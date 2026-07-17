@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Management - CKH Teacher Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/db.js"></script>
+  <link rel="icon" type="image/png" href="../ckh-nobg.png">
+</head>
+<body>
+
+<!-- Mobile Header -->
+<div class="mobile-header">
+  <button class="hamburger-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <div class="mobile-brand">
+    <img src="../ckh-nobg.png" alt="CKH Crest">
+    <span class="name">CKH Teacher Portal</span>
+  </div>
+  <div style="width:40px;"></div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="dash-shell">
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="dash-brand">
+      <div class="dash-brand-mark">
+        <img src="../ckh-nobg.png" alt="CKH Crest">
+        <span class="name">CKH Teacher Portal</span>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="dash-nav-container">
+      <a href="dashboard.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="courses.html" class="dash-nav-item active">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 19V5.5"/></svg>
+        My Courses
+      </a>
+      <a href="lessons.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z"/><path d="M9 8h7M9 12h7"/></svg>
+        Lesson Planning
+      </a>
+      <a href="assignments.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6l1 3h3v15H5V6h3l1-3Z"/><path d="M9 12h6M9 16h6"/></svg>
+        Assignments
+      </a>
+      <a href="assessments.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M9 9h6v6H9z"/></svg>
+        Assessments
+      </a>
+      <a href="attendance.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Attendance
+      </a>
+      <a href="gradebook.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M11 19V4M18 19v-6"/></svg>
+        Gradebook
+      </a>
+      <a href="communication.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4V5Z"/></svg>
+        Communication
+      </a>
+      <a href="reports.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V10M10 21V3M16 21v-7M22 21H2"/></svg>
+        Reports & Analytics
+      </a>
+      <a href="account.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        My Account
+      </a>
+    </div>
+    <div class="dash-bottom-section">
+      <div class="dash-user-info">
+        <div class="dash-user-avatar" id="userAvatar">JO</div>
+        <div class="dash-user-details">
+          <p class="dash-user-name" id="userName">James Otieno</p>
+          <p class="dash-user-role" id="userRole">Teacher</p>
+        </div>
+      </div>
+      <button class="dash-logout-btn" onclick="logout(event)">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <h1>Course management</h1>
+        <div class="who">Create courses, upload materials and plan curriculum</div>
+      </div>
+      <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
+    </div>
+
+
+    <div class="section-head">
+      <h2>My courses</h2>
+      <button class="btn btn-gold btn-sm" onclick="openNewCourseModal()">+ Create course</button>
+    </div>
+    <div id="coursesGrid" class="grid-cards"></div>
+
+    <div class="modal-overlay" id="courseModal">
+      <div class="modal-box">
+        <div class="modal-close"><button onclick="closeCourseModal()">✕</button></div>
+        <h2>Create a new course</h2>
+        <form onsubmit="submitNewCourse(event)">
+          <div class="field">
+            <label for="courseName">Course name</label>
+            <input id="courseName" type="text" placeholder="e.g. Physics" required>
+          </div>
+          <div class="field">
+            <label for="courseRoom">Room</label>
+            <input id="courseRoom" type="text" placeholder="e.g. Lab 2" required>
+          </div>
+          <button type="submit" class="btn btn-gold full-btn">Create course</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="materialModal">
+      <div class="modal-box">
+        <div class="modal-close"><button onclick="closeMaterialModal()">✕</button></div>
+        <h2 id="materialModalTitle">Add learning material</h2>
+        <form onsubmit="submitNewMaterial(event)">
+          <input type="hidden" id="materialCourseId">
+          <div class="field">
+            <label for="materialTitle">Title</label>
+            <input id="materialTitle" type="text" placeholder="e.g. Chapter 8 notes" required>
+          </div>
+          <div class="field">
+            <label for="materialType">Type</label>
+            <select id="materialType">
+              <option>Notes</option>
+              <option>Video</option>
+              <option>Worksheet</option>
+              <option>Past paper</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-gold full-btn">Add to course</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await sb.auth.signOut();
+    window.location.href = '../index.html';
+  }
+
+  async function requireTeacher() {
+    const user = await getCurrentUser();
+    if (!user) {
+      window.location.href = '../index.html';
+      return null;
+    }
+    if (user.role !== 'teacher') {
+      window.location.href = user.role === 'student' ? '../student/dashboard.html' : '../admin/dashboard.html';
+      return null;
+    }
+    const nameParts = user.name.split(' ');
+    const initials = nameParts.length >= 2
+      ? nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase()
+      : nameParts[0][0].toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userRole').textContent = 'Teacher';
+    return user;
+  }
+
+
+  let currentUser = null;
+
+  async function myCourses() {
+    const courses = await getDB(DB_KEYS.COURSES) || [];
+    const subjects = currentUser.subjects && currentUser.subjects.length ? currentUser.subjects : [];
+    let mine = courses.filter(c => subjects.includes(c.name));
+    if (mine.length === 0) mine = courses;
+    return mine;
+  }
+
+  async function renderCourses() {
+    const grid = document.getElementById('coursesGrid');
+    grid.innerHTML = '';
+    const courses = await myCourses();
+    if (courses.length === 0) {
+      grid.innerHTML = '<div class="empty-state">You have no courses yet. Create your first one.</div>';
+      return;
+    }
+    courses.forEach(c => {
+      const materials = c.materials || [];
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <h3>${c.name}</h3>
+        <p style="color:var(--ink-soft);font-size:13px;margin:-8px 0 12px;">${c.room}</p>
+        <div id="materials_${c.id}">
+          ${materials.length ? materials.map(m => `<div class="list-row"><div><div class="t">${m.title}</div><div class="d">${m.type}</div></div></div>`).join('') : '<div class="empty-state" style="padding:12px 0;">No materials uploaded yet.</div>'}
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px;">
+          <button class="btn btn-outline btn-sm" onclick="openMaterialModal('${c.id}', '${c.name.replace(/'/g, "\\'")}')">+ Upload material</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function openNewCourseModal() {
+    document.getElementById('courseModal').classList.add('open');
+  }
+  function closeCourseModal() {
+    document.getElementById('courseModal').classList.remove('open');
+  }
+
+  async function submitNewCourse(e) {
+    e.preventDefault();
+    const name = document.getElementById('courseName').value;
+    const room = document.getElementById('courseRoom').value;
+    await addToList(DB_KEYS.COURSES, { name, teacher: currentUser.name, room, materials: [] });
+
+    // Keep it visible to this teacher even if it wasn't already in their subject list
+    if (!currentUser.subjects) currentUser.subjects = [];
+    if (!currentUser.subjects.includes(name)) {
+      currentUser.subjects.push(name);
+      await updateMyProfile({ subjects: currentUser.subjects });
+    }
+
+    closeCourseModal();
+    document.getElementById('courseName').value = '';
+    document.getElementById('courseRoom').value = '';
+    await renderCourses();
+    return false;
+  }
+
+  function openMaterialModal(courseId, courseName) {
+    document.getElementById('materialCourseId').value = courseId;
+    document.getElementById('materialModalTitle').textContent = 'Add material to ' + courseName;
+    document.getElementById('materialModal').classList.add('open');
+  }
+  function closeMaterialModal() {
+    document.getElementById('materialModal').classList.remove('open');
+  }
+
+  async function submitNewMaterial(e) {
+    e.preventDefault();
+    const courseId = document.getElementById('materialCourseId').value;
+    const title = document.getElementById('materialTitle').value;
+    const type = document.getElementById('materialType').value;
+    const courses = await getDB(DB_KEYS.COURSES) || [];
+    const course = courses.find(c => c.id === courseId);
+    if (course) {
+      const materials = course.materials || [];
+      materials.unshift({ title, type });
+      await updateInList(DB_KEYS.COURSES, c => c.id === courseId, { materials });
+    }
+    closeMaterialModal();
+    document.getElementById('materialTitle').value = '';
+    await renderCourses();
+    return false;
+  }
+
+  window.onload = async function() {
+    currentUser = await requireTeacher();
+    if (!currentUser) return;
+    await renderCourses();
+  };
+
+</script>
+
+</body>
+</html>

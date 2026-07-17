@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Communication Tools - CKH Teacher Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/db.js"></script>
+  <link rel="icon" type="image/png" href="../ckh-nobg.png">
+</head>
+<body>
+
+<!-- Mobile Header -->
+<div class="mobile-header">
+  <button class="hamburger-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <div class="mobile-brand">
+    <img src="../ckh-nobg.png" alt="CKH Crest">
+    <span class="name">CKH Teacher Portal</span>
+  </div>
+  <div style="width:40px;"></div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="dash-shell">
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="dash-brand">
+      <div class="dash-brand-mark">
+        <img src="../ckh-nobg.png" alt="CKH Crest">
+        <span class="name">CKH Teacher Portal</span>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="dash-nav-container">
+      <a href="dashboard.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="courses.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 19V5.5"/></svg>
+        My Courses
+      </a>
+      <a href="lessons.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z"/><path d="M9 8h7M9 12h7"/></svg>
+        Lesson Planning
+      </a>
+      <a href="assignments.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6l1 3h3v15H5V6h3l1-3Z"/><path d="M9 12h6M9 16h6"/></svg>
+        Assignments
+      </a>
+      <a href="assessments.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M9 9h6v6H9z"/></svg>
+        Assessments
+      </a>
+      <a href="attendance.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Attendance
+      </a>
+      <a href="gradebook.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M11 19V4M18 19v-6"/></svg>
+        Gradebook
+      </a>
+      <a href="communication.html" class="dash-nav-item active">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4V5Z"/></svg>
+        Communication
+      </a>
+      <a href="reports.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V10M10 21V3M16 21v-7M22 21H2"/></svg>
+        Reports & Analytics
+      </a>
+      <a href="account.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        My Account
+      </a>
+    </div>
+    <div class="dash-bottom-section">
+      <div class="dash-user-info">
+        <div class="dash-user-avatar" id="userAvatar">JO</div>
+        <div class="dash-user-details">
+          <p class="dash-user-name" id="userName">James Otieno</p>
+          <p class="dash-user-role" id="userRole">Teacher</p>
+        </div>
+      </div>
+      <button class="dash-logout-btn" onclick="logout(event)">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <h1>Communication tools</h1>
+        <div class="who">Send announcements to students or the administration</div>
+      </div>
+      <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
+    </div>
+
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="section-head">
+        <h2>Send an announcement</h2>
+      </div>
+      <form onsubmit="submitAnnouncement(event)">
+        <div class="form-row">
+          <div class="field">
+            <label for="annAudience">Send to</label>
+            <select id="annAudience">
+              <option value="students">Students</option>
+              <option value="admin">Administration</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="annCourse">Course (optional)</label>
+            <select id="annCourse"><option value="">All my classes</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="annTitle">Message</label>
+          <textarea id="annTitle" placeholder="Write your announcement..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-gold full-btn" style="max-width:260px;">Send announcement</button>
+        <div id="annSentMsg" class="success-message" style="display:none;">Announcement sent.</div>
+      </form>
+    </div>
+
+    <div class="section-head">
+      <h2>Messages you've sent</h2>
+    </div>
+    <div class="card">
+      <div id="sentList"></div>
+      <div id="sentEmpty" class="empty-state" style="display:none;">You haven't sent any announcements yet.</div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await sb.auth.signOut();
+    window.location.href = '../index.html';
+  }
+
+  async function requireTeacher() {
+    const user = await getCurrentUser();
+    if (!user) {
+      window.location.href = '../index.html';
+      return null;
+    }
+    if (user.role !== 'teacher') {
+      window.location.href = user.role === 'student' ? '../student/dashboard.html' : '../admin/dashboard.html';
+      return null;
+    }
+    const nameParts = user.name.split(' ');
+    const initials = nameParts.length >= 2
+      ? nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase()
+      : nameParts[0][0].toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userRole').textContent = 'Teacher';
+    return user;
+  }
+
+
+  let currentUser = null;
+
+  async function myCourses() {
+    const courses = await getDB(DB_KEYS.COURSES) || [];
+    const subjects = currentUser.subjects && currentUser.subjects.length ? currentUser.subjects : [];
+    let mine = courses.filter(c => subjects.includes(c.name));
+    if (mine.length === 0) mine = courses;
+    return mine;
+  }
+
+  async function renderSent() {
+    const all = await getDB(DB_KEYS.ANNOUNCEMENTS) || [];
+    const mine = all.filter(a => a.author === currentUser.name);
+    const list = document.getElementById('sentList');
+    const empty = document.getElementById('sentEmpty');
+    list.innerHTML = '';
+    if (mine.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    mine.forEach(a => {
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      const audienceLabel = a.audience === 'admin' ? 'To: Administration' : (a.course ? `To: ${a.course} students` : 'To: All my students');
+      row.innerHTML = `<div><div class="t">${a.title}</div><div class="d">${audienceLabel} · ${a.date}</div></div>`;
+      list.appendChild(row);
+    });
+  }
+
+  async function submitAnnouncement(e) {
+    e.preventDefault();
+    const audience = document.getElementById('annAudience').value;
+    const course = document.getElementById('annCourse').value;
+    const title = document.getElementById('annTitle').value;
+    await addToList(DB_KEYS.ANNOUNCEMENTS, {
+      id: 'ann_' + Date.now(),
+      title,
+      author: currentUser.name,
+      audience,
+      course: course || null,
+      date: new Date().toISOString().slice(0, 10)
+    });
+    document.getElementById('annSentMsg').style.display = 'block';
+    setTimeout(() => { document.getElementById('annSentMsg').style.display = 'none'; }, 2500);
+    e.target.reset();
+    await renderSent();
+    return false;
+  }
+
+  window.onload = async function() {
+    currentUser = await requireTeacher();
+    if (!currentUser) return;
+    document.getElementById('annCourse').innerHTML += (await myCourses()).map(c => `<option>${c.name}</option>`).join('');
+    await renderSent();
+  };
+
+</script>
+
+</body>
+</html>

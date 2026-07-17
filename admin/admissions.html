@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admissions - CKH Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/db.js"></script>
+  <style>
+    .doc-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .doc-tag-list span {
+      background: var(--ivory);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 11.5px;
+      color: var(--ink-soft);
+    }
+    .app-note {
+      background: var(--ivory);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      margin: 10px 0 18px;
+    }
+    .profile-field {
+      margin-bottom: 14px;
+    }
+    .profile-field label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .profile-value {
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+  </style>
+  <link rel="icon" type="image/png" href="../ckh-nobg.png">
+</head>
+<body>
+
+<!-- Mobile Header -->
+<div class="mobile-header">
+  <button class="hamburger-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <div class="mobile-brand">
+    <img src="../ckh-nobg.png" alt="CKH Crest">
+    <span class="name">CKH Admin Portal</span>
+  </div>
+  <div style="width:40px;"></div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="dash-shell">
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="dash-brand">
+      <div class="dash-brand-mark">
+        <img src="../ckh-nobg.png" alt="CKH Crest">
+        <span class="name">CKH Admin Portal</span>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="dash-nav-container">
+      <a href="dashboard.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="teachers.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c1.2-4 4-6 6.5-6s5.3 2 6.5 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.6 2.3 5.5 5.3"/></svg>
+        Teacher Management
+      </a>
+      <a href="admissions.html" class="dash-nav-item active">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 9l10-5 10 5-10 5-10-5Z"/><path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg>
+        Admissions
+      </a>
+      <a href="academics.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+        Academics
+      </a>
+      <a href="finance.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 9h.01M18 15h.01"/></svg>
+        Finance
+      </a>
+      <a href="reports.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V10M10 21V3M16 21v-7M22 21H2"/></svg>
+        Reports & Analytics
+      </a>
+      <a href="account.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        My Account
+      </a>
+    </div>
+    <div class="dash-bottom-section">
+      <div class="dash-user-info">
+        <div class="dash-user-avatar" id="userAvatar">CA</div>
+        <div class="dash-user-details">
+          <p class="dash-user-name" id="userName">CKH Admin</p>
+          <p class="dash-user-role" id="userRole">Administrator</p>
+        </div>
+      </div>
+      <button class="dash-logout-btn" onclick="logout(event)">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <h1>Admissions</h1>
+        <div class="who">Manage programmes offered on the school site and review admission applications</div>
+      </div>
+      <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
+    </div>
+
+    <div class="section-head">
+      <h2>Applications awaiting review <span class="more" id="pendingCountTag"></span></h2>
+    </div>
+    <div class="card" style="margin-bottom:24px;">
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Reference</th><th>Applicant</th><th>Programme</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="applicationRows"></tbody>
+        </table>
+      </div>
+      <div id="applicationEmpty" class="empty-state" style="display:none;">No admission applications yet. Applications submitted from the school website will appear here.</div>
+    </div>
+
+    <div class="section-head">
+      <h2>Programmes on offer</h2>
+      <button class="btn btn-gold btn-sm" onclick="openProgrammeModal()">+ Add programme</button>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Programme</th><th>Curriculum</th><th>Level</th><th>Vacancies</th><th>Visible on site</th><th>Actions</th></tr></thead>
+          <tbody id="programmeRows"></tbody>
+        </table>
+      </div>
+      <div id="programmeEmpty" class="empty-state" style="display:none;">No programmes added yet.</div>
+    </div>
+
+    <!-- Add / edit programme modal -->
+    <div class="modal-overlay" id="programmeModal">
+      <div class="modal-box">
+        <div class="modal-close"><button onclick="closeProgrammeModal()">✕</button></div>
+        <h2 id="programmeModalTitle">Add a programme</h2>
+        <form onsubmit="submitProgramme(event)">
+          <input type="hidden" id="programmeEditId">
+          <div class="field">
+            <label for="programmeName">Programme name</label>
+            <input id="programmeName" type="text" placeholder="e.g. Cambridge IGCSE" required>
+          </div>
+          <div class="field">
+            <label for="programmeCurriculum">Curriculum</label>
+            <select id="programmeCurriculum">
+              <option value="Cambridge IGCSE">Cambridge IGCSE</option>
+              <option value="Edexcel">Pearson Edexcel</option>
+              <option value="IB">International Baccalaureate</option>
+              <option value="Common Core">Common Core</option>
+              <option value="SAT">SAT Preparation</option>
+              <option value="CBE">Competency-Based Education</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="programmeLevel">Level / grade range</label>
+            <input id="programmeLevel" type="text" placeholder="e.g. Years 9 - 11" required>
+          </div>
+          <div class="field">
+            <label for="programmeVacancies">Vacancies open</label>
+            <input id="programmeVacancies" type="number" min="0" placeholder="e.g. 10" required>
+          </div>
+          <div class="field">
+            <label for="programmeSummary">Short summary (shown on the programme card)</label>
+            <input id="programmeSummary" type="text" placeholder="One line, shown to browsing visitors" required>
+          </div>
+          <div class="field">
+            <label for="programmeDescription">Full description</label>
+            <textarea id="programmeDescription" placeholder="Shown when a visitor opens the programme's details" required></textarea>
+          </div>
+          <div class="field">
+            <label for="programmeHowToApply">How to apply</label>
+            <textarea id="programmeHowToApply" placeholder="Explain the steps an applicant should follow" required></textarea>
+          </div>
+          <div class="field">
+            <label for="programmeDocuments">Required documents (one per line)</label>
+            <textarea id="programmeDocuments" placeholder="e.g.&#10;Copy of birth certificate&#10;Latest school report&#10;Copy of parent/guardian ID"></textarea>
+          </div>
+          <div class="field">
+            <label for="programmeStatus">Visible to applicants on the school site?</label>
+            <select id="programmeStatus">
+              <option value="open">Yes — open for admission</option>
+              <option value="closed">No — hide from the site</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-gold full-btn">Save programme</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Application review modal -->
+    <div class="modal-overlay" id="applicationModal">
+      <div class="modal-box">
+        <div class="modal-close"><button onclick="closeApplicationModal()">✕</button></div>
+        <h2>Application <span id="appModalRef"></span></h2>
+        <div class="profile-field">
+          <label>Applicant</label>
+          <div class="profile-value" id="appModalName"></div>
+        </div>
+        <div class="profile-field">
+          <label>Email</label>
+          <div class="profile-value" id="appModalEmail"></div>
+        </div>
+        <div class="profile-field">
+          <label>Phone / WhatsApp</label>
+          <div class="profile-value" id="appModalPhone"></div>
+        </div>
+        <div class="profile-field">
+          <label>Programme applied for</label>
+          <div class="profile-value" id="appModalProgramme"></div>
+        </div>
+        <div class="profile-field">
+          <label>Grade / year applying for</label>
+          <div class="profile-value" id="appModalLevel"></div>
+        </div>
+        <div class="profile-field">
+          <label>Applicant's notes</label>
+          <div class="profile-value" id="appModalNotes"></div>
+        </div>
+        <div class="profile-field" id="appModalVacancyWrap">
+          <label>Vacancy status on this programme</label>
+          <div class="profile-value" id="appModalVacancy"></div>
+        </div>
+        <div id="appModalAdminNoteWrap" style="display:none;">
+          <div class="profile-field">
+            <label>Admin note on file</label>
+            <div class="profile-value" id="appModalAdminNote"></div>
+          </div>
+        </div>
+        <div id="appModalActions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button class="btn btn-gold btn-sm" onclick="handleApprove()">Approve application</button>
+          <button class="btn btn-outline btn-sm" onclick="handleRequestDocs()">Request more documents</button>
+          <button class="btn btn-outline btn-sm" onclick="handleReject()">Reject</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval confirmation modal (shown after approving an application) -->
+    <div class="modal-overlay" id="credentialsModal">
+      <div class="modal-box">
+        <div class="modal-close"><button onclick="closeCredentialsModal()">✕</button></div>
+        <h2>Application approved</h2>
+        <div class="profile-field">
+          <label>Name</label>
+          <div class="profile-value" id="credName"></div>
+        </div>
+        <div class="profile-field">
+          <label>Login email</label>
+          <div class="profile-value" id="credEmail"></div>
+        </div>
+        <p style="color:var(--ink-soft);font-size:13px;margin:14px 0;">They already set their own portal password when they applied, so there's nothing more to send — they can sign in any time. Tap below to let them know on WhatsApp.</p>
+        <button class="btn btn-gold full-btn" onclick="sendCredentialsWhatsApp()">Notify on WhatsApp</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await sb.auth.signOut();
+    window.location.href = '../index.html';
+  }
+
+  async function requireAdmin() {
+    const user = await getCurrentUser();
+    if (!user) {
+      window.location.href = '../index.html';
+      return null;
+    }
+    if (user.role !== 'admin') {
+      window.location.href = user.role === 'teacher' ? '../teacher/dashboard.html' : '../student/dashboard.html';
+      return null;
+    }
+    const nameParts = user.name.split(' ');
+    const initials = nameParts.length >= 2
+      ? nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase()
+      : nameParts[0][0].toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userRole').textContent = 'Administrator';
+    return user;
+  }
+
+  let currentUser = null;
+  let pendingWhatsAppLink = null;
+  let activeApplicationId = null;
+
+  const STATUS_LABEL = {
+    pending: 'Pending review',
+    approved: 'Approved',
+    rejected: 'Rejected',
+    more_info: 'Docs requested'
+  };
+  const STATUS_CLASS = {
+    pending: 'warn',
+    approved: 'good',
+    rejected: 'bad',
+    more_info: 'warn'
+  };
+
+  // --- Applications queue ------------------------------------------------
+
+  async function renderApplications() {
+    const applications = (await getAdmissionApplications()).slice().sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+    const rows = document.getElementById('applicationRows');
+    const empty = document.getElementById('applicationEmpty');
+    const pendingCount = applications.filter(a => a.status === 'pending').length;
+    document.getElementById('pendingCountTag').textContent = pendingCount > 0 ? `(${pendingCount} pending)` : '';
+
+    if (applications.length === 0) {
+      empty.style.display = 'block';
+      rows.innerHTML = '';
+      return;
+    }
+    empty.style.display = 'none';
+    rows.innerHTML = applications.map(a => `
+      <tr>
+        <td data-label="Reference">${a.id}</td>
+        <td data-label="Applicant">${a.name}</td>
+        <td data-label="Programme">${a.programmeName || '—'}</td>
+        <td data-label="Contact">${a.phone || a.email || '—'}</td>
+        <td data-label="Status"><span class="status-pill ${STATUS_CLASS[a.status] || ''}">${STATUS_LABEL[a.status] || a.status}</span></td>
+        <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm" onclick="openApplicationModal('${a.id}')">View</button></td>
+      </tr>`).join('');
+  }
+
+  async function openApplicationModal(applicationId) {
+    const applications = await getAdmissionApplications();
+    const application = applications.find(a => a.id === applicationId);
+    if (!application) return;
+    activeApplicationId = applicationId;
+
+    document.getElementById('appModalRef').textContent = application.id;
+    document.getElementById('appModalName').textContent = application.name;
+    document.getElementById('appModalEmail').textContent = application.email || '—';
+    document.getElementById('appModalPhone').textContent = application.phone || '—';
+    document.getElementById('appModalProgramme').textContent = application.programmeName || 'Not specified';
+    document.getElementById('appModalLevel').textContent = application.level || '—';
+    document.getElementById('appModalNotes').textContent = application.notes || 'None provided';
+
+    const programmes = await getProgrammes();
+    const programme = programmes.find(p => p.id === application.programmeId);
+    const vacancyWrap = document.getElementById('appModalVacancyWrap');
+    if (programme && typeof programme.vacancies === 'number') {
+      vacancyWrap.style.display = 'block';
+      document.getElementById('appModalVacancy').textContent = programme.vacancies > 0
+        ? `${programme.vacancies} slot(s) currently open`
+        : 'No vacant slots right now — approving will place them over capacity, consider a waitlist.';
+    } else {
+      vacancyWrap.style.display = 'none';
+    }
+
+    const adminNoteWrap = document.getElementById('appModalAdminNoteWrap');
+    if (application.adminNote) {
+      adminNoteWrap.style.display = 'block';
+      document.getElementById('appModalAdminNote').textContent = application.adminNote;
+    } else {
+      adminNoteWrap.style.display = 'none';
+    }
+
+    const actions = document.getElementById('appModalActions');
+    actions.style.display = application.status === 'approved' ? 'none' : 'flex';
+
+    document.getElementById('applicationModal').classList.add('open');
+  }
+
+  function closeApplicationModal() {
+    document.getElementById('applicationModal').classList.remove('open');
+    activeApplicationId = null;
+  }
+
+  async function handleApprove() {
+    if (!activeApplicationId) return;
+    if (!confirm('Approve this application?')) return;
+    const result = await approveAdmissionApplication(activeApplicationId);
+    if (!result.success) {
+      alert(result.message || 'Could not approve this application.');
+      return;
+    }
+    closeApplicationModal();
+    await renderApplications();
+    await renderProgrammes();
+    showCredentials(result.application);
+  }
+
+  async function handleReject() {
+    if (!activeApplicationId) return;
+    const reason = prompt('Add a short reason for rejecting this application (optional):') || '';
+    await rejectAdmissionApplication(activeApplicationId, reason);
+    closeApplicationModal();
+    await renderApplications();
+  }
+
+  async function handleRequestDocs() {
+    if (!activeApplicationId) return;
+    const note = prompt('What additional documents or information do you need from the applicant?') || '';
+    if (!note) return;
+    await requestMoreDocsForApplication(activeApplicationId, note);
+    closeApplicationModal();
+    await renderApplications();
+  }
+
+  function showCredentials(application) {
+    document.getElementById('credName').textContent = application.name;
+    document.getElementById('credEmail').textContent = application.email || '—';
+    pendingWhatsAppLink = application.phone
+      ? `https://wa.me/${application.phone.replace(/[^\d]/g, '')}?text=${encodeURIComponent(`Hello ${application.name}, great news — your CKH admission application (${application.id}) has been approved! You can sign in to the school portal any time with the login you created when you applied.`)}`
+      : null;
+    document.getElementById('credentialsModal').classList.add('open');
+  }
+
+  function closeCredentialsModal() {
+    document.getElementById('credentialsModal').classList.remove('open');
+    pendingWhatsAppLink = null;
+  }
+
+  function sendCredentialsWhatsApp() {
+    if (pendingWhatsAppLink) {
+      window.open(pendingWhatsAppLink, '_blank');
+    }
+  }
+
+  // --- Programme management -----------------------------------------------
+
+  async function renderProgrammes() {
+    const programmes = await getProgrammes();
+    const rows = document.getElementById('programmeRows');
+    const empty = document.getElementById('programmeEmpty');
+    if (programmes.length === 0) {
+      empty.style.display = 'block';
+      rows.innerHTML = '';
+      return;
+    }
+    empty.style.display = 'none';
+    rows.innerHTML = programmes.map(p => `
+      <tr>
+        <td data-label="Programme">${p.name}</td>
+        <td data-label="Curriculum">${p.curriculum || '—'}</td>
+        <td data-label="Level">${p.level || '—'}</td>
+        <td data-label="Vacancies">${typeof p.vacancies === 'number' ? p.vacancies : '—'}</td>
+        <td data-label="Visible on site"><span class="status-pill ${p.status === 'closed' ? 'bad' : 'good'}">${p.status === 'closed' ? 'Hidden' : 'Visible'}</span></td>
+        <td class="table-actions" data-label="Actions">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="openProgrammeModal('${p.id}')">Edit</button>
+            <button class="btn btn-outline btn-sm" onclick="removeProgramme('${p.id}')">Remove</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  async function openProgrammeModal(programmeId) {
+    const form = document.querySelector('#programmeModal form');
+    form.reset();
+    document.getElementById('programmeEditId').value = '';
+
+    if (programmeId) {
+      const programme = (await getProgrammes()).find(p => p.id === programmeId);
+      if (programme) {
+        document.getElementById('programmeModalTitle').textContent = 'Edit programme';
+        document.getElementById('programmeEditId').value = programme.id;
+        document.getElementById('programmeName').value = programme.name || '';
+        document.getElementById('programmeCurriculum').value = programme.curriculum || 'Cambridge IGCSE';
+        document.getElementById('programmeLevel').value = programme.level || '';
+        document.getElementById('programmeVacancies').value = typeof programme.vacancies === 'number' ? programme.vacancies : 0;
+        document.getElementById('programmeSummary').value = programme.summary || '';
+        document.getElementById('programmeDescription').value = programme.description || '';
+        document.getElementById('programmeHowToApply').value = programme.howToApply || '';
+        document.getElementById('programmeDocuments').value = (programme.requiredDocuments || []).join('\n');
+        document.getElementById('programmeStatus').value = programme.status || 'open';
+      }
+    } else {
+      document.getElementById('programmeModalTitle').textContent = 'Add a programme';
+    }
+
+    document.getElementById('programmeModal').classList.add('open');
+  }
+
+  function closeProgrammeModal() {
+    document.getElementById('programmeModal').classList.remove('open');
+  }
+
+  async function submitProgramme(e) {
+    e.preventDefault();
+    const editId = document.getElementById('programmeEditId').value;
+    const documents = document.getElementById('programmeDocuments').value
+      .split('\n').map(s => s.trim()).filter(Boolean);
+
+    const data = {
+      name: document.getElementById('programmeName').value.trim(),
+      curriculum: document.getElementById('programmeCurriculum').value,
+      level: document.getElementById('programmeLevel').value.trim(),
+      vacancies: parseInt(document.getElementById('programmeVacancies').value, 10) || 0,
+      summary: document.getElementById('programmeSummary').value.trim(),
+      description: document.getElementById('programmeDescription').value.trim(),
+      howToApply: document.getElementById('programmeHowToApply').value.trim(),
+      requiredDocuments: documents,
+      status: document.getElementById('programmeStatus').value
+    };
+
+    if (editId) {
+      await updateInList(DB_KEYS.PROGRAMMES, p => p.id === editId, data);
+    } else {
+      await addToList(DB_KEYS.PROGRAMMES, { id: 'prog_' + Date.now(), ...data });
+    }
+
+    closeProgrammeModal();
+    await renderProgrammes();
+    return false;
+  }
+
+  async function removeProgramme(programmeId) {
+    if (!confirm('Remove this programme? It will disappear from the school website immediately.')) return;
+    await removeFromList(DB_KEYS.PROGRAMMES, p => p.id === programmeId);
+    await renderProgrammes();
+  }
+
+  window.onload = async function() {
+    currentUser = await requireAdmin();
+    if (!currentUser) return;
+    await renderApplications();
+    await renderProgrammes();
+  };
+</script>
+
+</body>
+</html>

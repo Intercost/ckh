@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance - CKH International School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/db.js"></script>
+  <link rel="icon" type="image/png" href="../ckh-nobg.png">
+</head>
+<body>
+
+<!-- Mobile Header -->
+<div class="mobile-header">
+  <button class="hamburger-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <div class="mobile-brand">
+    <img src="../ckh-nobg.png" alt="CKH Crest">
+    <span class="name">CKH Portal</span>
+  </div>
+  <div style="width:40px;"></div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="dash-shell">
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="dash-brand">
+      <div class="dash-brand-mark">
+        <img src="../ckh-nobg.png" alt="CKH Crest">
+        <span class="name">CKH Portal</span>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+        <div class="dash-nav-container">
+      <a href="dashboard.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="courses.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 19V5.5"/></svg>
+        My Courses
+      </a>
+      <a href="live.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-4v12l-6-4"/></svg>
+        Live Classes
+      </a>
+      <a href="assignments.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6l1 3h3v15H5V6h3l1-3Z"/><path d="M9 12h6M9 16h6"/></svg>
+        Assignments
+      </a>
+      <a href="assessments.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M9 9h6v6H9z"/></svg>
+        Assessments &amp; Exams
+      </a>
+      <a href="grades.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M11 19V4M18 19v-6"/></svg>
+        Grades &amp; Reports
+      </a>
+      <a href="attendance.html" class="dash-nav-item active">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Attendance
+      </a>
+      <a href="communication.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4V5Z"/></svg>
+        Communication
+      </a>
+      <a href="resources.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h11l5 5v11H4Z"/><path d="M15 4v5h5"/></svg>
+        Resources Library
+      </a>
+      <a href="account.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        My Account
+      </a>
+    </div>
+
+    <div class="dash-bottom-section">
+      <div class="dash-user-info">
+        <div class="dash-user-avatar" id="userAvatar">AK</div>
+        <div class="dash-user-details">
+          <p class="dash-user-name" id="userName">Amara Kamau</p>
+          <p class="dash-user-role" id="userRole">Student</p>
+        </div>
+      </div>
+      <button class="dash-logout-btn" onclick="logout(event)">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <h1>Attendance</h1>
+        <div class="who">Your class attendance record</div>
+      </div>
+      <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
+    </div>
+
+    <div style="display:flex;justify-content:center;margin-bottom:30px;">
+      <div style="text-align:center;">
+        <div class="attend-ring" style="width:180px;height:180px;"><span style="font-size:36px;">94%</span></div>
+        <p style="color:var(--ink-soft);margin-top:16px;">This term · 3 absences</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-family:'Fraunces',serif;color:var(--navy-900);margin:0 0 16px 0;">Recent Attendance</h2>
+      <div class="list-row"><div><div class="t">July 4, 2026</div><div class="d">All classes</div></div><span class="tag-soft">Present</span></div>
+      <div class="list-row"><div><div class="t">July 3, 2026</div><div class="d">All classes</div></div><span class="tag-soft">Present</span></div>
+      <div class="list-row"><div><div class="t">July 2, 2026</div><div class="d">All classes</div></div><span class="tag-soft">Present</span></div>
+      <div class="list-row"><div><div class="t">July 1, 2026</div><div class="d">All classes</div></div><span class="tag-soft warn">Absent</span></div>
+      <div class="list-row"><div><div class="t">June 30, 2026</div><div class="d">All classes</div></div><span class="tag-soft">Present</span></div>
+    </div>
+  </main>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await sb.auth.signOut();
+    window.location.href = '../index.html';
+  }
+
+  window.onload = async function() {
+    const user = await getCurrentUser();
+    if (!user) {
+      window.location.href = '../index.html';
+      return;
+    }
+    if (user.role !== 'student') {
+      window.location.href = user.role === 'teacher' ? '../teacher/dashboard.html' : '../admin/dashboard.html';
+      return;
+    }
+
+    const nameParts = user.name.split(' ');
+    const initials = nameParts.length >= 2
+      ? nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase()
+      : nameParts[0][0].toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userRole').textContent = user.role;
+  };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CKH International School — Inspire. Learn. Lead.</title>
+  <meta name="description" content="Inspire. Learn. Lead. CKH International School — Cambridge, Edexcel, IB, Common Core, SAT and CBE, in one connected school portal.">
+
+  <!-- Open Graph / link preview tags (WhatsApp, Facebook, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CKH International School">
+  <meta property="og:title" content="CKH International School — Inspire. Learn. Lead.">
+  <meta property="og:description" content="Inspire · Learn · Lead — a single home for every learner, teacher and administrator across Cambridge, Edexcel, IB, Common Core, SAT and CBE.">
+  <meta property="og:image" content="https://ckh-brown.vercel.app/ckh-nobg.png">
+  <meta property="og:image:width" content="1254">
+  <meta property="og:image:height" content="1254">
+  <meta property="og:url" content="https://ckh-brown.vercel.app/">
+
+  <!-- Twitter card (some clients fall back to these) -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CKH International School — Inspire. Learn. Lead.">
+  <meta name="twitter:description" content="Inspire · Learn · Lead — a single home for every learner, teacher and administrator.">
+  <meta name="twitter:image" content="https://ckh-brown.vercel.app/ckh-nobg.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/db.js"></script>
+  <style>
+    .hero {
+      position: relative;
+      background: radial-gradient(120% 140% at 15% 0%, var(--navy-800), var(--navy-950) 65%);
+      color: var(--ivory-100);
+      overflow: hidden;
+    }
+
+    .hero .wrap {
+      padding: 96px 32px 84px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .hero-laurel {
+      position: absolute;
+      inset: 0;
+      opacity: 0.05;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(115deg, var(--gold-300) 0 2px, transparent 2px 46px);
+    }
+
+    .hero h1 {
+      color: var(--ivory-100);
+      font-size: clamp(38px, 5vw, 60px);
+      line-height: 1.04;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold-300);
+      font-weight: 500;
+    }
+
+    .hero p.lede {
+      font-size: 17px;
+      line-height: 1.65;
+      color: rgba(248, 244, 234, 0.78);
+      max-width: 46ch;
+      margin-top: 20px;
+    }
+
+    .hero .cta-row {
+      display: flex;
+      gap: 14px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .hero-crest {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-crest .glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201, 161, 58, 0.22), transparent 70%);
+    }
+
+    .hero-crest img {
+      width: 280px;
+      height: 280px;
+      object-fit: contain;
+      position: relative;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
+    }
+
+    .hero-motto {
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line-on-navy);
+      display: flex;
+      gap: 36px;
+      flex-wrap: wrap;
+    }
+
+    .hero-motto div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hero-motto .k {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      color: var(--gold-300);
+    }
+
+    .hero-motto .v {
+      font-size: 12px;
+      color: rgba(248, 244, 234, 0.65);
+      letter-spacing: 0.06em;
+    }
+
+    .pillars {
+      padding: 80px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pillars .head {
+      max-width: 640px;
+      margin-bottom: 44px;
+    }
+
+    .pillars h2 {
+      font-size: clamp(26px, 3vw, 36px);
+      font-weight: 600;
+      margin-top: 14px;
+    }
+
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .pillar-card {
+      background: var(--ivory-100);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+
+    .pillar-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: var(--navy-900);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .pillar-icon svg {
+      width: 26px;
+      height: 26px;
+      stroke: var(--gold-300);
+    }
+
+    .pillar-card h3 {
+      font-size: 19px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .pillar-card p {
+      font-size: 14.5px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .curricula {
+      padding: 80px 0;
+      background: var(--navy-900);
+      color: var(--ivory-100);
+    }
+
+    .curricula .head {
+      max-width: 640px;
+      margin-bottom: 40px;
+    }
+
+    .curricula h2 {
+      color: var(--ivory-100);
+      font-size: clamp(26px, 3vw, 36px);
+      font-weight: 600;
+      margin-top: 14px;
+    }
+
+    .curricula .eyebrow {
+      color: var(--gold-300);
+    }
+
+    .curricula .eyebrow::before {
+      background: var(--gold-300);
+    }
+
+    .curr-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+    }
+
+    .curr-card {
+      border: 1px solid var(--line-on-navy);
+      border-radius: 12px;
+      padding: 22px 14px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.03);
+      transition: background .2s ease, border-color .2s ease;
+    }
+
+    .curr-card:hover {
+      background: rgba(227, 196, 124, 0.08);
+      border-color: var(--gold-500);
+    }
+
+    .curr-card .tag {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      color: var(--gold-300);
+    }
+
+    .curr-card .full {
+      font-size: 11px;
+      color: rgba(248, 244, 234, 0.6);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .admissions {
+      padding: 72px 0;
+      background: var(--ivory-100);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .admissions-wrap {
+      max-width: 720px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admissions h2 {
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 600;
+    }
+
+    .admissions-lede {
+      color: var(--ink-soft);
+      font-size: 15.5px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* Wider modal variant for browsing programmes */
+    .modal-box.wide {
+      max-width: 880px;
+      padding: 32px 36px;
+    }
+
+    .prog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .prog-card {
+      text-align: left;
+      background: var(--ivory);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+    .prog-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: var(--gold-500);
+    }
+
+    .prog-card h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .prog-card .prog-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .prog-card p {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .prog-detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--ink-soft);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 0;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .prog-detail-back svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .prog-detail h3 {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .prog-detail .prog-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .prog-detail-section {
+      margin-bottom: 18px;
+    }
+
+    .prog-detail-section h4 {
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gold-700);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .prog-detail-section p {
+      font-size: 14.5px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .prog-detail-section ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.8;
+    }
+
+    .contact-band {
+      background: var(--navy-900);
+      color: var(--ivory-100);
+      padding: 56px 0;
+    }
+
+    .contact-band .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .contact-band h2 {
+      color: var(--ivory-100);
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .contact-band p {
+      color: rgba(248, 244, 234, 0.7);
+      font-size: 14.5px;
+      margin-top: 8px;
+      max-width: 44ch;
+    }
+
+    .contact-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 720px) {
+      .prog-grid {
+        grid-template-columns: 1fr;
+      }
+      .contact-band .wrap {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .portal {
+      padding: 96px 0;
+    }
+
+    .portal .wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .portal-copy h2 {
+      font-size: clamp(26px, 3vw, 36px);
+      font-weight: 600;
+      margin-top: 14px;
+    }
+
+    .portal-copy p {
+      font-size: 15.5px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      margin-top: 16px;
+      max-width: 44ch;
+    }
+
+    .role-list {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .role-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+
+    .role-item .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold-500);
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+
+    .login-card {
+      background: var(--ivory-100);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 36px;
+      box-shadow: var(--shadow);
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      font-size: 14.5px;
+      font-family: inherit;
+      background: var(--ivory);
+      color: var(--ink);
+    }
+
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--gold-500);
+      box-shadow: 0 0 0 3px rgba(201, 161, 58, 0.18);
+    }
+
+    .login-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      margin-bottom: 22px;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+
+    .login-foot a {
+      color: var(--navy-900);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .full-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 14px;
+      font-size: 15px;
+    }
+
+    .password-field {
+      position: relative;
+    }
+
+    .password-field input {
+      padding-right: 44px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--ink-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-password svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .demo-note {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 16px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .switch-form {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+
+    .switch-form a {
+      color: var(--navy-900);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    footer.site {
+      background: var(--navy-950);
+      color: rgba(248, 244, 234, 0.7);
+      padding: 56px 0 28px;
+    }
+
+    .foot-top {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--line-on-navy);
+    }
+
+    .foot-brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .foot-brand img {
+      height: 36px;
+      width: 36px;
+    }
+
+    .foot-brand .name {
+      font-family: 'Fraunces', serif;
+      color: var(--ivory-100);
+      font-size: 16px;
+    }
+
+    .foot-cols {
+      display: flex;
+      gap: 56px;
+      flex-wrap: wrap;
+    }
+
+    .foot-col h4 {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-300);
+      margin-bottom: 14px;
+    }
+
+    .foot-col a {
+      display: block;
+      font-size: 13.5px;
+      color: rgba(248, 244, 234, 0.65);
+      text-decoration: none;
+      margin-bottom: 9px;
+    }
+
+    .foot-col a:hover {
+      color: var(--ivory-100);
+    }
+
+    .foot-bottom {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 24px;
+      font-size: 12.5px;
+    }
+
+    .error-message {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .portal-choice-head h3 {
+      font-size: 19px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .portal-choice-head p {
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .portal-choice-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .portal-choice-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      text-align: left;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1.5px solid var(--line);
+      background: var(--ivory);
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .portal-choice-card:hover {
+      border-color: var(--gold-500);
+      background: rgba(201, 161, 58, 0.07);
+      transform: translateY(-2px);
+    }
+
+    .portal-choice-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: var(--navy-900);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .portal-choice-icon svg {
+      width: 23px;
+      height: 23px;
+      stroke: var(--gold-300);
+    }
+
+    .portal-choice-text {
+      flex: 1;
+    }
+
+    .portal-choice-text h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .portal-choice-text p {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    .portal-choice-arrow {
+      width: 18px;
+      height: 18px;
+      stroke: var(--ink-soft);
+      flex-shrink: 0;
+    }
+
+    .back-to-choice {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      padding: 0;
+      margin-bottom: 20px;
+      font-family: inherit;
+    }
+
+    .back-to-choice:hover {
+      color: var(--navy-900);
+    }
+
+    .back-to-choice svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .login-role-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .login-role-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: var(--navy-900);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .login-role-icon svg {
+      width: 23px;
+      height: 23px;
+      stroke: var(--gold-300);
+    }
+
+    .login-role-heading h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .login-role-heading p {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin: 2px 0 0;
+    }
+
+    @media (max-width: 980px) {
+      .hero .wrap {
+        grid-template-columns: 1fr;
+        padding-top: 64px;
+      }
+
+      .hero-crest {
+        order: -1;
+      }
+
+      .curr-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .pillar-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .portal .wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="icon" type="image/png" href="ckh-nobg.png">
+</head>
+<body>
+
+<header class="site">
+  <div class="nav-row">
+    <a class="brand" href="#top">
+      <img src="ckh-nobg.png" alt="CKH Crest">
+      <span class="brand-text">
+        <span class="name">CKH International</span><br>
+        <span class="sub">Inspire · Learn · Lead</span>
+      </span>
+    </a>
+    <nav class="links">
+      <a href="#pillars">Why CKH</a>
+      <a href="#curricula">Curricula</a>
+      <a href="#admissions">Admissions</a>
+      <a href="#careers">Careers</a>
+      <a href="#portal">Portal</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="btn btn-outline" onclick="showLogin()">Portal Login</button>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-laurel"></div>
+  <div class="wrap">
+    <div>
+      <span class="eyebrow" style="color:var(--gold-300)">CKH International School</span>
+      <h1 style="margin-top: 16px;">Inspire minds.<br>Shape <em>futures.</em></h1>
+      <p class="lede">A single home for every learner, teacher and administrator — live classes, assignments, grading and reporting across Cambridge, Edexcel, IB, Common Core, SAT and CBE, in one calm, connected platform.</p>
+      <div class="cta-row">
+        <button class="btn btn-gold" onclick="showLogin()">Enter the Portal</button>
+        <a href="#curricula" class="btn btn-ghost-light">Explore Curricula</a>
+      </div>
+      <div class="hero-motto">
+        <div><span class="k">6</span><span class="v">Curricula supported</span></div>
+        <div><span class="k">3</span><span class="v">Roles, one platform</span></div>
+        <div><span class="k">24/7</span><span class="v">Access to learning</span></div>
+      </div>
+    </div>
+    <div class="hero-crest">
+      <div class="glow"></div>
+      <img src="ckh-nobg.png" alt="CKH Crest">
+    </div>
+  </div>
+</section>
+
+<section class="pillars" id="pillars">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Why CKH</span>
+      <h2>Built around the way your school actually runs.</h2>
+    </div>
+    <div class="pillar-grid">
+      <div class="pillar-card">
+        <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18"/></svg></div>
+        <h3>Global by design</h3>
+        <p>Cambridge, Edexcel, IB, Common Core, SAT and CBE curricula, side by side, so every student's pathway is tracked on its own terms.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2c2 3 5 5 5 9a5 5 0 0 1-10 0c0-1.5.8-2.5 1.5-3.5C9 9 9.5 10 10 10c-.3-3 .5-5.5 2-8Z"/><path d="M9 21h6"/></svg></div>
+        <h3>Teaching that stays lit</h3>
+        <p>Live classes, lesson plans and marking in one workspace, so teachers spend their energy on students, not on switching tools.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v6M12 21v-8M8 21c0-3 1.8-4.5 4-6M16 21c0-3-1.8-4.5-4-6M6 9c0 2 2.5 3 6 3s6-1 6-3"/></svg></div>
+        <h3>Growth you can see</h3>
+        <p>Attendance, grades and performance analytics roll up automatically for students, parents and administrators alike.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="curricula" id="curricula">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">One school, six pathways</span>
+      <h2>Every curriculum, properly supported.</h2>
+    </div>
+    <div class="curr-grid">
+      <div class="curr-card"><div class="tag">CAIE</div><div class="full">Cambridge International</div></div>
+      <div class="curr-card"><div class="tag">Edexcel</div><div class="full">Pearson Edexcel</div></div>
+      <div class="curr-card"><div class="tag">IB</div><div class="full">International Baccalaureate</div></div>
+      <div class="curr-card"><div class="tag">CC</div><div class="full">Common Core</div></div>
+      <div class="curr-card"><div class="tag">SAT</div><div class="full">SAT Preparation</div></div>
+      <div class="curr-card"><div class="tag">CBE</div><div class="full">Competency-Based Ed.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="admissions" id="admissions">
+  <div class="wrap admissions-wrap">
+    <span class="eyebrow">Admissions</span>
+    <h2>Applying to CKH starts here.</h2>
+    <p class="admissions-lede">Browse the programmes we currently offer, see open vacancies, what's required to apply, and the documents you'll need, then submit your application in a couple of minutes.</p>
+    <button class="btn btn-gold" onclick="openAdmissionsModal()">Explore Admissions</button>
+  </div>
+</section>
+
+<section class="admissions" id="careers">
+  <div class="wrap admissions-wrap">
+    <span class="eyebrow">Careers</span>
+    <h2>Teach with us.</h2>
+    <p class="admissions-lede">See the certificate courses we're currently looking for teachers on, apply for the one you teach, and our school team will contact you with additional details.</p>
+    <button class="btn btn-gold" onclick="openTeacherApplyModal()">Apply to Teach</button>
+  </div>
+</section>
+
+<!-- Teacher job application modal -->
+<div class="modal-overlay" id="teacherApplyModal">
+  <div class="modal-box">
+    <div class="modal-close"><button onclick="closeTeacherApplyModal()">✕</button></div>
+    <h2>Apply to teach at CKH</h2>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:-6px 0 16px;">Choose the certificate course you teach, tell us a little about your experience, and submit. Our school team will review your application and contact you with additional details.</p>
+    <form onsubmit="submitTeacherApp(event)">
+      <div class="field">
+        <label for="teacherAppName">Full name</label>
+        <input id="teacherAppName" type="text" placeholder="e.g. Jane Wambui" required>
+      </div>
+      <div class="field">
+        <label for="teacherAppEmail">Email address</label>
+        <input id="teacherAppEmail" type="email" placeholder="e.g. jane.wambui@example.com" required>
+      </div>
+      <div class="field">
+        <label for="teacherAppPhone">Phone / WhatsApp number</label>
+        <input id="teacherAppPhone" type="tel" placeholder="e.g. +254712345678" required>
+      </div>
+      <div class="field">
+        <label for="teacherAppCourse">Certificate course you teach</label>
+        <select id="teacherAppCourse" required></select>
+      </div>
+      <div class="field">
+        <label for="teacherAppQualifications">Qualifications / experience</label>
+        <textarea id="teacherAppQualifications" placeholder="e.g. B.Ed in Mathematics, 5 years teaching Cambridge IGCSE" required></textarea>
+      </div>
+      <div class="field">
+        <label for="teacherAppNotes">Anything else the school team should know?</label>
+        <textarea id="teacherAppNotes" placeholder="Optional"></textarea>
+      </div>
+      <button type="submit" class="btn btn-gold full-btn">Submit application</button>
+      <div id="teacherAppErrorMessage" class="error-message"></div>
+    </form>
+    <div id="teacherAppSuccess" style="display:none;text-align:center;padding:8px 0;">
+      <p style="font-weight:700;color:var(--navy-900);margin-bottom:6px;">Application received!</p>
+      <p style="font-size:13.5px;color:var(--ink-soft);">Your reference is <strong id="teacherAppRefText"></strong>. The school team will contact you with additional details.</p>
+      <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="closeTeacherApplyModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<section class="portal" id="portal">
+  <div class="wrap">
+    <div class="portal-copy">
+      <span class="eyebrow">The portal</span>
+      <h2>Sign in to the workspace built for your role.</h2>
+      <p>Students track lessons, assignments and grades. Teachers plan, mark and message. Administrators run enrolment, timetables and finance — all from the same crest.</p>
+      <div class="role-list">
+        <div class="role-item"><span class="dot"></span>Students see today's classes, deadlines and progress the moment they log in.</div>
+        <div class="role-item"><span class="dot"></span>Teachers manage courses, assignments and gradebooks without leaving the tab.</div>
+        <div class="role-item"><span class="dot"></span>Administrators oversee enrolment, timetables, fees and school-wide reporting.</div>
+      </div>
+    </div>
+    <div class="login-card">
+      <div id="portalChoice">
+        <div class="portal-choice-head">
+          <h3>Choose your portal</h3>
+          <p>Select your role to continue to sign in.</p>
+        </div>
+        <div class="portal-choice-grid">
+          <button type="button" class="portal-choice-card" onclick="selectPortal('student')">
+            <div class="portal-choice-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 9l10 6 10-6-10-6Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v7"/></svg>
+            </div>
+            <div class="portal-choice-text">
+              <h4>Student</h4>
+              <p>Classes, assignments & grades</p>
+            </div>
+            <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button type="button" class="portal-choice-card" onclick="selectPortal('teacher')">
+            <div class="portal-choice-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/><path d="M7 10l3-3 2 2 4-4"/></svg>
+            </div>
+            <div class="portal-choice-text">
+              <h4>Teacher</h4>
+              <p>Courses, gradebook & lesson plans</p>
+            </div>
+            <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button type="button" class="portal-choice-card" onclick="selectPortal('admin')">
+            <div class="portal-choice-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <div class="portal-choice-text">
+              <h4>Administrator</h4>
+              <p>Enrolment, timetables & finance</p>
+            </div>
+            <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="loginForm" style="display:none;">
+        <button type="button" class="back-to-choice" onclick="backToPortalChoice()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          Change portal
+        </button>
+        <div class="login-role-heading">
+          <div class="login-role-icon" id="loginRoleIcon"></div>
+          <div>
+            <h3 id="loginRoleTitle">Student Portal</h3>
+            <p id="loginRoleSub">Sign in to continue</p>
+          </div>
+        </div>
+        <form onsubmit="enterPortal(event)">
+          <div class="field">
+            <label for="loginId">School email or admission number</label>
+            <input id="loginId" type="text" placeholder="e.g. amara.k@ckhschool.ac.ke" required>
+          </div>
+          <div class="field password-field">
+            <label for="loginPass">Password</label>
+            <input id="loginPass" type="password" placeholder="••••••••" required>
+            <button type="button" class="toggle-password" onclick="togglePassword('loginPass', 'toggleIconLogin')">
+              <svg id="toggleIconLogin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <div class="login-foot">
+            <span style="font-size:12.5px;color:var(--ink-soft);">You'll stay signed in on this device.</span>
+            <a href="#">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn-gold full-btn">Enter Portal</button>
+          <div id="errorMessage" class="error-message"></div>
+        </form>
+        <p class="demo-note" id="demoNote">Demo credentials: amara.k@ckhschool.ac.ke / password123</p>
+        <div class="switch-form" id="switchToRegister">
+          New student? <a onclick="showRegisterForm()">Apply for admission</a>
+        </div>
+      </div>
+
+      <div id="registerForm" style="display:none;">
+        <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;">Joining CKH for the first time is called <strong>admission</strong>. Fill in the form below to apply and set up your portal login in the same step — our admissions team then reviews your application and confirms there's a vacant slot on your chosen programme. You can sign in any time with the password you choose here to follow up on your application's status.</p>
+        <form onsubmit="submitApplication(event)">
+          <div class="field">
+            <label for="registerName">Learner's full name</label>
+            <input id="registerName" type="text" placeholder="e.g. John Doe" required>
+          </div>
+          <div class="field">
+            <label for="registerEmail">Email address</label>
+            <input id="registerEmail" type="email" placeholder="e.g. john.doe@example.com" required>
+          </div>
+          <div class="field">
+            <label for="registerPhone">Phone / WhatsApp number</label>
+            <input id="registerPhone" type="tel" placeholder="e.g. +254712345678" required>
+          </div>
+          <div class="field">
+            <label for="registerPassword">Choose a portal password</label>
+            <input id="registerPassword" type="password" placeholder="At least 6 characters" minlength="6" required>
+          </div>
+          <div class="field">
+            <label for="registerConfirmPassword">Confirm password</label>
+            <input id="registerConfirmPassword" type="password" placeholder="••••••••" minlength="6" required>
+          </div>
+          <div class="field">
+            <label for="registerProgramme">Programme you're applying to</label>
+            <select id="registerProgramme" onchange="onApplyProgrammeChange()" required></select>
+          </div>
+          <div class="field">
+            <label for="registerGrade">Grade / year applying for</label>
+            <input id="registerGrade" type="text" placeholder="e.g. Year 11">
+          </div>
+          <div class="field">
+            <label for="registerNotes">Anything else admissions should know?</label>
+            <textarea id="registerNotes" placeholder="e.g. transferring from another school, documents you're attaching by email/WhatsApp, etc."></textarea>
+          </div>
+          <button type="submit" class="btn btn-gold full-btn">Submit application</button>
+          <div id="registerErrorMessage" class="error-message"></div>
+        </form>
+        <div id="applicationSuccess" style="display:none;text-align:center;padding:8px 0;">
+          <p style="font-weight:700;color:var(--navy-900);margin-bottom:6px;">Application received!</p>
+          <p style="font-size:13.5px;color:var(--ink-soft);">Your reference is <strong id="applicationRefText"></strong>. Our admissions team will reach out via WhatsApp or email once it's been reviewed.</p>
+          <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="backToPortalChoice()">Done</button>
+        </div>
+        <div class="switch-form">
+          Already have an account? <a onclick="showLoginForm()">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Admissions browsing modal -->
+<div class="modal-overlay" id="admissionsModal">
+  <div class="modal-box wide">
+    <div class="modal-close"><button onclick="closeAdmissionsModal()">✕</button></div>
+
+    <div id="programmeListView">
+      <h2>Programmes open for admission</h2>
+      <p style="font-size:13.5px;color:var(--ink-soft);margin:-12px 0 20px;">Tap a programme to see vacancies, how to apply, and the documents you'll need.</p>
+      <div class="prog-grid" id="programmeGrid"></div>
+    </div>
+
+    <div id="programmeDetailView" style="display:none;">
+      <button class="prog-detail-back" onclick="backToProgrammeList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        All programmes
+      </button>
+      <div class="prog-detail">
+        <h3 id="progDetailName"></h3>
+        <div class="prog-tags">
+          <span class="status-pill" id="progDetailCurriculum"></span>
+          <span class="status-pill" id="progDetailLevel"></span>
+          <span class="status-pill" id="progDetailVacancies"></span>
+        </div>
+        <div class="prog-detail-section">
+          <h4>About this programme</h4>
+          <p id="progDetailDescription"></p>
+        </div>
+        <div class="prog-detail-section">
+          <h4>How to apply</h4>
+          <p id="progDetailHowToApply"></p>
+        </div>
+        <div class="prog-detail-section">
+          <h4>Documents you'll need</h4>
+          <ul id="progDetailDocuments"></ul>
+        </div>
+        <button class="btn btn-gold full-btn" id="progDetailApplyBtn">Apply for this programme</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="contact-band" id="contact">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow" style="color:var(--gold-300)">Get in touch</span>
+      <h2>Have a question? Talk to the school directly.</h2>
+      <p>Our admissions and front office team is happy to help with programme details, fees, or anything else on your mind.</p>
+    </div>
+    <div class="contact-actions">
+      <a class="btn btn-gold" href="tel:+254791197950">Call +254 791 197 950</a>
+      <a class="btn btn-ghost-light" href="https://wa.me/254791197950" target="_blank" rel="noopener">WhatsApp us</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site" id="footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <img src="ckh-nobg.png" alt="CKH Crest">
+        <span class="name">CKH International School</span>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h4>Platform</h4>
+          <a href="#pillars">Why CKH</a>
+          <a href="#curricula">Curricula</a>
+          <a href="#portal">Portal login</a>
+        </div>
+        <div class="foot-col">
+          <h4>School</h4>
+          <a href="#admissions" onclick="openAdmissionsModal();return false;">Admissions</a>
+          <a href="#careers" onclick="openTeacherApplyModal();return false;">Careers</a>
+          <a href="#curricula">Academic calendar</a>
+          <a href="#contact">Contact us</a>
+          <a href="tel:+254791197950">+254 791 197 950</a>
+        </div>
+        <div class="foot-col">
+          <h4>Roles</h4>
+          <a href="#">Students</a>
+          <a href="#">Teachers</a>
+          <a href="#">Administrators</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 CKH International School. All rights reserved.</span>
+      <span>Inspiring minds. Shaping futures.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  let currentRole = 'student';
+  const currentRegisterRole = 'student'; // public sign-up is students only
+
+  const ROLE_META = {
+    student: {
+      title: 'Student Portal',
+      sub: "Sign in to see today's classes and progress.",
+      placeholder: 'e.g. amara.k@ckhschool.ac.ke',
+      demo: 'Demo credentials: amara.k@ckhschool.ac.ke / password123',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 9l10 6 10-6-10-6Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v7"/></svg>'
+    },
+    teacher: {
+      title: 'Teacher Portal',
+      sub: 'Sign in to manage your classes and gradebook.',
+      placeholder: 'e.g. j.otieno@ckhschool.ac.ke',
+      demo: 'Demo credentials: j.otieno@ckhschool.ac.ke / password123',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/><path d="M7 10l3-3 2 2 4-4"/></svg>'
+    },
+    admin: {
+      title: 'Administrator Portal',
+      sub: 'Sign in to run enrolment, timetables and finance.',
+      placeholder: 'e.g. admin@ckhschool.ac.ke',
+      demo: 'Demo credentials: admin@ckhschool.ac.ke / password123',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>'
+    }
+  };
+
+  function selectPortal(role) {
+    currentRole = role;
+    const meta = ROLE_META[role];
+    document.getElementById('portalChoice').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('loginId').placeholder = meta.placeholder;
+    document.getElementById('loginRoleTitle').textContent = meta.title;
+    document.getElementById('loginRoleSub').textContent = meta.sub;
+    document.getElementById('loginRoleIcon').innerHTML = meta.icon;
+    document.getElementById('demoNote').textContent = meta.demo;
+    document.getElementById('switchToRegister').style.display = role === 'student' ? 'block' : 'none';
+    document.getElementById('errorMessage').textContent = '';
+    document.getElementById('loginId').value = '';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginId').focus();
+  }
+
+  function backToPortalChoice() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('portalChoice').style.display = 'block';
+  }
+
+  function showLogin() {
+    document.getElementById('portal').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      `;
+    } else {
+      input.type = 'password';
+      icon.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      `;
+    }
+  }
+
+  function showRegisterForm(preselectProgrammeId) {
+    document.getElementById('portalChoice').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    populateProgrammeSelect(preselectProgrammeId);
+    document.querySelector('#registerForm form').style.display = 'block';
+    document.getElementById('applicationSuccess').style.display = 'none';
+    document.getElementById('registerErrorMessage').textContent = '';
+    document.getElementById('registerName').focus();
+  }
+
+  function showLoginForm() {
+    document.getElementById('portalChoice').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('loginId').focus();
+  }
+
+  async function enterPortal(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginId').value;
+    const password = document.getElementById('loginPass').value;
+    const errorElement = document.getElementById('errorMessage');
+    errorElement.textContent = '';
+
+    // Supabase keeps you signed in across reloads/tabs on its own, so
+    // there's no separate "remember me" password store anymore.
+    const user = await getUser(email, password);
+
+    if (user) {
+      goToPortal(user);
+    } else {
+      errorElement.textContent = 'Invalid email or password. Please try again.';
+    }
+
+    return false;
+  }
+
+  // Populate the "programme you're applying to" dropdown from admin-managed
+  // programmes. Optionally preselect one (e.g. from the admissions modal).
+  async function populateProgrammeSelect(preselectProgrammeId) {
+    const programmes = await getOpenProgrammes();
+    const select = document.getElementById('registerProgramme');
+    select.innerHTML = programmes.map(p => {
+      const vacancyLabel = typeof p.vacancies === 'number'
+        ? (p.vacancies > 0 ? `${p.vacancies} slot(s) open` : 'currently full — waitlist')
+        : '';
+      return `<option value="${p.id}" data-level="${p.level || ''}">${p.name}${vacancyLabel ? ' — ' + vacancyLabel : ''}</option>`;
+    }).join('');
+    if (preselectProgrammeId) {
+      select.value = preselectProgrammeId;
+    }
+    onApplyProgrammeChange();
+  }
+
+  // Auto-fill the grade field with the programme's typical level when the
+  // applicant changes their programme selection.
+  function onApplyProgrammeChange() {
+    const select = document.getElementById('registerProgramme');
+    const gradeField = document.getElementById('registerGrade');
+    const selected = select.selectedOptions[0];
+    if (selected && !gradeField.value) {
+      gradeField.value = selected.getAttribute('data-level') || '';
+    }
+  }
+
+  // A prospective student creates their own portal login (their own
+  // password, unlike teachers) at the same time as applying, so they can
+  // sign back in any time to follow up on their application's status.
+  async function submitApplication(e) {
+    e.preventDefault();
+    const errorElement = document.getElementById('registerErrorMessage');
+    errorElement.textContent = '';
+
+    const name = document.getElementById('registerName').value.trim();
+    const email = document.getElementById('registerEmail').value.trim();
+    const phone = document.getElementById('registerPhone').value.trim();
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    const programmeId = document.getElementById('registerProgramme').value;
+    const level = document.getElementById('registerGrade').value.trim();
+    const notes = document.getElementById('registerNotes').value.trim();
+
+    if (!programmeId) {
+      errorElement.textContent = 'Please choose the programme you are applying to.';
+      return false;
+    }
+    if (password.length < 6) {
+      errorElement.textContent = 'Your password must be at least 6 characters.';
+      return false;
+    }
+    if (password !== confirmPassword) {
+      errorElement.textContent = 'Passwords do not match.';
+      return false;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+
+    const result = await studentSignUpAndApply({ name, email, phone, password, programmeId, level, notes });
+
+    submitBtn.disabled = false;
+
+    if (!result.success) {
+      errorElement.textContent = result.message || 'Could not submit your application. Please try again.';
+      return false;
+    }
+
+    document.querySelector('#registerForm form').style.display = 'none';
+    document.getElementById('applicationRefText').textContent = result.application.id;
+    document.getElementById('applicationSuccess').style.display = 'block';
+    e.target.reset();
+
+    return false;
+  }
+
+  // --- Teach with us: teacher job applications --------------------------
+
+  function openTeacherApplyModal() {
+    const form = document.querySelector('#teacherApplyModal form');
+    form.reset();
+    form.style.display = 'block';
+    document.getElementById('teacherAppSuccess').style.display = 'none';
+    document.getElementById('teacherAppErrorMessage').textContent = '';
+    populateCertCourseSelect();
+    document.getElementById('teacherApplyModal').classList.add('open');
+  }
+
+  function closeTeacherApplyModal() {
+    document.getElementById('teacherApplyModal').classList.remove('open');
+  }
+
+  async function populateCertCourseSelect() {
+    const courses = await getOpenCertCourses();
+    const select = document.getElementById('teacherAppCourse');
+    select.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}${c.curriculum ? ' — ' + c.curriculum : ''}</option>`).join('')
+      || '<option value="">No courses currently open — contact the school directly</option>';
+  }
+
+  async function submitTeacherApp(e) {
+    e.preventDefault();
+    const errorElement = document.getElementById('teacherAppErrorMessage');
+    errorElement.textContent = '';
+
+    const name = document.getElementById('teacherAppName').value.trim();
+    const email = document.getElementById('teacherAppEmail').value.trim();
+    const phone = document.getElementById('teacherAppPhone').value.trim();
+    const certCourseId = document.getElementById('teacherAppCourse').value;
+    const qualifications = document.getElementById('teacherAppQualifications').value.trim();
+    const notes = document.getElementById('teacherAppNotes').value.trim();
+
+    if (!certCourseId) {
+      errorElement.textContent = 'Please choose the certificate course you teach.';
+      return false;
+    }
+
+    const application = await submitTeacherApplication({ name, email, phone, certCourseId, qualifications, notes });
+
+    document.querySelector('#teacherApplyModal form').style.display = 'none';
+    document.getElementById('teacherAppRefText').textContent = application.id;
+    document.getElementById('teacherAppSuccess').style.display = 'block';
+    e.target.reset();
+
+    return false;
+  }
+
+  // --- Admissions browsing modal ---------------------------------------
+
+  function openAdmissionsModal() {
+    renderProgrammeGrid();
+    document.getElementById('programmeListView').style.display = 'block';
+    document.getElementById('programmeDetailView').style.display = 'none';
+    document.getElementById('admissionsModal').classList.add('open');
+  }
+
+  function closeAdmissionsModal() {
+    document.getElementById('admissionsModal').classList.remove('open');
+  }
+
+  async function renderProgrammeGrid() {
+    const programmes = await getOpenProgrammes();
+    const grid = document.getElementById('programmeGrid');
+    grid.innerHTML = programmes.map(p => {
+      const vacancyText = typeof p.vacancies === 'number'
+        ? (p.vacancies > 0 ? `${p.vacancies} vacancy(ies)` : 'Full — waitlist open')
+        : 'Contact admissions';
+      const pillClass = typeof p.vacancies === 'number' && p.vacancies === 0 ? 'warn' : 'good';
+      return `
+        <div class="prog-card" onclick="showProgrammeDetail('${p.id}')">
+          <h3>${p.name}</h3>
+          <div class="prog-tags">
+            <span class="status-pill">${p.curriculum || ''}</span>
+            <span class="status-pill ${pillClass}">${vacancyText}</span>
+          </div>
+          <p>${p.summary || ''}</p>
+        </div>`;
+    }).join('') || '<p style="color:var(--ink-soft);">No programmes are currently open for admission. Please check back soon or contact the school directly.</p>';
+  }
+
+  async function showProgrammeDetail(programmeId) {
+    const programmes = await getOpenProgrammes();
+    const programme = programmes.find(p => p.id === programmeId);
+    if (!programme) return;
+
+    document.getElementById('progDetailName').textContent = programme.name;
+    document.getElementById('progDetailCurriculum').textContent = programme.curriculum || '';
+    document.getElementById('progDetailLevel').textContent = programme.level || '';
+
+    const vacancyEl = document.getElementById('progDetailVacancies');
+    if (typeof programme.vacancies === 'number') {
+      vacancyEl.textContent = programme.vacancies > 0 ? `${programme.vacancies} vacancy(ies)` : 'Full — waitlist open';
+      vacancyEl.className = 'status-pill ' + (programme.vacancies > 0 ? 'good' : 'warn');
+    } else {
+      vacancyEl.textContent = 'Contact admissions';
+      vacancyEl.className = 'status-pill';
+    }
+
+    document.getElementById('progDetailDescription').textContent = programme.description || programme.summary || '';
+    document.getElementById('progDetailHowToApply').textContent = programme.howToApply || 'Submit an application below and our admissions team will contact you.';
+    document.getElementById('progDetailDocuments').innerHTML =
+      (programme.requiredDocuments || []).map(doc => `<li>${doc}</li>`).join('') || '<li>No documents specified — contact admissions for details.</li>';
+
+    document.getElementById('progDetailApplyBtn').onclick = function() {
+      applyForProgramme(programme.id);
+    };
+
+    document.getElementById('programmeListView').style.display = 'none';
+    document.getElementById('programmeDetailView').style.display = 'block';
+  }
+
+  function backToProgrammeList() {
+    document.getElementById('programmeListView').style.display = 'block';
+    document.getElementById('programmeDetailView').style.display = 'none';
+  }
+
+  // Close the browsing modal and jump straight into the admission
+  // application form with this programme preselected.
+  function applyForProgramme(programmeId) {
+    closeAdmissionsModal();
+    document.getElementById('portal').scrollIntoView({ behavior: 'smooth' });
+    showRegisterForm(programmeId);
+  }
+
+  // Send each role to its own portal folder
+  function goToPortal(user) {
+    if (user.role === 'teacher') {
+      window.location.href = 'teacher/dashboard.html';
+    } else if (user.role === 'admin') {
+      window.location.href = 'admin/dashboard.html';
+    } else {
+      window.location.href = 'student/dashboard.html';
+    }
+  }
+
+  // If a Supabase session already exists (from a previous visit), skip
+  // straight to the right portal.
+  window.onload = async function() {
+    const user = await getCurrentUser();
+    if (user) {
+      goToPortal(user);
+    }
+  };
+</script>
+
+</body>
+</html>

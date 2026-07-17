@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports & Analytics - CKH Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/db.js"></script>
+  <link rel="icon" type="image/png" href="../ckh-nobg.png">
+</head>
+<body>
+
+<!-- Mobile Header -->
+<div class="mobile-header">
+  <button class="hamburger-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <div class="mobile-brand">
+    <img src="../ckh-nobg.png" alt="CKH Crest">
+    <span class="name">CKH Admin Portal</span>
+  </div>
+  <div style="width:40px;"></div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="dash-shell">
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="dash-brand">
+      <div class="dash-brand-mark">
+        <img src="../ckh-nobg.png" alt="CKH Crest">
+        <span class="name">CKH Admin Portal</span>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="dash-nav-container">
+      <a href="dashboard.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="teachers.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c1.2-4 4-6 6.5-6s5.3 2 6.5 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.6 2.3 5.5 5.3"/></svg>
+        Teacher Management
+      </a>
+      <a href="admissions.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 9l10-5 10 5-10 5-10-5Z"/><path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg>
+        Admissions
+      </a>
+      <a href="academics.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+        Academics
+      </a>
+      <a href="finance.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 9h.01M18 15h.01"/></svg>
+        Finance
+      </a>
+      <a href="reports.html" class="dash-nav-item active">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V10M10 21V3M16 21v-7M22 21H2"/></svg>
+        Reports & Analytics
+      </a>
+      <a href="account.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        My Account
+      </a>
+    </div>
+    <div class="dash-bottom-section">
+      <div class="dash-user-info">
+        <div class="dash-user-avatar" id="userAvatar">CA</div>
+        <div class="dash-user-details">
+          <p class="dash-user-name" id="userName">CKH Admin</p>
+          <p class="dash-user-role" id="userRole">Administrator</p>
+        </div>
+      </div>
+      <button class="dash-logout-btn" onclick="logout(event)">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <h1>Reports & analytics</h1>
+        <div class="who">School-wide performance, attendance and financial reporting</div>
+      </div>
+      <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
+    </div>
+
+    <div class="grid-cards">
+      <div class="card span2">
+        <h3>Academic performance by subject</h3>
+        <div id="academicPerformance" style="display:flex;flex-direction:column;gap:14px;"></div>
+      </div>
+
+      <div class="card">
+        <h3>Fee collection status</h3>
+        <div class="attend-ring"><span id="reportsFeePct">—</span></div>
+        <div style="text-align:center;font-size:12.5px;color:var(--ink-soft);" id="reportsFeeInfo">Collected vs billed</div>
+      </div>
+
+      <div class="card">
+        <h3>Attendance by course</h3>
+        <div id="attendanceByCourse"></div>
+      </div>
+
+      <div class="card">
+        <h3>Enrollment by year group</h3>
+        <div id="enrollmentBreakdown"></div>
+      </div>
+
+      <div class="card span2">
+        <h3>Teacher directory summary</h3>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Teacher</th><th>Subjects</th><th>Classes</th><th>Students taught</th></tr></thead>
+            <tbody id="teacherSummaryRows"></tbody>
+          </table>
+        </div>
+        <div id="teacherSummaryEmpty" class="empty-state" style="display:none;">No teachers on record yet.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await sb.auth.signOut();
+    window.location.href = '../index.html';
+  }
+
+  async function requireAdmin() {
+    const user = await getCurrentUser();
+    if (!user) {
+      window.location.href = '../index.html';
+      return null;
+    }
+    if (user.role !== 'admin') {
+      window.location.href = user.role === 'teacher' ? '../teacher/dashboard.html' : '../student/dashboard.html';
+      return null;
+    }
+    const nameParts = user.name.split(' ');
+    const initials = nameParts.length >= 2
+      ? nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase()
+      : nameParts[0][0].toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userRole').textContent = 'Administrator';
+    return user;
+  }
+
+  let currentUser = null;
+
+  function standing(score) {
+    if (score >= 85) return { label: 'Excelling', cls: 'good' };
+    if (score >= 65) return { label: 'On track', cls: '' };
+    return { label: 'Needs support', cls: 'bad' };
+  }
+
+  window.onload = async function() {
+    currentUser = await requireAdmin();
+    if (!currentUser) return;
+
+    const teachers = await getAllTeachers();
+    const students = await getAllStudents();
+    const courses = await getDB(DB_KEYS.COURSES) || [];
+    const gradebook = await getDB(DB_KEYS.GRADEBOOK) || [];
+    const log = await getDB(DB_KEYS.ATTENDANCE_LOG) || [];
+    const roster = await getDB(DB_KEYS.ROSTER) || [];
+    const fees = await getDB('ckh_fees') || [];
+
+    // Academic performance by subject
+    const perf = document.getElementById('academicPerformance');
+    if (courses.length === 0) {
+      perf.innerHTML = '<div class="empty-state">No courses set up yet.</div>';
+    } else {
+      perf.innerHTML = '';
+      courses.forEach(c => {
+        const scores = gradebook.filter(g => g.course === c.name).map(g => g.score);
+        const avg = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span>${c.name}</span><span>${scores.length ? avg + '% avg · ' + scores.length + ' marks' : 'No marks yet'}</span></div>
+          <div class="perf-bar"><div style="width:${avg}%;"></div></div>`;
+        perf.appendChild(wrap);
+      });
+    }
+
+    // Fee collection ring
+    const totalBilled = fees.reduce((a, f) => a + Number(f.amount || 0), 0);
+    const totalPaid = fees.filter(f => f.status === 'paid').reduce((a, f) => a + Number(f.amount || 0), 0);
+    const pct = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
+    document.getElementById('reportsFeePct').textContent = totalBilled > 0 ? pct + '%' : '—';
+    document.getElementById('reportsFeeInfo').textContent = totalBilled > 0
+      ? `KES ${totalPaid.toLocaleString()} of KES ${totalBilled.toLocaleString()}`
+      : 'No invoices recorded yet';
+
+    // Attendance by course
+    const attendanceByCourse = document.getElementById('attendanceByCourse');
+    if (courses.length === 0) {
+      attendanceByCourse.innerHTML = '<div class="empty-state">No courses set up yet.</div>';
+    } else {
+      attendanceByCourse.innerHTML = courses.map(c => {
+        const entries = log.filter(l => l.course === c.name);
+        if (entries.length === 0) return `<div class="list-row"><div><div class="t">${c.name}</div></div><span class="tag-soft">No data</span></div>`;
+        const totalRecords = entries.reduce((a, l) => a + l.records.length, 0);
+        const presentRecords = entries.reduce((a, l) => a + l.records.filter(r => r.status === 'present').length, 0);
+        const pctAttend = totalRecords ? Math.round((presentRecords / totalRecords) * 100) : 0;
+        return `<div class="list-row"><div><div class="t">${c.name}</div></div><span class="tag-soft">${pctAttend}%</span></div>`;
+      }).join('');
+    }
+
+    // Enrollment by year group
+    const enrollmentBreakdown = document.getElementById('enrollmentBreakdown');
+    const byGrade = {};
+    students.forEach(s => {
+      const grade = s.grade || 'Unspecified';
+      byGrade[grade] = (byGrade[grade] || 0) + 1;
+    });
+    const gradeKeys = Object.keys(byGrade);
+    if (gradeKeys.length === 0) {
+      enrollmentBreakdown.innerHTML = '<div class="empty-state">No students enrolled yet.</div>';
+    } else {
+      enrollmentBreakdown.innerHTML = gradeKeys.map(g => `<div class="list-row"><div><div class="t">${g}</div></div><span class="tag-soft">${byGrade[g]}</span></div>`).join('');
+    }
+
+    // Teacher directory summary
+    const rows = document.getElementById('teacherSummaryRows');
+    const empty = document.getElementById('teacherSummaryEmpty');
+    if (teachers.length === 0) {
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      teachers.forEach(t => {
+        const subjects = t.subjects || [];
+        const classes = courses.filter(c => subjects.includes(c.name));
+        const studentCount = new Set(roster.filter(r => classes.some(c => c.name === r.course)).map(r => r.name)).size;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td data-label="Teacher">${t.name}</td><td data-label="Subjects">${subjects.length ? subjects.join(', ') : '—'}</td><td data-label="Classes">${classes.length}</td><td data-label="Students taught">${studentCount}</td>`;
+        rows.appendChild(tr);
+      });
+    }
+  };
+
+</script>
+
+</body>
+</html>
