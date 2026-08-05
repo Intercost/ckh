@@ -324,7 +324,7 @@
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-outline btn-sm" onclick="resendCredentials('${t.id}')">Resend credentials</button>
             <button class="btn btn-outline btn-sm" onclick="resetAndResend('${t.id}')">Reset & resend</button>
-            <button class="btn btn-outline btn-sm" onclick="removeTeacher('${t.id}')">Remove</button>
+            <button class="btn btn-outline btn-sm icon-btn btn-danger-outline" onclick="removeTeacher('${t.id}')" title="Remove" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
           </div>
         </td>`;
       rows.appendChild(tr);
@@ -428,8 +428,8 @@
         <td data-label="Open to applicants"><span class="status-pill ${c.status === 'closed' ? 'bad' : 'good'}">${c.status === 'closed' ? 'Hidden' : 'Open'}</span></td>
         <td class="table-actions" data-label="Actions">
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-outline btn-sm" onclick="openCertCourseModal('${c.id}')">Edit</button>
-            <button class="btn btn-outline btn-sm" onclick="removeCertCourse('${c.id}')">Remove</button>
+            <button class="btn btn-outline btn-sm icon-btn" onclick="openCertCourseModal('${c.id}')" title="Edit" aria-label="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+            <button class="btn btn-outline btn-sm icon-btn btn-danger-outline" onclick="removeCertCourse('${c.id}')" title="Remove" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
           </div>
         </td>
       </tr>`).join('');

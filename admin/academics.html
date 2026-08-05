@@ -300,7 +300,7 @@
     courses.forEach(c => {
       const tr = document.createElement('tr');
       tr.innerHTML = `<td data-label="Subject">${c.name}</td><td data-label="Teacher">${c.teacher || '<span style="color:var(--ink-soft);">Unassigned</span>'}</td><td data-label="Room">${c.room || '-'}</td>
-        <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm" onclick="removeSubject('${c.id}')">Remove</button></td>`;
+        <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm icon-btn btn-danger-outline" onclick="removeSubject('${c.id}')" title="Remove" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></td>`;
       rows.appendChild(tr);
     });
   }
@@ -350,7 +350,7 @@
     slots.slice().sort((a, b) => dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day) || a.time.localeCompare(b.time)).forEach(s => {
       const tr = document.createElement('tr');
       tr.innerHTML = `<td data-label="Day">${s.day}</td><td data-label="Time">${s.time}</td><td data-label="Subject">${s.course}</td><td data-label="Room">${s.room || '-'}</td>
-        <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm" onclick="removeTimetableSlot('${s.id}')">Remove</button></td>`;
+        <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm icon-btn btn-danger-outline" onclick="removeTimetableSlot('${s.id}')" title="Remove" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></td>`;
       rows.appendChild(tr);
     });
   }

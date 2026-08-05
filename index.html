@@ -832,10 +832,166 @@
         grid-template-columns: 1fr;
       }
     }
+    .splash-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at top, var(--navy-800), var(--navy-950));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .splash-crest {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--ivory-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px var(--line-on-navy), 0 20px 45px -15px rgba(0,0,0,0.6);
+      animation: splash-pulse 1.6s ease-in-out infinite;
+    }
+
+    .splash-crest img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+    }
+
+    @keyframes splash-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .splash-name {
+      color: var(--ivory-100);
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      letter-spacing: 0.02em;
+    }
+
+    .splash-spinner {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 3px solid var(--line-on-navy);
+      border-top-color: var(--gold-300);
+      animation: splash-spin 0.9s linear infinite;
+    }
+
+    @keyframes splash-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .splash-picker-head {
+      margin-bottom: 6px;
+    }
+
+    .splash-picker-crest {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    .splash-picker-head h2 {
+      color: var(--ivory-100);
+      font-family: 'Fraunces', serif;
+      margin: 0 0 6px 0;
+    }
+
+    .splash-picker-head p {
+      color: rgba(248, 244, 234, 0.75);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .splash-picker-grid {
+      display: grid;
+      gap: 12px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .splash-picker-grid .portal-choice-card {
+      background: var(--ivory-100);
+    }
+
+    .splash-picker-landing-link {
+      background: none;
+      border: none;
+      color: var(--gold-300);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .splash-picker-grid { max-width: 100%; }
+    }
   </style>
   <link rel="icon" type="image/png" href="ckh-nobg.png">
 </head>
 <body>
+
+<!-- Splash: shown for 5 seconds on every visit -->
+<div id="splashLoader" class="splash-overlay">
+  <div class="splash-crest">
+    <img src="ckh-nobg.png" alt="CKH Crest">
+  </div>
+  <div class="splash-name">CKH International School</div>
+  <div class="splash-spinner"></div>
+</div>
+
+<!-- Splash: shown to returning visitors after the loader, for a quick portal jump -->
+<div id="splashPicker" class="splash-overlay" style="display:none;">
+  <div class="splash-picker-head">
+    <img src="ckh-nobg.png" alt="CKH Crest" class="splash-picker-crest">
+    <h2>Welcome back</h2>
+    <p>Jump straight to your portal, or visit the school site.</p>
+  </div>
+  <div class="splash-picker-grid">
+    <button type="button" class="portal-choice-card" onclick="splashGoToPortal('student')">
+      <div class="portal-choice-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 9l10 6 10-6-10-6Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v7"/></svg>
+      </div>
+      <div class="portal-choice-text">
+        <h4>Student</h4>
+        <p>Classes, assignments &amp; grades</p>
+      </div>
+      <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <button type="button" class="portal-choice-card" onclick="splashGoToPortal('teacher')">
+      <div class="portal-choice-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/><path d="M7 10l3-3 2 2 4-4"/></svg>
+      </div>
+      <div class="portal-choice-text">
+        <h4>Teacher</h4>
+        <p>Courses, gradebook &amp; lesson plans</p>
+      </div>
+      <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <button type="button" class="portal-choice-card" onclick="splashGoToPortal('admin')">
+      <div class="portal-choice-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div class="portal-choice-text">
+        <h4>Administrator</h4>
+        <p>Enrolment, timetables &amp; finance</p>
+      </div>
+      <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+  <button type="button" class="splash-picker-landing-link" onclick="splashGoToLandingPage()">Go to the school site instead</button>
+</div>
 
 <header class="site">
   <div class="nav-row">
@@ -990,7 +1146,7 @@
     <div class="portal-copy">
       <span class="eyebrow">The portal</span>
       <h2>Sign in to the workspace built for your role.</h2>
-      <p>Students track lessons, assignments and grades. Teachers plan, mark and message. Administrators run enrolment, timetables and finance - all from the same crest.</p>
+      <p>Students track lessons, assignments and grades. Teachers plan, mark and message. Administrators run enrolment, timetables and finance, all from the same crest.</p>
       <div class="role-list">
         <div class="role-item"><span class="dot"></span>Students see today's classes, deadlines and progress the moment they log in.</div>
         <div class="role-item"><span class="dot"></span>Teachers manage courses, assignments and gradebooks without leaving the tab.</div>
@@ -1553,13 +1709,46 @@
     }
   }
 
+  const VISITED_KEY = 'ckh_visited';
+
+  function splashGoToPortal(role) {
+    document.getElementById('splashPicker').style.display = 'none';
+    localStorage.setItem(VISITED_KEY, '1');
+    selectPortal(role);
+    document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function splashGoToLandingPage() {
+    document.getElementById('splashPicker').style.display = 'none';
+    localStorage.setItem(VISITED_KEY, '1');
+  }
+
+  // Show the loading animation for 5 seconds on every visit. After that:
+  // first-time visitors land on the school site (and get remembered as
+  // "visited" for next time); returning visitors see a quick 3-card portal
+  // picker instead, with a link at the bottom to reach the school site.
+  function runSplash() {
+    const isReturning = localStorage.getItem(VISITED_KEY) === '1';
+    setTimeout(() => {
+      document.getElementById('splashLoader').style.display = 'none';
+      if (isReturning) {
+        document.getElementById('splashPicker').style.display = 'flex';
+      } else {
+        localStorage.setItem(VISITED_KEY, '1');
+      }
+    }, 5000);
+  }
+
   // If a Supabase session already exists (from a previous visit), skip
-  // straight to the right portal.
+  // the splash and straight to the right portal.
   window.onload = async function() {
     const user = await getCurrentUser();
     if (user) {
+      document.getElementById('splashLoader').style.display = 'none';
       goToPortal(user);
+      return;
     }
+    runSplash();
   };
 </script>
 

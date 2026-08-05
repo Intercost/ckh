@@ -184,10 +184,10 @@
     // School overview
     const overview = document.getElementById('overviewList');
     overview.innerHTML = `
-      <div class="list-row"><div><div class="t">Teaching staff</div><div class="d">Active teacher accounts</div></div><span class="tag-soft">${teachers.length}</span></div>
-      <div class="list-row"><div><div class="t">Enrolled students</div><div class="d">Across all year groups</div></div><span class="tag-soft">${students.length}</span></div>
-      <div class="list-row"><div><div class="t">Courses running</div><div class="d">Active subjects this term</div></div><span class="tag-soft">${courses.length}</span></div>
-      <div class="list-row"><div><div class="t">Announcements this week</div><div class="d">Sent by staff & registrar</div></div><span class="tag-soft">${announcements.length}</span></div>
+      <button type="button" class="list-row list-row-link" onclick="window.location.href='teachers.html'"><div><div class="t">Teaching staff</div><div class="d">Active teacher accounts</div></div><span class="tag-soft">${teachers.length}</span></button>
+      <button type="button" class="list-row list-row-link" onclick="window.location.href='reports.html'"><div><div class="t">Enrolled students</div><div class="d">Across all year groups</div></div><span class="tag-soft">${students.length}</span></button>
+      <button type="button" class="list-row list-row-link" onclick="window.location.href='academics.html'"><div><div class="t">Courses running</div><div class="d">Active subjects this term</div></div><span class="tag-soft">${courses.length}</span></button>
+      <button type="button" class="list-row list-row-link" onclick="window.location.href='reports.html'"><div><div class="t">Announcements this week</div><div class="d">Sent by staff &amp; registrar</div></div><span class="tag-soft">${announcements.length}</span></button>
     `;
 
     // Fee collection ring (visual is decorative; percentage text is accurate)

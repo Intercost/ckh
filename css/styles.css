@@ -568,6 +568,27 @@ nav.links a:hover, nav.links a:focus-visible {
   border-bottom: none;
 }
 
+.list-row-link {
+  width: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 8px;
+  font: inherit;
+  color: inherit;
+  transition: background .15s ease;
+}
+
+.list-row-link:hover {
+  background: rgba(20, 30, 60, 0.04);
+}
+
+.list-row-link:hover .t {
+  color: var(--navy-900);
+  text-decoration: underline;
+}
+
 .list-row .t {
   font-weight: 600;
   color: var(--ink);
@@ -922,6 +943,32 @@ nav.links a:hover, nav.links a:focus-visible {
 .btn-sm {
   padding: 8px 14px;
   font-size: 13px;
+}
+
+.icon-btn {
+  padding: 8px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.icon-btn.btn-danger-outline {
+  border-color: #b3423a;
+  color: #b3423a;
+}
+
+.icon-btn.btn-danger-outline:hover {
+  background: #b3423a;
+  border-color: #b3423a;
+  color: #fff;
 }
 
 .attendance-roster-row {
