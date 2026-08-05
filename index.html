@@ -442,54 +442,36 @@
     .portal .wrap {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 64px;
+      gap: 0;
+      align-items: stretch;
+      max-width: 1020px;
+    }
+
+    .portal-copy {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-right: none;
+      border-radius: 18px 0 0 18px;
+      display: flex;
       align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      min-height: 540px;
     }
 
-    .portal-copy h2 {
-      font-size: clamp(26px, 3vw, 36px);
-      font-weight: 600;
-      margin-top: 14px;
-    }
-
-    .portal-copy p {
-      font-size: 15.5px;
-      color: var(--ink-soft);
-      line-height: 1.7;
-      margin-top: 16px;
-      max-width: 44ch;
-    }
-
-    .role-list {
-      margin-top: 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .role-item {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      font-size: 14.5px;
-      color: var(--ink);
-    }
-
-    .role-item .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--gold-500);
-      margin-top: 7px;
-      flex-shrink: 0;
+    .portal-logo {
+      width: 260px;
+      height: 260px;
+      object-fit: contain;
     }
 
     .login-card {
       background: var(--ivory-100);
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: 0 18px 18px 0;
       padding: 36px;
       box-shadow: var(--shadow);
+      min-height: 540px;
     }
 
     .field {
@@ -830,6 +812,42 @@
 
       .portal .wrap {
         grid-template-columns: 1fr;
+        gap: 0;
+        max-width: 520px;
+      }
+      .portal-copy {
+        border-right: 1px solid var(--line);
+        border-bottom: none;
+        border-radius: 18px 18px 0 0;
+        min-height: 0;
+        padding: 32px 24px 20px;
+      }
+      .portal-logo {
+        width: 140px;
+        height: 140px;
+      }
+      .login-card {
+        border-left: 1px solid var(--line);
+        border-top: none;
+        border-radius: 0 0 18px 18px;
+        min-height: 0;
+        padding: 28px 24px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .portal {
+        padding: 64px 0;
+      }
+      .portal-copy {
+        padding: 24px 18px 14px;
+      }
+      .portal-logo {
+        width: 104px;
+        height: 104px;
+      }
+      .login-card {
+        padding: 22px 16px;
       }
     }
     .splash-overlay {
@@ -947,8 +965,46 @@
       display: none;
     }
 
+    .splash-picker-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      max-width: 960px;
+      min-height: 520px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.5);
+    }
+
+    .splash-picker-left {
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+    }
+
+    .splash-picker-logo {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+    }
+
+    .splash-picker-right {
+      background: radial-gradient(120% 140% at 15% 0%, var(--navy-800), var(--navy-950) 65%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      gap: 18px;
+    }
+
     .splash-picker-head {
-      margin-bottom: 6px;
+      width: 100%;
+      max-width: 420px;
+      text-align: left;
+      margin-bottom: 2px;
     }
 
     .splash-picker-crest {
@@ -962,12 +1018,14 @@
       color: var(--ivory-100);
       font-family: 'Fraunces', serif;
       margin: 0 0 6px 0;
+      font-size: 32px;
     }
 
     .splash-picker-head p {
       color: rgba(248, 244, 234, 0.75);
-      font-size: 14px;
+      font-size: 15px;
       margin: 0;
+      line-height: 1.5;
     }
 
     .splash-picker-grid {
@@ -992,8 +1050,48 @@
       padding: 10px;
     }
 
+    @media (max-width: 800px) {
+      .splash-picker-wrap {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        min-height: 0;
+        border-radius: 20px;
+      }
+      .splash-picker-left {
+        padding: 28px 24px 12px;
+      }
+      .splash-picker-logo {
+        width: 120px;
+        height: 120px;
+      }
+      .splash-picker-right {
+        padding: 16px 24px 32px;
+        background: radial-gradient(120% 140% at 15% 0%, var(--navy-800), var(--navy-950) 65%);
+        border-radius: 0;
+      }
+      .splash-picker-head h2 {
+        font-size: 26px;
+      }
+      .splash-picker-head {
+        text-align: center;
+      }
+    }
+
     @media (max-width: 480px) {
       .splash-picker-grid { max-width: 100%; }
+      .splash-picker-right {
+        padding: 14px 18px 28px;
+      }
+      .splash-picker-left {
+        padding: 22px 18px 8px;
+      }
+      .splash-picker-logo {
+        width: 96px;
+        height: 96px;
+      }
+      .splash-picker-head h2 {
+        font-size: 22px;
+      }
     }
   </style>
   <link rel="icon" type="image/png" href="ckh-nobg.png">
@@ -1027,44 +1125,50 @@
 
 <!-- Splash: shown to returning visitors after the loader, for a quick portal jump -->
 <div id="splashPicker" class="splash-overlay" style="display:none;">
-  <div class="splash-picker-head">
-    <img src="ckh-nobg.png" alt="CKH Crest" class="splash-picker-crest">
-    <h2>Welcome back</h2>
-    <p>Jump straight to your portal, or visit the school site.</p>
+  <div class="splash-picker-wrap">
+    <div class="splash-picker-left">
+      <img src="ckh-nobg.png" alt="CKH Crest" class="splash-picker-logo">
+    </div>
+    <div class="splash-picker-right">
+      <div class="splash-picker-head">
+        <h2>Welcome back</h2>
+        <p>Jump straight to your portal, or visit the school site.</p>
+      </div>
+      <div class="splash-picker-grid">
+        <button type="button" class="portal-choice-card" onclick="splashGoToPortal('student')">
+          <div class="portal-choice-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 9l10 6 10-6-10-6Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v7"/></svg>
+          </div>
+          <div class="portal-choice-text">
+            <h4>Student</h4>
+            <p>Classes, assignments &amp; grades</p>
+          </div>
+          <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <button type="button" class="portal-choice-card" onclick="splashGoToPortal('teacher')">
+          <div class="portal-choice-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/><path d="M7 10l3-3 2 2 4-4"/></svg>
+          </div>
+          <div class="portal-choice-text">
+            <h4>Teacher</h4>
+            <p>Courses, gradebook &amp; lesson plans</p>
+          </div>
+          <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <button type="button" class="portal-choice-card" onclick="splashGoToPortal('admin')">
+          <div class="portal-choice-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <div class="portal-choice-text">
+            <h4>Administrator</h4>
+            <p>Enrolment, timetables &amp; finance</p>
+          </div>
+          <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+      <button type="button" class="splash-picker-landing-link" onclick="splashGoToLandingPage()">Go to the school site instead</button>
+    </div>
   </div>
-  <div class="splash-picker-grid">
-    <button type="button" class="portal-choice-card" onclick="splashGoToPortal('student')">
-      <div class="portal-choice-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 9l10 6 10-6-10-6Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v7"/></svg>
-      </div>
-      <div class="portal-choice-text">
-        <h4>Student</h4>
-        <p>Classes, assignments &amp; grades</p>
-      </div>
-      <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-    <button type="button" class="portal-choice-card" onclick="splashGoToPortal('teacher')">
-      <div class="portal-choice-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/><path d="M7 10l3-3 2 2 4-4"/></svg>
-      </div>
-      <div class="portal-choice-text">
-        <h4>Teacher</h4>
-        <p>Courses, gradebook &amp; lesson plans</p>
-      </div>
-      <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-    <button type="button" class="portal-choice-card" onclick="splashGoToPortal('admin')">
-      <div class="portal-choice-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
-      </div>
-      <div class="portal-choice-text">
-        <h4>Administrator</h4>
-        <p>Enrolment, timetables &amp; finance</p>
-      </div>
-      <svg class="portal-choice-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-  </div>
-  <button type="button" class="splash-picker-landing-link" onclick="splashGoToLandingPage()">Go to the school site instead</button>
 </div>
 
 <header class="site">
@@ -1218,14 +1322,7 @@
 <section class="portal" id="portal">
   <div class="wrap">
     <div class="portal-copy">
-      <span class="eyebrow">The portal</span>
-      <h2>Sign in to the workspace built for your role.</h2>
-      <p>Students track lessons, assignments and grades. Teachers plan, mark and message. Administrators run enrolment, timetables and finance, all from the same crest.</p>
-      <div class="role-list">
-        <div class="role-item"><span class="dot"></span>Students see today's classes, deadlines and progress the moment they log in.</div>
-        <div class="role-item"><span class="dot"></span>Teachers manage courses, assignments and gradebooks without leaving the tab.</div>
-        <div class="role-item"><span class="dot"></span>Administrators oversee enrolment, timetables, fees and school-wide reporting.</div>
-      </div>
+      <img src="ckh-nobg.png" alt="CKH Crest" class="portal-logo">
     </div>
     <div class="login-card">
       <div id="portalChoice">
@@ -1301,7 +1398,6 @@
           <button type="submit" class="btn btn-gold full-btn">Enter Portal</button>
           <div id="errorMessage" class="error-message"></div>
         </form>
-        <p class="demo-note" id="demoNote">Demo credentials: amara.k@ckhschool.ac.ke / password123</p>
         <div class="switch-form" id="switchToRegister">
           New student? <a onclick="showRegisterForm()">Apply for admission</a>
         </div>
@@ -1459,21 +1555,18 @@
       title: 'Student Portal',
       sub: "Sign in to see today's classes and progress.",
       placeholder: 'e.g. amara.k@ckhschool.ac.ke',
-      demo: 'Demo credentials: amara.k@ckhschool.ac.ke / password123',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 9l10 6 10-6-10-6Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v7"/></svg>'
     },
     teacher: {
       title: 'Teacher Portal',
       sub: 'Sign in to manage your classes and gradebook.',
       placeholder: 'e.g. j.otieno@ckhschool.ac.ke',
-      demo: 'Demo credentials: j.otieno@ckhschool.ac.ke / password123',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/><path d="M7 10l3-3 2 2 4-4"/></svg>'
     },
     admin: {
       title: 'Administrator Portal',
       sub: 'Sign in to run enrolment, timetables and finance.',
       placeholder: 'e.g. admin@ckhschool.ac.ke',
-      demo: 'Demo credentials: admin@ckhschool.ac.ke / password123',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>'
     }
   };
@@ -1488,7 +1581,6 @@
     document.getElementById('loginRoleTitle').textContent = meta.title;
     document.getElementById('loginRoleSub').textContent = meta.sub;
     document.getElementById('loginRoleIcon').innerHTML = meta.icon;
-    document.getElementById('demoNote').textContent = meta.demo;
     document.getElementById('switchToRegister').style.display = role === 'student' ? 'block' : 'none';
     document.getElementById('errorMessage').textContent = '';
     document.getElementById('loginId').value = '';
