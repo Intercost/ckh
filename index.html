@@ -864,6 +864,73 @@
       object-fit: contain;
     }
 
+    .splash-gooey-svg {
+      position: absolute;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .gooey-loader-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .gooey-loader {
+      width: 12em;
+      height: 3em;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 8px solid var(--line-on-navy);
+      filter: url(#gooey-loader-filter);
+    }
+
+    .gooey-loader::before,
+    .gooey-loader::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .gooey-loader::before {
+      width: 22em;
+      height: 18em;
+      background-color: var(--gold-500);
+      left: -2em;
+      bottom: -18em;
+      animation: gooey-loader-wee1 2s linear infinite;
+    }
+
+    .gooey-loader::after {
+      width: 16em;
+      height: 12em;
+      background-color: var(--gold-300);
+      left: -4em;
+      bottom: -12em;
+      animation: gooey-loader-wee2 2s linear infinite 0.75s;
+    }
+
+    @keyframes gooey-loader-wee1 {
+      0% {
+        transform: translateX(-10em) rotate(0deg);
+      }
+      100% {
+        transform: translateX(7em) rotate(180deg);
+      }
+    }
+
+    @keyframes gooey-loader-wee2 {
+      0% {
+        transform: translateX(-8em) rotate(0deg);
+      }
+      100% {
+        transform: translateX(8em) rotate(180deg);
+      }
+    }
+
     @keyframes splash-pulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.08); }
@@ -877,16 +944,7 @@
     }
 
     .splash-spinner {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: 3px solid var(--line-on-navy);
-      border-top-color: var(--gold-300);
-      animation: splash-spin 0.9s linear infinite;
-    }
-
-    @keyframes splash-spin {
-      to { transform: rotate(360deg); }
+      display: none;
     }
 
     .splash-picker-head {
@@ -944,11 +1002,27 @@
 
 <!-- Splash: shown for 5 seconds on every visit -->
 <div id="splashLoader" class="splash-overlay">
+  <svg class="splash-gooey-svg">
+    <defs>
+      <filter id="gooey-loader-filter">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
+        <feColorMatrix
+          in="blur"
+          mode="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 48 -7"
+          result="goo"
+        />
+        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+      </filter>
+    </defs>
+  </svg>
   <div class="splash-crest">
     <img src="ckh-nobg.png" alt="CKH Crest">
   </div>
   <div class="splash-name">CKH International School</div>
-  <div class="splash-spinner"></div>
+  <div class="gooey-loader-wrap">
+    <div class="gooey-loader"></div>
+  </div>
 </div>
 
 <!-- Splash: shown to returning visitors after the loader, for a quick portal jump -->
