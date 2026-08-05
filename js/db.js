@@ -1,7 +1,7 @@
 // =====================================================================
-// CKH School Portal — Supabase-backed data layer
+// CKH School Portal - Supabase-backed data layer
 // This replaces the old localStorage version. Function names match the
-// original wherever possible so pages barely change — every one of them
+// original wherever possible so pages barely change - every one of them
 // is now ASYNC, so every call site needs `await` (and its enclosing
 // function needs to be `async`).
 // =====================================================================
@@ -91,7 +91,7 @@ async function addToList(table, item) {
 
 // Same shape as the old localStorage helper: find the first row matching
 // a JS predicate, then update it. (Fetches the table, applies the
-// predicate client-side, then issues a targeted update by id — so every
+// predicate client-side, then issues a targeted update by id - so every
 // existing `updateInList(KEY, r => r.id === x, {...})` call site keeps
 // working unchanged other than adding `await`.)
 async function updateInList(table, matchFn, updates) {
@@ -131,7 +131,7 @@ async function getCurrentUser() {
 }
 
 // Signs in with email + password and returns the profile on success, or
-// null on failure — same shape as the old `getUser(email, password)`.
+// null on failure - same shape as the old `getUser(email, password)`.
 async function getUser(email, password) {
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error || !data.user) return null;
@@ -177,7 +177,7 @@ async function getAllStudents() {
 
 // ---------------------------------------------------------------------
 // A prospective STUDENT creates their own portal account (their own
-// password — unlike teachers, admins never generate a password for
+// password - unlike teachers, admins never generate a password for
 // students) at the same time as submitting their admission application,
 // so they can sign back in any time to follow up on its status.
 // ---------------------------------------------------------------------
@@ -218,7 +218,7 @@ async function studentSignUpAndApply({ name, email, phone, password, programmeId
   // session yet at this point. Try a normal sign-in so "sign in to follow
   // up on your application" works immediately after applying. If email
   // confirmation is required this quietly fails and they'll confirm their
-  // email first — that's fine, it's a normal Supabase Auth flow.
+  // email first - that's fine, it's a normal Supabase Auth flow.
   if (!signUpData.session) {
     await sb.auth.signInWithPassword({ email, password }).catch(() => {});
   }
@@ -266,7 +266,7 @@ function generateJobApplicationRef() {
 }
 
 // =====================================================================
-// Teacher accounts — PRIVILEGED. Only an admin, generating a temporary
+// Teacher accounts - PRIVILEGED. Only an admin, generating a temporary
 // password, can create/reset/remove a teacher's login. This can't be
 // done with the public anon key (creating an auth user needs the
 // service-role key), so it goes through the `manage-teacher-account`
@@ -321,7 +321,7 @@ async function approveAdmissionApplication(applicationId) {
   if (application.status === 'approved') return { success: false, message: 'This application has already been approved' };
 
   // Fill in the student's grade/curriculum now that they're accepted
-  // (their account already exists — they self-registered when applying).
+  // (their account already exists - they self-registered when applying).
   if (application.student_id) {
     await sb.from('profiles').update({ grade: application.level, curriculum: application.curriculum }).eq('id', application.student_id);
   }
@@ -358,7 +358,7 @@ async function requestMoreDocsForApplication(applicationId, note) {
   return { success: true, application: rowToCamel(data) };
 }
 
-// Look up whatever admission application(s) belong to the given email —
+// Look up whatever admission application(s) belong to the given email -
 // used on the student side to show "your application is still pending".
 async function getMyAdmissionApplications(email) {
   const { data, error } = await sb.from('admissions').select('*').eq('email', email);

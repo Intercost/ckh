@@ -3,7 +3,7 @@
 // Handles the privileged parts of teacher account management that the
 // browser can never be trusted to do directly with the anon key:
 // creating an auth user, resetting a password, or deleting an account.
-// Only an authenticated admin may call this — it re-checks that on
+// Only an authenticated admin may call this - it re-checks that on
 // every request using the caller's own JWT before touching anything.
 //
 // Deploy with:
@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
 
   const authHeader = req.headers.get('Authorization') ?? '';
 
-  // Client scoped to the CALLER's own JWT — used only to verify identity
+  // Client scoped to the CALLER's own JWT - used only to verify identity
   // and role, respecting normal RLS (an admin can always read their own
   // profile row).
   const callerClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ success: false, message: 'Admin access required' }, 403);
   }
 
-  // Privileged client — only used AFTER the admin check above passes.
+  // Privileged client - only used AFTER the admin check above passes.
   const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   let body: Record<string, unknown>;

@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CKH International School — Inspire. Learn. Lead.</title>
-  <meta name="description" content="Inspire. Learn. Lead. CKH International School — Cambridge, Edexcel, IB, Common Core, SAT and CBE, in one connected school portal.">
+  <title>CKH International School - Inspire. Learn. Lead.</title>
+  <meta name="description" content="Inspire. Learn. Lead. CKH International School - Cambridge, Edexcel, IB, Common Core, SAT and CBE, in one connected school portal.">
 
   <!-- Open Graph / link preview tags (WhatsApp, Facebook, etc.) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CKH International School">
-  <meta property="og:title" content="CKH International School — Inspire. Learn. Lead.">
-  <meta property="og:description" content="Inspire · Learn · Lead — a single home for every learner, teacher and administrator across Cambridge, Edexcel, IB, Common Core, SAT and CBE.">
+  <meta property="og:title" content="CKH International School - Inspire. Learn. Lead.">
+  <meta property="og:description" content="Inspire · Learn · Lead - a single home for every learner, teacher and administrator across Cambridge, Edexcel, IB, Common Core, SAT and CBE.">
   <meta property="og:image" content="https://ckh-brown.vercel.app/ckh-nobg.png">
   <meta property="og:image:width" content="1254">
   <meta property="og:image:height" content="1254">
@@ -18,8 +18,8 @@
 
   <!-- Twitter card (some clients fall back to these) -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="CKH International School — Inspire. Learn. Lead.">
-  <meta name="twitter:description" content="Inspire · Learn · Lead — a single home for every learner, teacher and administrator.">
+  <meta name="twitter:title" content="CKH International School - Inspire. Learn. Lead.">
+  <meta name="twitter:description" content="Inspire · Learn · Lead - a single home for every learner, teacher and administrator.">
   <meta name="twitter:image" content="https://ckh-brown.vercel.app/ckh-nobg.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -864,7 +864,7 @@
     <div>
       <span class="eyebrow" style="color:var(--gold-300)">CKH International School</span>
       <h1 style="margin-top: 16px;">Inspire minds.<br>Shape <em>futures.</em></h1>
-      <p class="lede">A single home for every learner, teacher and administrator — live classes, assignments, grading and reporting across Cambridge, Edexcel, IB, Common Core, SAT and CBE, in one calm, connected platform.</p>
+      <p class="lede">A single home for every learner, teacher and administrator - live classes, assignments, grading and reporting across Cambridge, Edexcel, IB, Common Core, SAT and CBE, in one calm, connected platform.</p>
       <div class="cta-row">
         <button class="btn btn-gold" onclick="showLogin()">Enter the Portal</button>
         <a href="#curricula" class="btn btn-ghost-light">Explore Curricula</a>
@@ -990,7 +990,7 @@
     <div class="portal-copy">
       <span class="eyebrow">The portal</span>
       <h2>Sign in to the workspace built for your role.</h2>
-      <p>Students track lessons, assignments and grades. Teachers plan, mark and message. Administrators run enrolment, timetables and finance — all from the same crest.</p>
+      <p>Students track lessons, assignments and grades. Teachers plan, mark and message. Administrators run enrolment, timetables and finance - all from the same crest.</p>
       <div class="role-list">
         <div class="role-item"><span class="dot"></span>Students see today's classes, deadlines and progress the moment they log in.</div>
         <div class="role-item"><span class="dot"></span>Teachers manage courses, assignments and gradebooks without leaving the tab.</div>
@@ -1078,7 +1078,7 @@
       </div>
 
       <div id="registerForm" style="display:none;">
-        <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;">Joining CKH for the first time is called <strong>admission</strong>. Fill in the form below to apply and set up your portal login in the same step — our admissions team then reviews your application and confirms there's a vacant slot on your chosen programme. You can sign in any time with the password you choose here to follow up on your application's status.</p>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;">Joining CKH for the first time is called <strong>admission</strong>. Fill in the form below to apply and set up your portal login in the same step - our admissions team then reviews your application and confirms there's a vacant slot on your chosen programme. You can sign in any time with the password you choose here to follow up on your application's status.</p>
         <form onsubmit="submitApplication(event)">
           <div class="field">
             <label for="registerName">Learner's full name</label>
@@ -1344,9 +1344,9 @@
     const select = document.getElementById('registerProgramme');
     select.innerHTML = programmes.map(p => {
       const vacancyLabel = typeof p.vacancies === 'number'
-        ? (p.vacancies > 0 ? `${p.vacancies} slot(s) open` : 'currently full — waitlist')
+        ? (p.vacancies > 0 ? `${p.vacancies} slot(s) open` : 'currently full - waitlist')
         : '';
-      return `<option value="${p.id}" data-level="${p.level || ''}">${p.name}${vacancyLabel ? ' — ' + vacancyLabel : ''}</option>`;
+      return `<option value="${p.id}" data-level="${p.level || ''}">${p.name}${vacancyLabel ? ' - ' + vacancyLabel : ''}</option>`;
     }).join('');
     if (preselectProgrammeId) {
       select.value = preselectProgrammeId;
@@ -1434,8 +1434,8 @@
   async function populateCertCourseSelect() {
     const courses = await getOpenCertCourses();
     const select = document.getElementById('teacherAppCourse');
-    select.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}${c.curriculum ? ' — ' + c.curriculum : ''}</option>`).join('')
-      || '<option value="">No courses currently open — contact the school directly</option>';
+    select.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}${c.curriculum ? ' - ' + c.curriculum : ''}</option>`).join('')
+      || '<option value="">No courses currently open - contact the school directly</option>';
   }
 
   async function submitTeacherApp(e) {
@@ -1483,7 +1483,7 @@
     const grid = document.getElementById('programmeGrid');
     grid.innerHTML = programmes.map(p => {
       const vacancyText = typeof p.vacancies === 'number'
-        ? (p.vacancies > 0 ? `${p.vacancies} vacancy(ies)` : 'Full — waitlist open')
+        ? (p.vacancies > 0 ? `${p.vacancies} vacancy(ies)` : 'Full - waitlist open')
         : 'Contact admissions';
       const pillClass = typeof p.vacancies === 'number' && p.vacancies === 0 ? 'warn' : 'good';
       return `
@@ -1509,7 +1509,7 @@
 
     const vacancyEl = document.getElementById('progDetailVacancies');
     if (typeof programme.vacancies === 'number') {
-      vacancyEl.textContent = programme.vacancies > 0 ? `${programme.vacancies} vacancy(ies)` : 'Full — waitlist open';
+      vacancyEl.textContent = programme.vacancies > 0 ? `${programme.vacancies} vacancy(ies)` : 'Full - waitlist open';
       vacancyEl.className = 'status-pill ' + (programme.vacancies > 0 ? 'good' : 'warn');
     } else {
       vacancyEl.textContent = 'Contact admissions';
@@ -1519,7 +1519,7 @@
     document.getElementById('progDetailDescription').textContent = programme.description || programme.summary || '';
     document.getElementById('progDetailHowToApply').textContent = programme.howToApply || 'Submit an application below and our admissions team will contact you.';
     document.getElementById('progDetailDocuments').innerHTML =
-      (programme.requiredDocuments || []).map(doc => `<li>${doc}</li>`).join('') || '<li>No documents specified — contact admissions for details.</li>';
+      (programme.requiredDocuments || []).map(doc => `<li>${doc}</li>`).join('') || '<li>No documents specified - contact admissions for details.</li>';
 
     document.getElementById('progDetailApplyBtn').onclick = function() {
       applyForProgramme(programme.id);

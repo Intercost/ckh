@@ -83,12 +83,7 @@
           <p class="dash-user-role" id="userRole">Administrator</p>
         </div>
       </div>
-      <button class="dash-logout-btn" onclick="logout(event)">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
-        Sign Out
-      </button>
+      <button class="dash-logout-btn" onclick="logout(event)">Sign Out</button>
     </div>
   </aside>
 
@@ -109,7 +104,7 @@
 
       <div class="card">
         <h3>Fee collection status</h3>
-        <div class="attend-ring"><span id="reportsFeePct">—</span></div>
+        <div class="attend-ring"><span id="reportsFeePct">-</span></div>
         <div style="text-align:center;font-size:12.5px;color:var(--ink-soft);" id="reportsFeeInfo">Collected vs billed</div>
       </div>
 
@@ -190,7 +185,7 @@
     const gradebook = await getDB(DB_KEYS.GRADEBOOK) || [];
     const log = await getDB(DB_KEYS.ATTENDANCE_LOG) || [];
     const roster = await getDB(DB_KEYS.ROSTER) || [];
-    const fees = await getDB('ckh_fees') || [];
+    const fees = await getDB('fees') || [];
 
     // Academic performance by subject
     const perf = document.getElementById('academicPerformance');
@@ -213,7 +208,7 @@
     const totalBilled = fees.reduce((a, f) => a + Number(f.amount || 0), 0);
     const totalPaid = fees.filter(f => f.status === 'paid').reduce((a, f) => a + Number(f.amount || 0), 0);
     const pct = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
-    document.getElementById('reportsFeePct').textContent = totalBilled > 0 ? pct + '%' : '—';
+    document.getElementById('reportsFeePct').textContent = totalBilled > 0 ? pct + '%' : '-';
     document.getElementById('reportsFeeInfo').textContent = totalBilled > 0
       ? `KES ${totalPaid.toLocaleString()} of KES ${totalBilled.toLocaleString()}`
       : 'No invoices recorded yet';
@@ -259,7 +254,7 @@
         const classes = courses.filter(c => subjects.includes(c.name));
         const studentCount = new Set(roster.filter(r => classes.some(c => c.name === r.course)).map(r => r.name)).size;
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td data-label="Teacher">${t.name}</td><td data-label="Subjects">${subjects.length ? subjects.join(', ') : '—'}</td><td data-label="Classes">${classes.length}</td><td data-label="Students taught">${studentCount}</td>`;
+        tr.innerHTML = `<td data-label="Teacher">${t.name}</td><td data-label="Subjects">${subjects.length ? subjects.join(', ') : '-'}</td><td data-label="Classes">${classes.length}</td><td data-label="Students taught">${studentCount}</td>`;
         rows.appendChild(tr);
       });
     }

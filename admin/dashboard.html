@@ -83,12 +83,7 @@
           <p class="dash-user-role" id="userRole">Administrator</p>
         </div>
       </div>
-      <button class="dash-logout-btn" onclick="logout(event)">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
-        Sign Out
-      </button>
+      <button class="dash-logout-btn" onclick="logout(event)">Sign Out</button>
     </div>
   </aside>
 
@@ -116,7 +111,7 @@
 
       <div class="card">
         <h3>Fee collection this term</h3>
-        <div class="attend-ring"><span id="feeCollectedPct">—</span></div>
+        <div class="attend-ring"><span id="feeCollectedPct">-</span></div>
         <div style="text-align:center;font-size:12.5px;color:var(--ink-soft);" id="feeInfo">Collected vs billed</div>
       </div>
 
@@ -179,7 +174,7 @@
     const teachers = await getAllTeachers();
     const students = await getAllStudents();
     const courses = await getDB(DB_KEYS.COURSES) || [];
-    const fees = await getDB('ckh_fees') || [];
+    const fees = await getDB('fees') || [];
     const announcements = await getDB(DB_KEYS.ANNOUNCEMENTS) || [];
 
     document.getElementById('teacherCountPill').textContent = teachers.length + ' teacher' + (teachers.length === 1 ? '' : 's');
@@ -199,7 +194,7 @@
     const totalBilled = fees.reduce((a, f) => a + Number(f.amount || 0), 0);
     const totalPaid = fees.filter(f => f.status === 'paid').reduce((a, f) => a + Number(f.amount || 0), 0);
     const pct = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
-    document.getElementById('feeCollectedPct').textContent = totalBilled > 0 ? pct + '%' : '—';
+    document.getElementById('feeCollectedPct').textContent = totalBilled > 0 ? pct + '%' : '-';
     document.getElementById('feeInfo').textContent = totalBilled > 0
       ? `KES ${totalPaid.toLocaleString()} of KES ${totalBilled.toLocaleString()} collected`
       : 'No invoices recorded yet';

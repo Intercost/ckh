@@ -1,5 +1,5 @@
 -- =====================================================================
--- CKH International School Portal — Supabase schema (v2)
+-- CKH International School Portal - Supabase schema (v2)
 -- Run this in the Supabase SQL editor.
 --
 -- Design note: the original app referenced courses/students/teachers by
@@ -19,7 +19,7 @@ create type fee_status         as enum ('paid', 'pending', 'overdue');
 create type programme_status   as enum ('open', 'closed');
 
 -- ---------------------------------------------------------------------
--- profiles — extends auth.users (replaces ckh_users)
+-- profiles - extends auth.users (replaces ckh_users)
 -- ---------------------------------------------------------------------
 create table profiles (
   id          uuid primary key references auth.users (id) on delete cascade,
@@ -36,7 +36,7 @@ create table profiles (
 
 -- Auto-create a profile row whenever a new auth user signs up (self signup
 -- for students, or supabase.auth.admin.createUser() for admin-created
--- teachers — both go through this trigger).
+-- teachers - both go through this trigger).
 create function public.handle_new_user()
 returns trigger as $$
 begin
@@ -84,7 +84,7 @@ $$ language sql stable security definer set search_path = public;
 
 -- ---------------------------------------------------------------------
 -- courses (replaces ckh_courses). `teacher` stays a plain display name,
--- exactly like the original — actual per-teacher visibility is driven by
+-- exactly like the original - actual per-teacher visibility is driven by
 -- profiles.subjects, not this column.
 -- ---------------------------------------------------------------------
 create table courses (
@@ -97,7 +97,7 @@ create table courses (
 );
 
 -- ---------------------------------------------------------------------
--- roster (replaces ckh_roster) — read-only reference data for teachers
+-- roster (replaces ckh_roster) - read-only reference data for teachers
 -- ---------------------------------------------------------------------
 create table roster (
   id          uuid primary key default gen_random_uuid(),
@@ -145,7 +145,7 @@ create table submissions (
 );
 
 -- ---------------------------------------------------------------------
--- grades (replaces ckh_grades — the logged-in student's own scores)
+-- grades (replaces ckh_grades - the logged-in student's own scores)
 -- ---------------------------------------------------------------------
 create table grades (
   id          uuid primary key default gen_random_uuid(),
@@ -209,7 +209,7 @@ create table attendance_log (
   created_at  timestamptz not null default now()
 );
 
--- attendance (replaces ckh_attendance — a single overview row the current
+-- attendance (replaces ckh_attendance - a single overview row the current
 -- student sees on their dashboard: percentage / absences / term)
 create table attendance (
   id          uuid primary key default gen_random_uuid(),
@@ -237,7 +237,7 @@ create table programmes (
 );
 
 -- id is the human-readable reference itself (e.g. "ADM-4821"), exactly
--- like the original app — generated client-side at submission time.
+-- like the original app - generated client-side at submission time.
 create table admissions (
   id              text primary key,
   name            text not null,
@@ -405,21 +405,21 @@ create policy "attendance_log_write" on attendance_log for all using (is_staff()
 create policy "attendance_read" on attendance for select using (auth.role() = 'authenticated');
 create policy "attendance_write" on attendance for all using (is_staff()) with check (is_staff());
 
--- programmes / cert_courses — public marketing data
+-- programmes / cert_courses - public marketing data
 create policy "programmes_public_read" on programmes for select using (true);
 create policy "programmes_admin_write" on programmes for all using (is_admin()) with check (is_admin());
 
 create policy "cert_courses_public_read" on cert_courses for select using (true);
 create policy "cert_courses_admin_write" on cert_courses for all using (is_admin()) with check (is_admin());
 
--- admissions — anyone can apply (even signed-in applicants); an applicant
+-- admissions - anyone can apply (even signed-in applicants); an applicant
 -- can see their own application by email; admin sees/manages everything
 create policy "admissions_insert" on admissions for insert with check (true);
 create policy "admissions_admin_all" on admissions for all using (is_admin()) with check (is_admin());
 create policy "admissions_select_own" on admissions
   for select using (is_admin() or email = auth.jwt() ->> 'email' or student_id = auth.uid());
 
--- teacher_applications — same pattern
+-- teacher_applications - same pattern
 create policy "teacher_apps_insert" on teacher_applications for insert with check (true);
 create policy "teacher_apps_admin_all" on teacher_applications for all using (is_admin()) with check (is_admin());
 create policy "teacher_apps_select_own" on teacher_applications
@@ -476,7 +476,7 @@ insert into programmes (name, curriculum, level, vacancies, status, summary, des
   ('IB Diploma Programme', 'IB', 'Years 12 - 13', 0, 'open',
    'The full International Baccalaureate Diploma pathway.',
    'A rigorous, globally respected two-year diploma covering six subject groups plus Theory of Knowledge, the Extended Essay and CAS.',
-   'Applications are still accepted even when the intake is full — approved learners are waitlisted.',
+   'Applications are still accepted even when the intake is full - approved learners are waitlisted.',
    array['Latest two years of school transcripts', 'Copy of learner''s birth certificate or passport', 'Reference letter from current school', 'Copy of parent/guardian ID']),
   ('Competency-Based Education (CBE)', 'CBE', 'Junior School', 18, 'open',
    'Kenya''s CBE pathway for junior school learners.',

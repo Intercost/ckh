@@ -123,12 +123,7 @@
           <p class="dash-user-role" id="userRole">Administrator</p>
         </div>
       </div>
-      <button class="dash-logout-btn" onclick="logout(event)">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
-        Sign Out
-      </button>
+      <button class="dash-logout-btn" onclick="logout(event)">Sign Out</button>
     </div>
   </aside>
 
@@ -217,8 +212,8 @@
           <div class="field">
             <label for="programmeStatus">Visible to applicants on the school site?</label>
             <select id="programmeStatus">
-              <option value="open">Yes — open for admission</option>
-              <option value="closed">No — hide from the site</option>
+              <option value="open">Yes - open for admission</option>
+              <option value="closed">No - hide from the site</option>
             </select>
           </div>
           <button type="submit" class="btn btn-gold full-btn">Save programme</button>
@@ -286,7 +281,7 @@
           <label>Login email</label>
           <div class="profile-value" id="credEmail"></div>
         </div>
-        <p style="color:var(--ink-soft);font-size:13px;margin:14px 0;">They already set their own portal password when they applied, so there's nothing more to send — they can sign in any time. Tap below to let them know on WhatsApp.</p>
+        <p style="color:var(--ink-soft);font-size:13px;margin:14px 0;">They already set their own portal password when they applied, so there's nothing more to send - they can sign in any time. Tap below to let them know on WhatsApp.</p>
         <button class="btn btn-gold full-btn" onclick="sendCredentialsWhatsApp()">Notify on WhatsApp</button>
       </div>
     </div>
@@ -364,8 +359,8 @@
       <tr>
         <td data-label="Reference">${a.id}</td>
         <td data-label="Applicant">${a.name}</td>
-        <td data-label="Programme">${a.programmeName || '—'}</td>
-        <td data-label="Contact">${a.phone || a.email || '—'}</td>
+        <td data-label="Programme">${a.programmeName || '-'}</td>
+        <td data-label="Contact">${a.phone || a.email || '-'}</td>
         <td data-label="Status"><span class="status-pill ${STATUS_CLASS[a.status] || ''}">${STATUS_LABEL[a.status] || a.status}</span></td>
         <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm" onclick="openApplicationModal('${a.id}')">View</button></td>
       </tr>`).join('');
@@ -379,10 +374,10 @@
 
     document.getElementById('appModalRef').textContent = application.id;
     document.getElementById('appModalName').textContent = application.name;
-    document.getElementById('appModalEmail').textContent = application.email || '—';
-    document.getElementById('appModalPhone').textContent = application.phone || '—';
+    document.getElementById('appModalEmail').textContent = application.email || '-';
+    document.getElementById('appModalPhone').textContent = application.phone || '-';
     document.getElementById('appModalProgramme').textContent = application.programmeName || 'Not specified';
-    document.getElementById('appModalLevel').textContent = application.level || '—';
+    document.getElementById('appModalLevel').textContent = application.level || '-';
     document.getElementById('appModalNotes').textContent = application.notes || 'None provided';
 
     const programmes = await getProgrammes();
@@ -392,7 +387,7 @@
       vacancyWrap.style.display = 'block';
       document.getElementById('appModalVacancy').textContent = programme.vacancies > 0
         ? `${programme.vacancies} slot(s) currently open`
-        : 'No vacant slots right now — approving will place them over capacity, consider a waitlist.';
+        : 'No vacant slots right now - approving will place them over capacity, consider a waitlist.';
     } else {
       vacancyWrap.style.display = 'none';
     }
@@ -449,9 +444,9 @@
 
   function showCredentials(application) {
     document.getElementById('credName').textContent = application.name;
-    document.getElementById('credEmail').textContent = application.email || '—';
+    document.getElementById('credEmail').textContent = application.email || '-';
     pendingWhatsAppLink = application.phone
-      ? `https://wa.me/${application.phone.replace(/[^\d]/g, '')}?text=${encodeURIComponent(`Hello ${application.name}, great news — your CKH admission application (${application.id}) has been approved! You can sign in to the school portal any time with the login you created when you applied.`)}`
+      ? `https://wa.me/${application.phone.replace(/[^\d]/g, '')}?text=${encodeURIComponent(`Hello ${application.name}, great news - your CKH admission application (${application.id}) has been approved! You can sign in to the school portal any time with the login you created when you applied.`)}`
       : null;
     document.getElementById('credentialsModal').classList.add('open');
   }
@@ -482,9 +477,9 @@
     rows.innerHTML = programmes.map(p => `
       <tr>
         <td data-label="Programme">${p.name}</td>
-        <td data-label="Curriculum">${p.curriculum || '—'}</td>
-        <td data-label="Level">${p.level || '—'}</td>
-        <td data-label="Vacancies">${typeof p.vacancies === 'number' ? p.vacancies : '—'}</td>
+        <td data-label="Curriculum">${p.curriculum || '-'}</td>
+        <td data-label="Level">${p.level || '-'}</td>
+        <td data-label="Vacancies">${typeof p.vacancies === 'number' ? p.vacancies : '-'}</td>
         <td data-label="Visible on site"><span class="status-pill ${p.status === 'closed' ? 'bad' : 'good'}">${p.status === 'closed' ? 'Hidden' : 'Visible'}</span></td>
         <td class="table-actions" data-label="Actions">
           <div style="display:flex;gap:8px;flex-wrap:wrap;">

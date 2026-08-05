@@ -95,12 +95,7 @@
           <p class="dash-user-role" id="userRole">Teacher</p>
         </div>
       </div>
-      <button class="dash-logout-btn" onclick="logout(event)">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
-        Sign Out
-      </button>
+      <button class="dash-logout-btn" onclick="logout(event)">Sign Out</button>
     </div>
   </aside>
 
@@ -237,7 +232,7 @@
     if (!currentUser) return;
     document.getElementById('profName').textContent = currentUser.name;
     document.getElementById('profEmail').textContent = currentUser.email;
-    document.getElementById('profPhone').textContent = currentUser.phone || 'Not set — ask the admin to add it';
+    document.getElementById('profPhone').textContent = currentUser.phone || 'Not set - ask the admin to add it';
     document.getElementById('profSubjects').textContent = (currentUser.subjects && currentUser.subjects.length) ? currentUser.subjects.join(', ') : 'None assigned yet';
   };
 

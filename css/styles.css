@@ -367,17 +367,16 @@ nav.links a:hover, nav.links a:focus-visible {
 
 .dash-logout-btn {
   width: 100%;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(248, 244, 234, 0.3);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(248, 244, 234, 0.25);
   background: transparent;
-  color: rgba(248, 244, 234, 0.85);
-  font-size: 13px;
-  font-weight: 600;
+  color: rgba(248, 244, 234, 0.7);
+  font-size: 12px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   transition: all .15s ease;
   cursor: pointer;
 }

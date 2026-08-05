@@ -83,12 +83,7 @@
           <p class="dash-user-role" id="userRole">Administrator</p>
         </div>
       </div>
-      <button class="dash-logout-btn" onclick="logout(event)">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
-        Sign Out
-      </button>
+      <button class="dash-logout-btn" onclick="logout(event)">Sign Out</button>
     </div>
   </aside>
 
@@ -257,8 +252,8 @@
 
   let currentUser = null;
 
-  const CALENDAR_KEY = 'ckh_academic_calendar';
-  const TIMETABLE_KEY = 'ckh_timetable';
+  const CALENDAR_KEY = 'academic_calendar';
+  const TIMETABLE_KEY = 'timetable';
 
   async function renderCalendar() {
     const events = (await getDB(CALENDAR_KEY) || []).slice().sort((a, b) => a.date.localeCompare(b.date));
@@ -304,7 +299,7 @@
     empty.style.display = 'none';
     courses.forEach(c => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td data-label="Subject">${c.name}</td><td data-label="Teacher">${c.teacher || '<span style="color:var(--ink-soft);">Unassigned</span>'}</td><td data-label="Room">${c.room || '—'}</td>
+      tr.innerHTML = `<td data-label="Subject">${c.name}</td><td data-label="Teacher">${c.teacher || '<span style="color:var(--ink-soft);">Unassigned</span>'}</td><td data-label="Room">${c.room || '-'}</td>
         <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm" onclick="removeSubject('${c.id}')">Remove</button></td>`;
       rows.appendChild(tr);
     });
@@ -354,7 +349,7 @@
     const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     slots.slice().sort((a, b) => dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day) || a.time.localeCompare(b.time)).forEach(s => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td data-label="Day">${s.day}</td><td data-label="Time">${s.time}</td><td data-label="Subject">${s.course}</td><td data-label="Room">${s.room || '—'}</td>
+      tr.innerHTML = `<td data-label="Day">${s.day}</td><td data-label="Time">${s.time}</td><td data-label="Subject">${s.course}</td><td data-label="Room">${s.room || '-'}</td>
         <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm" onclick="removeTimetableSlot('${s.id}')">Remove</button></td>`;
       rows.appendChild(tr);
     });

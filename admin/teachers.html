@@ -83,12 +83,7 @@
           <p class="dash-user-role" id="userRole">Administrator</p>
         </div>
       </div>
-      <button class="dash-logout-btn" onclick="logout(event)">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
-        Sign Out
-      </button>
+      <button class="dash-logout-btn" onclick="logout(event)">Sign Out</button>
     </div>
   </aside>
 
@@ -162,8 +157,8 @@
           <div class="field">
             <label for="certCourseStatus">Open to teacher applicants on the school site?</label>
             <select id="certCourseStatus">
-              <option value="open">Yes — accepting applications</option>
-              <option value="closed">No — hide from the site</option>
+              <option value="open">Yes - accepting applications</option>
+              <option value="closed">No - hide from the site</option>
             </select>
           </div>
           <button type="submit" class="btn btn-gold full-btn">Save course</button>
@@ -260,7 +255,7 @@
           <label>Temporary password</label>
           <div class="profile-value" id="credPassword"></div>
         </div>
-        <p style="color:var(--ink-soft);font-size:13px;margin:14px 0;">There's no automatic messaging — tap below to open WhatsApp with the message pre-filled, then hit send yourself.</p>
+        <p style="color:var(--ink-soft);font-size:13px;margin:14px 0;">There's no automatic messaging - tap below to open WhatsApp with the message pre-filled, then hit send yourself.</p>
         <button class="btn btn-gold full-btn" id="credWhatsAppBtn" onclick="sendCredentialsWhatsApp()">Send credentials on WhatsApp</button>
       </div>
     </div>
@@ -322,7 +317,7 @@
       tr.innerHTML = `
         <td data-label="Name">${t.name}</td>
         <td data-label="Email">${t.email}</td>
-        <td data-label="WhatsApp">${t.phone || '—'}</td>
+        <td data-label="WhatsApp">${t.phone || '-'}</td>
         <td data-label="Subjects">${subjects}</td>
         <td data-label="Status"><span class="status-pill good">Active</span></td>
         <td class="table-actions" data-label="Actions">
@@ -388,7 +383,7 @@
   }
 
   // Note: Supabase Auth never exposes a stored password back to us, so
-  // there's no way to "resend" the ORIGINAL temporary password — both
+  // there's no way to "resend" the ORIGINAL temporary password - both
   // buttons below issue a fresh one and send it over WhatsApp.
   async function resendCredentials(teacherId) {
     await resetAndResend(teacherId);
@@ -429,7 +424,7 @@
     rows.innerHTML = courses.map(c => `
       <tr>
         <td data-label="Course">${c.name}</td>
-        <td data-label="Curriculum">${c.curriculum || '—'}</td>
+        <td data-label="Curriculum">${c.curriculum || '-'}</td>
         <td data-label="Open to applicants"><span class="status-pill ${c.status === 'closed' ? 'bad' : 'good'}">${c.status === 'closed' ? 'Hidden' : 'Open'}</span></td>
         <td class="table-actions" data-label="Actions">
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -525,8 +520,8 @@
       <tr>
         <td data-label="Reference">${a.id}</td>
         <td data-label="Applicant">${a.name}</td>
-        <td data-label="Course applied for">${a.certCourseName || '—'}</td>
-        <td data-label="Contact">${a.phone || a.email || '—'}</td>
+        <td data-label="Course applied for">${a.certCourseName || '-'}</td>
+        <td data-label="Contact">${a.phone || a.email || '-'}</td>
         <td data-label="Status"><span class="status-pill ${JOB_STATUS_CLASS[a.status] || ''}">${JOB_STATUS_LABEL[a.status] || a.status}</span></td>
         <td class="table-actions" data-label="Actions"><button class="btn btn-outline btn-sm" onclick="openJobApplicationModal('${a.id}')">View</button></td>
       </tr>`).join('');
@@ -539,8 +534,8 @@
 
     document.getElementById('jobModalRef').textContent = application.id;
     document.getElementById('jobModalName').textContent = application.name;
-    document.getElementById('jobModalEmail').textContent = application.email || '—';
-    document.getElementById('jobModalPhone').textContent = application.phone || '—';
+    document.getElementById('jobModalEmail').textContent = application.email || '-';
+    document.getElementById('jobModalPhone').textContent = application.phone || '-';
     document.getElementById('jobModalCourse').textContent = application.certCourseName + (application.curriculum ? ` (${application.curriculum})` : '');
     document.getElementById('jobModalQualifications').textContent = application.qualifications || 'None provided';
     document.getElementById('jobModalNotes').textContent = application.notes || 'None provided';
