@@ -89,20 +89,48 @@
       position: relative;
     }
 
+    .hero-media {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      aspect-ratio: 4 / 3;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 30px 70px -25px rgba(0, 0, 0, 0.55);
+      border: 1px solid var(--line-on-navy);
+    }
+
+    .hero-media video,
+    .hero-media img.hero-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-media img.hero-image {
+      z-index: 1;
+    }
+
+    .hero-media video {
+      z-index: 2;
+    }
+
+    .hero-media-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: linear-gradient(160deg, rgba(7, 27, 58, 0.05) 0%, rgba(7, 27, 58, 0.35) 100%);
+      pointer-events: none;
+    }
+
     .hero-crest .glow {
       position: absolute;
       width: 320px;
       height: 320px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(201, 161, 58, 0.22), transparent 70%);
-    }
-
-    .hero-crest img {
-      width: 280px;
-      height: 280px;
-      object-fit: contain;
-      position: relative;
-      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
     }
 
     .hero-motto {
@@ -158,13 +186,28 @@
       background: var(--ivory-100);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 32px 28px;
+      padding: 0 0 28px 0;
+      overflow: hidden;
       transition: transform .2s ease, box-shadow .2s ease;
     }
 
     .pillar-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow);
+    }
+
+    .pillar-photo {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: var(--navy-900);
+    }
+
+    .pillar-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .pillar-icon {
@@ -175,7 +218,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 20px;
+      margin: -26px 28px 16px 28px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 10px 25px -10px rgba(10, 39, 79, 0.35);
     }
 
     .pillar-icon svg {
@@ -187,20 +233,42 @@
     .pillar-card h3 {
       font-size: 19px;
       font-weight: 600;
-      margin-bottom: 10px;
+      margin: 0 28px 10px 28px;
     }
 
     .pillar-card p {
       font-size: 14.5px;
       color: var(--ink-soft);
       line-height: 1.6;
-      margin: 0;
+      margin: 0 28px;
     }
 
     .curricula {
       padding: 80px 0;
       background: var(--navy-900);
       color: var(--ivory-100);
+    }
+
+    .curricula-wrap {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .curricula-photo {
+      aspect-ratio: 4 / 3;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 30px 70px -25px rgba(0, 0, 0, 0.55);
+      border: 1px solid var(--line-on-navy);
+    }
+
+    .curricula-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .curricula .head {
@@ -263,12 +331,78 @@
       border-bottom: 1px solid var(--line);
     }
 
+    .admissions-banner {
+      background: var(--ivory);
+    }
+
+    .careers-banner {
+      background: var(--ivory-100);
+      border-top: none;
+    }
+
+    .admissions-split,
+    .careers-split {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 0;
+      max-width: 1080px;
+      margin: 0 auto;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 30px 70px -35px rgba(10, 39, 79, 0.35);
+      border: 1px solid var(--line);
+    }
+
+    .careers-split {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    .admissions-photo,
+    .careers-photo {
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+    }
+
+    .admissions-photo img,
+    .careers-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .admissions-copy {
+      background: var(--ivory-100);
+      padding: 56px 48px;
+      max-width: none;
+    }
+
+    .careers-copy {
+      background: var(--ivory);
+      padding: 56px 48px;
+      max-width: none;
+    }
+
     .admissions-wrap {
       max-width: 720px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 16px;
+    }
+
+    .admissions-wrap {
+      text-align: center;
+    }
+
+    .admissions-copy,
+    .careers-copy {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       gap: 16px;
     }
 
@@ -796,10 +930,26 @@
       .hero .wrap {
         grid-template-columns: 1fr;
         padding-top: 64px;
+        gap: 36px;
       }
 
       .hero-crest {
         order: -1;
+      }
+
+      .hero-media {
+        max-width: 560px;
+        aspect-ratio: 16 / 10;
+      }
+
+      .curricula-wrap {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+
+      .curricula-photo {
+        order: -1;
+        aspect-ratio: 16 / 10;
       }
 
       .curr-grid {
@@ -808,6 +958,26 @@
 
       .pillar-grid {
         grid-template-columns: 1fr;
+      }
+
+      .admissions-split,
+      .careers-split {
+        grid-template-columns: 1fr;
+        border-radius: 20px;
+      }
+
+      .admissions-photo,
+      .careers-photo {
+        aspect-ratio: 16 / 9;
+      }
+
+      .careers-photo {
+        order: -1;
+      }
+
+      .admissions-copy,
+      .careers-copy {
+        padding: 40px 32px;
       }
 
       .portal .wrap {
@@ -836,6 +1006,33 @@
     }
 
     @media (max-width: 520px) {
+      .hero .wrap {
+        padding: 48px 20px 56px;
+        gap: 28px;
+      }
+
+      .hero-media {
+        aspect-ratio: 4 / 3;
+        border-radius: 16px;
+      }
+
+      .curr-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .curricula-photo {
+        aspect-ratio: 4 / 3;
+      }
+
+      .pillar-photo {
+        aspect-ratio: 4 / 3;
+      }
+
+      .admissions-copy,
+      .careers-copy {
+        padding: 32px 22px;
+      }
+
       .portal {
         padding: 64px 0;
       }
@@ -1210,8 +1407,13 @@
       </div>
     </div>
     <div class="hero-crest">
-      <div class="glow"></div>
-      <img src="ckh-nobg.png" alt="CKH Crest">
+      <div class="hero-media">
+        <video autoplay muted loop playsinline preload="metadata" poster="hero.jpg" class="hero-video">
+          <source src="hero.mp4" type="video/mp4">
+        </video>
+        <img src="hero.jpg" alt="Student joining a live online class from home" class="hero-image" loading="eager">
+        <div class="hero-media-overlay"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -1224,16 +1426,19 @@
     </div>
     <div class="pillar-grid">
       <div class="pillar-card">
+        <div class="pillar-photo"><img src="pillar1.png" alt="Global curricula and virtual learning pathways" loading="lazy"></div>
         <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18"/></svg></div>
         <h3>Global by design</h3>
         <p>Cambridge, Edexcel, IB, Common Core, SAT and CBE curricula, side by side, so every student's pathway is tracked on its own terms.</p>
       </div>
       <div class="pillar-card">
+        <div class="pillar-photo"><img src="pillar2.jpg" alt="Teacher leading a live online class" loading="lazy"></div>
         <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2c2 3 5 5 5 9a5 5 0 0 1-10 0c0-1.5.8-2.5 1.5-3.5C9 9 9.5 10 10 10c-.3-3 .5-5.5 2-8Z"/><path d="M9 21h6"/></svg></div>
         <h3>Teaching that stays lit</h3>
         <p>Live classes, lesson plans and marking in one workspace, so teachers spend their energy on students, not on switching tools.</p>
       </div>
       <div class="pillar-card">
+        <div class="pillar-photo"><img src="pillar3.jpg" alt="Student reviewing grades and progress on the portal" loading="lazy"></div>
         <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v6M12 21v-8M8 21c0-3 1.8-4.5 4-6M16 21c0-3-1.8-4.5-4-6M6 9c0 2 2.5 3 6 3s6-1 6-3"/></svg></div>
         <h3>Growth you can see</h3>
         <p>Attendance, grades and performance analytics roll up automatically for students, parents and administrators alike.</p>
@@ -1243,37 +1448,52 @@
 </section>
 
 <section class="curricula" id="curricula">
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">One school, six pathways</span>
-      <h2>Every curriculum, properly supported.</h2>
+  <div class="wrap curricula-wrap">
+    <div class="curricula-copy">
+      <div class="head">
+        <span class="eyebrow">One school, six pathways</span>
+        <h2>Every curriculum, properly supported.</h2>
+      </div>
+      <div class="curr-grid">
+        <div class="curr-card"><div class="tag">CAIE</div><div class="full">Cambridge International</div></div>
+        <div class="curr-card"><div class="tag">Edexcel</div><div class="full">Pearson Edexcel</div></div>
+        <div class="curr-card"><div class="tag">IB</div><div class="full">International Baccalaureate</div></div>
+        <div class="curr-card"><div class="tag">CC</div><div class="full">Common Core</div></div>
+        <div class="curr-card"><div class="tag">SAT</div><div class="full">SAT Preparation</div></div>
+        <div class="curr-card"><div class="tag">CBE</div><div class="full">Competency-Based Ed.</div></div>
+      </div>
     </div>
-    <div class="curr-grid">
-      <div class="curr-card"><div class="tag">CAIE</div><div class="full">Cambridge International</div></div>
-      <div class="curr-card"><div class="tag">Edexcel</div><div class="full">Pearson Edexcel</div></div>
-      <div class="curr-card"><div class="tag">IB</div><div class="full">International Baccalaureate</div></div>
-      <div class="curr-card"><div class="tag">CC</div><div class="full">Common Core</div></div>
-      <div class="curr-card"><div class="tag">SAT</div><div class="full">SAT Preparation</div></div>
-      <div class="curr-card"><div class="tag">CBE</div><div class="full">Competency-Based Ed.</div></div>
+    <div class="curricula-photo">
+      <img src="pillar4.jpg" alt="Students joining a global online class across multiple curricula" loading="lazy">
     </div>
   </div>
 </section>
 
-<section class="admissions" id="admissions">
-  <div class="wrap admissions-wrap">
-    <span class="eyebrow">Admissions</span>
-    <h2>Applying to CKH starts here.</h2>
-    <p class="admissions-lede">Browse the programmes we currently offer, see open vacancies, what's required to apply, and the documents you'll need, then submit your application in a couple of minutes.</p>
-    <button class="btn btn-gold" onclick="openAdmissionsModal()">Explore Admissions</button>
+<section class="admissions admissions-banner" id="admissions">
+  <div class="wrap admissions-split">
+    <div class="admissions-photo">
+      <img src="pillar5.jpg" alt="Learner filling out an online admission application" loading="lazy">
+    </div>
+    <div class="wrap admissions-wrap admissions-copy">
+      <span class="eyebrow">Admissions</span>
+      <h2>Applying to CKH starts here.</h2>
+      <p class="admissions-lede">Browse the programmes we currently offer, see open vacancies, what's required to apply, and the documents you'll need, then submit your application in a couple of minutes.</p>
+      <button class="btn btn-gold" onclick="openAdmissionsModal()">Explore Admissions</button>
+    </div>
   </div>
 </section>
 
-<section class="admissions" id="careers">
-  <div class="wrap admissions-wrap">
-    <span class="eyebrow">Careers</span>
-    <h2>Teach with us.</h2>
-    <p class="admissions-lede">See the certificate courses we're currently looking for teachers on, apply for the one you teach, and our school team will contact you with additional details.</p>
-    <button class="btn btn-gold" onclick="openTeacherApplyModal()">Apply to Teach</button>
+<section class="admissions careers-banner" id="careers">
+  <div class="wrap careers-split">
+    <div class="wrap admissions-wrap careers-copy">
+      <span class="eyebrow">Careers</span>
+      <h2>Teach with us.</h2>
+      <p class="admissions-lede">See the certificate courses we're currently looking for teachers on, apply for the one you teach, and our school team will contact you with additional details.</p>
+      <button class="btn btn-gold" onclick="openTeacherApplyModal()">Apply to Teach</button>
+    </div>
+    <div class="careers-photo">
+      <img src="pillar6.jpg" alt="Online tutor preparing a live class from home" loading="lazy">
+    </div>
   </div>
 </section>
 
