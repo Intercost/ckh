@@ -70,6 +70,10 @@
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V10M10 21V3M16 21v-7M22 21H2"/></svg>
         Reports & Analytics
       </a>
+      <a href="password-retrieval.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1.2" fill="currentColor"/></svg>
+        Password Retrieval
+      </a>
       <a href="account.html" class="dash-nav-item">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
         My Account
@@ -96,22 +100,6 @@
       <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
     </div>
 
-    <!-- ===== PASSWORD RETRIEVAL SECTION ===== -->
-    <div class="section-head" style="margin-bottom:0;">
-      <h2>Password retrieval</h2>
-    </div>
-    <p style="color:var(--ink-soft);font-size:13.5px;margin:-8px 0 16px;">Search for a student or teacher by name or email. Click <strong>Reset &amp; send</strong> to generate a new temporary password and send it to them on WhatsApp.</p>
-    <div class="card" style="margin-bottom:32px;">
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-        <input id="pwSearchInput" type="text" placeholder="Search by name or email…" style="flex:1;min-width:200px;" oninput="onPwSearch()">
-        <select id="pwRoleFilter" onchange="onPwSearch()" style="min-width:140px;">
-          <option value="all">All roles</option>
-          <option value="student">Students only</option>
-          <option value="teacher">Teachers only</option>
-        </select>
-      </div>
-      <div id="pwResults"></div>
-    </div>
 
     <div class="section-head">
       <h2>All teachers</h2>
@@ -709,77 +697,11 @@
     await renderJobApplications();
   }
 
-  // ===== PASSWORD RETRIEVAL ===========================================
-
-  let _pwAllUsers = [];
-
-  async function loadPwUsers() {
-    const [teachers, students] = await Promise.all([getAllTeachers(), getAllStudents()]);
-    _pwAllUsers = [...teachers, ...students];
-  }
-
-  function onPwSearch() {
-    const q = document.getElementById('pwSearchInput').value.trim().toLowerCase();
-    const role = document.getElementById('pwRoleFilter').value;
-    const container = document.getElementById('pwResults');
-
-    if (!q) {
-      container.innerHTML = '<div class="empty-state" style="padding:10px 0;">Type a name or email above to search.</div>';
-      return;
-    }
-
-    const filtered = _pwAllUsers.filter(u => {
-      const matchRole = role === 'all' || u.role === role;
-      const matchQ = (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q);
-      return matchRole && matchQ;
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = '<div class="empty-state" style="padding:10px 0;">No matching users found.</div>';
-      return;
-    }
-
-    container.innerHTML = `
-      <div style="overflow-x:auto;">
-        <table class="data-table">
-          <thead><tr><th>Name</th><th>Email</th><th>WhatsApp</th><th>Role</th><th>Action</th></tr></thead>
-          <tbody>${filtered.map(u => `
-            <tr>
-              <td data-label="Name">${u.name}</td>
-              <td data-label="Email">${u.email}</td>
-              <td data-label="WhatsApp">${u.phone || '-'}</td>
-              <td data-label="Role"><span class="status-pill ${u.role === 'teacher' ? 'good' : ''}">${
-                u.role.charAt(0).toUpperCase() + u.role.slice(1)
-              }</span></td>
-              <td class="table-actions" data-label="Action">
-                <button class="btn btn-gold btn-sm" onclick="pwResetAndSend('${u.id}')">Reset &amp; send</button>
-              </td>
-            </tr>`).join('')}
-          </tbody>
-        </table>
-      </div>`;
-  }
-
-  async function pwResetAndSend(userId) {
-    if (!confirm('This will reset this person\'s password to a new temporary one. Continue?')) return;
-    const result = await resetUserPassword(userId);
-    if (!result.success) {
-      alert(result.message || 'Could not reset the password.');
-      return;
-    }
-    // Reload the user list so the card reflects any name changes
-    await loadPwUsers();
-    showCredentials('Password reset', result.user, result.tempPassword, result.whatsappLink);
-  }
-
-  // ====================================================================
 
   window.onload = async function() {
     currentUser = await requireAdmin();
     if (!currentUser) return;
-    await Promise.all([renderTeachers(), renderCertCourses(), renderJobApplications(), loadPwUsers()]);
-    // Show initial empty-state message
-    document.getElementById('pwResults').innerHTML = '<div class="empty-state" style="padding:10px 0;">Type a name or email above to search.</div>';
+    await Promise.all([renderTeachers(), renderCertCourses(), renderJobApplications()]);
   };
 
 </script>

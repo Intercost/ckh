@@ -148,8 +148,10 @@
       <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
     </div>
 
+    <div id="pendingBanner" style="display:none;background:#fff8e6;border:1px solid #f0d78c;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;color:var(--navy-900);"></div>
+
     <div id="liveClassesContainer">
-      <p style="color:var(--ink-soft);font-size:13.5px;">No live classes scheduled yet. Your live sessions will appear here once you're enrolled in courses.</p>
+      <p style="color:var(--ink-soft);font-size:13.5px;">Loading your schedule…</p>
     </div>
   </main>
 </div>
@@ -187,6 +189,56 @@
     document.getElementById('userAvatar').textContent = initials;
     document.getElementById('userName').textContent = user.name;
     document.getElementById('userRole').textContent = user.role;
+
+    // Check admission status
+    const myApps = await getMyAdmissionApplications(user.email);
+    const latest = myApps.sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''))[0];
+    const isApproved = !latest || latest.status === 'approved';
+    const banner = document.getElementById('pendingBanner');
+    if (latest && latest.status !== 'approved') {
+      banner.textContent = 'Your live class schedule will appear here once your admission has been approved.';
+      banner.style.display = 'block';
+    }
+
+    const container = document.getElementById('liveClassesContainer');
+    const slots = await getDB('timetable') || [];
+
+    if (!isApproved || slots.length === 0) {
+      container.innerHTML = isApproved
+        ? '<p style="color:var(--ink-soft);font-size:13.5px;">No live sessions have been scheduled yet. Check back soon.</p>'
+        : '<p style="color:var(--ink-soft);font-size:13.5px;">Your schedule will appear here once your admission has been approved.</p>';
+      return;
+    }
+
+    const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const sorted = slots.slice().sort((a, b) =>
+      dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day) || (a.time || '').localeCompare(b.time || '')
+    );
+
+    // Group by day
+    const byDay = {};
+    sorted.forEach(s => {
+      if (!byDay[s.day]) byDay[s.day] = [];
+      byDay[s.day].push(s);
+    });
+
+    container.innerHTML = Object.entries(byDay).map(([day, sessions]) => `
+      <div style="margin-bottom:24px;">
+        <h3 style="font-family:'Fraunces',serif;font-size:17px;color:var(--navy-900);margin:0 0 12px;">${day}</h3>
+        ${sessions.map(s => `
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+                      background:var(--ivory);border:1px solid var(--line);border-radius:12px;
+                      padding:16px 18px;margin-bottom:10px;">
+            <div>
+              <div style="font-weight:600;font-size:15px;color:var(--ink);">${s.course}</div>
+              <div style="font-size:12.5px;color:var(--ink-soft);margin-top:3px;">⏰ ${s.time}</div>
+            </div>
+            ${s.room
+              ? `<a href="${s.room}" target="_blank" class="btn btn-gold btn-sm">Join session</a>`
+              : `<span style="font-size:12.5px;color:var(--ink-soft);">Link not set yet</span>`
+            }
+          </div>`).join('')}
+      </div>`).join('');
   };
 </script>
 

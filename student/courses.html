@@ -140,8 +140,10 @@
       <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
     </div>
 
+    <div id="pendingBanner" style="display:none;background:#fff8e6;border:1px solid #f0d78c;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;color:var(--navy-900);"></div>
+
     <div id="coursesContainer">
-      <p style="color:var(--ink-soft);font-size:13.5px;">No courses enrolled yet. Your courses will appear here once you're enrolled by the school administration.</p>
+      <p style="color:var(--ink-soft);font-size:13.5px;">Loading your courses…</p>
     </div>
   </main>
 </div>
@@ -179,6 +181,44 @@
     document.getElementById('userAvatar').textContent = initials;
     document.getElementById('userName').textContent = user.name;
     document.getElementById('userRole').textContent = user.role;
+
+    // Check admission status first
+    const myApps = await getMyAdmissionApplications(user.email);
+    const latest = myApps.sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''))[0];
+    const pendingBanner = document.getElementById('pendingBanner');
+    const isApproved = !latest || latest.status === 'approved';
+
+    if (latest && latest.status !== 'approved') {
+      const statusMsg = {
+        pending: 'Your admission application is still under review. Courses will appear here once you are enrolled.',
+        more_info: 'Your admission needs more information before enrolment. Please check your email.',
+        rejected: 'Your admission application was not successful. Please contact the school office.'
+      }[latest.status] || 'Your application is being processed.';
+      pendingBanner.textContent = statusMsg;
+      pendingBanner.style.display = 'block';
+    }
+
+    const container = document.getElementById('coursesContainer');
+    const allCourses = await getDB(DB_KEYS.COURSES) || [];
+
+    if (!isApproved || allCourses.length === 0) {
+      container.innerHTML = isApproved
+        ? '<p style="color:var(--ink-soft);font-size:13.5px;">No subjects have been set up yet. Check back soon.</p>'
+        : '<p style="color:var(--ink-soft);font-size:13.5px;">Your courses will appear here once your admission has been approved.</p>';
+      return;
+    }
+
+    container.innerHTML = allCourses.map(c => `
+      <div class="course-card">
+        <div class="course-header">
+          <h2 class="course-title">${c.name}</h2>
+          ${c.room ? `<a href="${c.room}" target="_blank" class="btn btn-gold btn-sm">Join online session</a>` : ''}
+        </div>
+        <div class="course-meta">
+          <span>Teacher: <strong>${c.teacher || 'Unassigned'}</strong></span>
+          ${c.room ? `<span>Online: <a href="${c.room}" target="_blank" style="color:var(--gold-600);">${c.room}</a></span>` : '<span style="color:var(--ink-soft);">No link yet</span>'}
+        </div>
+      </div>`).join('');
   };
 </script>
 

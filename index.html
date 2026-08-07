@@ -1744,6 +1744,54 @@
   </div>
 </div>
 
+<!-- Terms & Conditions modal -->
+<div class="modal-overlay" id="termsModal">
+  <div class="modal-box wide">
+    <div class="modal-close"><button onclick="closeTermsModal()">✕</button></div>
+    <h2>Terms & Conditions</h2>
+    <div style="max-height:500px;overflow-y:auto;padding-right:10px;font-size:13.5px;line-height:1.6;color:var(--ink);">
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:0;">1. Acceptance of Terms</h3>
+      <p>By accessing and using the CKH International School online portal, you agree to be bound by these Terms & Conditions. If you do not agree to these terms, please do not use this service.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">2. User Accounts</h3>
+      <p>Users are responsible for maintaining the confidentiality of their account credentials. You agree to notify us immediately of any unauthorized use of your account. CKH International School reserves the right to suspend or terminate accounts that violate these terms.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">3. Academic Integrity</h3>
+      <p>All students must maintain academic honesty. Cheating, plagiarism, or any form of academic dishonesty is strictly prohibited and may result in disciplinary action, including expulsion.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">4. Code of Conduct</h3>
+      <p>Users must conduct themselves respectfully in all interactions within the portal. Harassment, bullying, or inappropriate behavior will not be tolerated and may result in account suspension.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">5. Privacy Policy</h3>
+      <p>CKH International School is committed to protecting your privacy. Personal information collected through this portal is used for educational purposes and will not be shared with third parties without consent, except as required by law.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">6. Intellectual Property</h3>
+      <p>All course materials, lectures, assignments, and other educational content provided through this portal are the intellectual property of CKH International School or its licensors. Unauthorized reproduction, distribution, or sharing is prohibited.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">7. Payment & Fees</h3>
+      <p>Tuition and fees must be paid according to the school's payment schedule. Failure to pay fees may result in restricted access to the portal and educational services.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">8. Attendance Requirements</h3>
+      <p>Students are expected to attend all scheduled classes and complete assignments on time. Excessive absences or missed work may affect academic standing.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">9. Technical Requirements</h3>
+      <p>Users are responsible for ensuring they have appropriate internet connectivity and devices to access the portal. CKH International School is not responsible for technical issues on the user's end.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">10. Limitation of Liability</h3>
+      <p>CKH International School shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of this portal.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">11. Modifications</h3>
+      <p>CKH International School reserves the right to modify these terms at any time. Continued use of the portal constitutes acceptance of any changes.</p>
+
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-top:20px;">12. Contact Information</h3>
+      <p>For questions about these Terms & Conditions, please contact us at:</p>
+      <p>Email: info@ckhschool.ac.ke<br>Phone: +254 791 197 950</p>
+
+      <p style="margin-top:20px;color:var(--ink-soft);font-size:12.5px;">Last updated: August 2026</p>
+    </div>
+  </div>
+</div>
+
 <section class="contact-band" id="contact">
   <div class="wrap">
     <div>
@@ -1791,6 +1839,7 @@
     <div class="foot-bottom">
       <span>© 2026 CKH International School. All rights reserved.</span>
       <span>Inspiring minds. Shaping futures.</span>
+      <a href="#" onclick="openTermsModal();return false;" style="color:var(--ink-soft);text-decoration:none;font-size:13px;">Terms & Conditions</a>
     </div>
   </div>
 </footer>
@@ -2160,6 +2209,14 @@
 
   function closeCurriculumLevelsModal() {
     document.getElementById('curriculumLevelsModal').classList.remove('open');
+  }
+
+  function openTermsModal() {
+    document.getElementById('termsModal').classList.add('open');
+  }
+
+  function closeTermsModal() {
+    document.getElementById('termsModal').classList.remove('open');
   }
 
   function applyForCurriculumLevel(curriculumKey, levelName) {
