@@ -293,7 +293,7 @@
 
     .curr-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 14px;
     }
 
@@ -1451,14 +1451,15 @@
   <div class="wrap curricula-wrap">
     <div class="curricula-copy">
       <div class="head">
-        <span class="eyebrow">One school, six pathways</span>
+        <span class="eyebrow">One school, many pathways</span>
         <h2>Every curriculum, properly supported.</h2>
       </div>
       <div class="curr-grid">
         <div class="curr-card" onclick="openCurriculumLevels('CAIE')" style="cursor:pointer"><div class="tag">CAIE</div><div class="full">Cambridge International</div></div>
         <div class="curr-card" onclick="openCurriculumLevels('Edexcel')" style="cursor:pointer"><div class="tag">Edexcel</div><div class="full">Pearson Edexcel</div></div>
         <div class="curr-card" onclick="openCurriculumLevels('IB')" style="cursor:pointer"><div class="tag">IB</div><div class="full">International Baccalaureate</div></div>
-        <div class="curr-card" onclick="openCurriculumLevels('CC')" style="cursor:pointer"><div class="tag">CC</div><div class="full">Common Core</div></div>
+        <div class="curr-card" onclick="openCurriculumLevels('CC')" style="cursor:pointer"><div class="tag">CC</div><div class="full">Common Core (USA)</div></div>
+        <div class="curr-card" onclick="openCurriculumLevels('American')" style="cursor:pointer"><div class="tag">USA</div><div class="full">American Curriculum</div></div>
         <div class="curr-card" onclick="openCurriculumLevels('SAT')" style="cursor:pointer"><div class="tag">SAT</div><div class="full">SAT Preparation</div></div>
         <div class="curr-card" onclick="openCurriculumLevels('CBE')" style="cursor:pointer"><div class="tag">CBE</div><div class="full">Competency-Based Ed.</div></div>
       </div>
@@ -1848,11 +1849,12 @@
   let currentRole = 'student';
   const currentRegisterRole = 'student'; // public sign-up is students only
 
-  // Curriculum data based on the brochure
+  // Curriculum data - kept in sync with the official CKH International
+  // Online School brochure ("One school. Many pathways. Limitless futures.")
   const CURRICULUM_DATA = {
     CAIE: {
       name: 'Cambridge International',
-      description: 'A world-class curriculum that develops students\' skills in creative thinking, enquiry and problem solving.',
+      description: 'A clear path for lifelong learners aged 5 to 19.',
       levels: [
         { name: 'Cambridge Primary', ageRange: '5-11 years', description: 'Builds strong foundations in English, Mathematics and Science.' },
         { name: 'Cambridge Lower Secondary', ageRange: '11-14 years', description: 'Develops skills and understanding in English, Mathematics and Science.' },
@@ -1862,49 +1864,51 @@
     },
     Edexcel: {
       name: 'Pearson Edexcel',
-      description: 'UK qualifications that are recognized by universities and employers around the world.',
+      description: 'Globally respected qualifications that open doors to university and career success.',
       levels: [
-        { name: 'Edexcel Primary', ageRange: '5-11 years', description: 'Foundation stage building core skills.' },
-        { name: 'Edexcel Lower Secondary', ageRange: '11-14 years', description: 'Develops knowledge and skills across subjects.' },
-        { name: 'Edexcel IGCSE', ageRange: '14-16 years', description: 'International GCSE qualifications for global recognition.' },
-        { name: 'Edexcel AS Level', ageRange: '16-17 years', description: 'Advanced Subsidiary level for university preparation.' },
-        { name: 'Edexcel A Level', ageRange: '17-19 years', description: 'Advanced Level qualifications for higher education.' }
+        { name: 'Edexcel Primary', ageRange: '', description: 'Foundation stage building core skills.' },
+        { name: 'Edexcel Lower Secondary', ageRange: '', description: 'Develops knowledge and skills across subjects.' },
+        { name: 'Edexcel IGCSE', ageRange: '', description: 'International GCSE qualifications for global recognition.' },
+        { name: 'Edexcel AS Level', ageRange: '', description: 'Advanced Subsidiary level for university preparation.' },
+        { name: 'Edexcel A Level', ageRange: '', description: 'Advanced Level qualifications for higher education.' }
       ]
     },
     IB: {
       name: 'International Baccalaureate',
-      description: 'A challenging framework that encourages students to think critically and independently.',
+      description: 'Nurturing curious, knowledgeable and caring young people.',
       levels: [
-        { name: 'PYP (Primary Years Programme)', ageRange: '3-12 years', description: 'Nurtures and develops young students as caring, active participants.' },
-        { name: 'MYP (Middle Years Programme)', ageRange: '11-16 years', description: 'Encourages students to make practical connections between their studies.' },
-        { name: 'DP (Diploma Programme)', ageRange: '16-19 years', description: 'Prepares students for university and encourages them to become active learners.' },
-        { name: 'CP (Career-related Programme)', ageRange: '16+ years', description: 'Combines academic study with career-related learning.' }
+        { name: 'PYP (Primary Years Programme)', ageRange: '3-12 years', description: 'Holistic, inquiry-based learning that encourages global-mindedness.' },
+        { name: 'MYP (Middle Years Programme)', ageRange: '11-16 years', description: 'Holistic, inquiry-based learning that encourages global-mindedness.' },
+        { name: 'DP (Diploma Programme)', ageRange: '16-19 years', description: 'Prepares students for university and life beyond.' },
+        { name: 'CP (Career-related Programme)', ageRange: '16+ years', description: 'Prepares students for university and life beyond.' }
       ]
     },
     CC: {
-      name: 'Common Core',
-      description: 'American curriculum standards ensuring students are prepared for college and career success.',
+      name: 'Common Core State Standards (USA)',
+      description: 'Building strong foundations for academic success.',
       levels: [
-        { name: 'Elementary School', ageRange: '5-11 years', description: 'Foundational skills in English Language Arts and Mathematics.' },
-        { name: 'Middle School', ageRange: '11-14 years', description: 'Building on foundational skills with advanced concepts.' },
-        { name: 'High School', ageRange: '14-18 years', description: 'College preparatory coursework aligned with US standards.' }
+        { name: 'Common Core Track', ageRange: '', description: 'Focus on English Language Arts and Mathematics, developing critical thinking, problem solving and analytical skills, and preparing students for college and career readiness.' }
       ]
     },
     SAT: {
       name: 'SAT Preparation',
-      description: 'Comprehensive preparation for the SAT standardized test used for college admissions.',
+      description: 'Your pathway to top universities worldwide.',
       levels: [
-        { name: 'SAT Foundation', ageRange: '14-16 years', description: 'Introduction to SAT format and basic test-taking strategies.' },
-        { name: 'SAT Advanced', ageRange: '16-18 years', description: 'Intensive preparation for high-scoring performance.' }
+        { name: 'SAT Preparation Programme', ageRange: '', description: 'Evidence-Based Reading & Writing, Math (No Calculator & Calculator), and Essay (where applicable) - built on proven strategies, practice tests and expert guidance.' }
       ]
     },
     CBE: {
       name: 'Competency-Based Education',
-      description: 'Personalized learning focused on mastery of skills at each student\'s own pace.',
+      description: "Learning that empowers every learner to master skills at their own pace.",
       levels: [
-        { name: 'Foundational Skills', ageRange: '5-11 years', description: 'Core competencies in literacy and numeracy.' },
-        { name: 'Intermediate Skills', ageRange: '11-14 years', description: 'Building on foundations with applied learning.' },
-        { name: 'Advanced Mastery', ageRange: '14-18 years', description: 'Demonstrating mastery through projects and assessments.' }
+        { name: 'Competency-Based Track', ageRange: '', description: 'A Learn - Practice - Master - Demonstrate cycle focused on what students can do with their knowledge, with personalized learning, continuous progress and preparation for real-world challenges.' }
+      ]
+    },
+    American: {
+      name: 'American Curriculum',
+      description: 'A flexible, well-rounded education that opens doors worldwide.',
+      levels: [
+        { name: 'American Curriculum Track', ageRange: '', description: 'A broad range of subjects and electives, with emphasis on innovation, creativity and leadership, and strong preparation for college and beyond.' }
       ]
     }
   };
@@ -2194,9 +2198,7 @@
     grid.innerHTML = curriculum.levels.map(level => `
       <div class="prog-card">
         <h3>${level.name}</h3>
-        <div class="prog-tags">
-          <span class="status-pill">${level.ageRange}</span>
-        </div>
+        ${level.ageRange ? `<div class="prog-tags"><span class="status-pill">${level.ageRange}</span></div>` : ''}
         <p>${level.description}</p>
         <button class="btn btn-gold" style="margin-top:12px;font-size:13px;padding:8px 16px;" onclick="applyForCurriculumLevel('${curriculumKey}', '${level.name}')">
           Apply
@@ -2221,12 +2223,12 @@
 
   function applyForCurriculumLevel(curriculumKey, levelName) {
     closeCurriculumLevelsModal();
-    document.getElementById('portal').scrollIntoView({ behavior: 'smooth' });
-    showRegisterForm();
-    // Pre-fill notes with curriculum and level info
     const curriculum = CURRICULUM_DATA[curriculumKey];
-    const notesField = document.getElementById('registerNotes');
-    notesField.value = `Applying for ${curriculum.name} - ${levelName}`;
+    const params = new URLSearchParams({
+      curriculum: curriculum ? curriculum.name : curriculumKey,
+      level: levelName
+    });
+    window.location.href = `apply-student.html?${params.toString()}`;
   }
 
   // --- Admissions browsing modal ---------------------------------------
@@ -2298,12 +2300,12 @@
     document.getElementById('programmeDetailView').style.display = 'none';
   }
 
-  // Close the browsing modal and jump straight into the admission
-  // application form with this programme preselected.
+  // Close the browsing modal and jump straight into the new admission
+  // application form (apply-student.html) with this programme preselected.
   function applyForProgramme(programmeId) {
     closeAdmissionsModal();
-    document.getElementById('portal').scrollIntoView({ behavior: 'smooth' });
-    showRegisterForm(programmeId);
+    const params = new URLSearchParams({ programmeId });
+    window.location.href = `apply-student.html?${params.toString()}`;
   }
 
   // Send each role to its own portal folder

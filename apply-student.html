@@ -484,6 +484,19 @@
         <h1>CKH International School — Student Admissions</h1>
     </header>
 
+    <!-- Shown instead of the form when the visitor is already signed in to
+         a CKH portal account, so an already-enrolled student doesn't
+         accidentally re-apply / re-register. -->
+    <div id="already-enrolled-screen" style="display:none; max-width:560px; margin:48px auto; padding:32px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); text-align:center;">
+        <h2 style="margin-bottom:8px;">You're already signed in</h2>
+        <p id="already-enrolled-message" style="color:var(--ink-soft); margin-bottom:24px;"></p>
+        <button class="btn-prev" id="already-enrolled-portal-btn" style="background:var(--navy-950);color:#fff;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;">Go to my portal</button>
+        <p style="margin-top:20px;font-size:13px;">
+            Not you, or applying for someone else?
+            <a href="#" id="already-enrolled-continue" onclick="dismissAlreadyEnrolled(event)">Continue with a new application</a>
+        </p>
+    </div>
+
     <div class="progress-container" id="progress-container">
         <div class="progress-bar">
             <div class="step-indicator active" data-step="1">
@@ -830,8 +843,69 @@
             }
         }
 
+        // Read optional query params so a link from the marketing site
+        // (curriculum cards, "Apply for this programme" button) can
+        // preselect a programme or prefill the curriculum/level being applied for.
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefillProgrammeId = urlParams.get('programmeId');
+        const prefillCurriculum = urlParams.get('curriculum');
+        const prefillLevel = urlParams.get('level');
+
+        function applyPrefill() {
+            if (prefillProgrammeId) {
+                const select = document.getElementById('programmeId');
+                if (select) select.value = prefillProgrammeId;
+            }
+            if (prefillLevel) {
+                const gradeField = document.getElementById('gradeApplyingFor');
+                if (gradeField && !gradeField.value) gradeField.value = prefillLevel;
+            }
+            if (prefillCurriculum || prefillLevel) {
+                const notesField = document.getElementById('notes');
+                if (notesField && !notesField.value) {
+                    notesField.value = `Interested in: ${[prefillCurriculum, prefillLevel].filter(Boolean).join(' - ')}`;
+                }
+            }
+        }
+
+        // If someone is already signed in to a CKH portal account (an
+        // enrolled student, a teacher, or an admin browsing the site),
+        // don't drop them straight into a fresh application/signup - that
+        // would either error out on the duplicate email or, worse, quietly
+        // leave them confused about which account they're using. Offer to
+        // send them to their existing portal instead, with an easy way to
+        // continue anyway (e.g. a parent applying for a sibling).
+        async function checkExistingSession() {
+            if (typeof getCurrentUser !== 'function') return;
+            try {
+                const user = await getCurrentUser();
+                if (!user) return;
+                const roleLabel = user.role === 'student' ? 'student' : user.role === 'teacher' ? 'teacher' : user.role === 'admin' ? 'administrator' : 'user';
+                document.getElementById('already-enrolled-message').textContent =
+                    `This browser is already signed in as ${user.name || user.email} (${roleLabel}). If that's you, head to your portal instead of starting a new application.`;
+                document.getElementById('already-enrolled-portal-btn').onclick = function () {
+                    if (user.role === 'teacher') window.location.href = 'teacher/dashboard.html';
+                    else if (user.role === 'admin') window.location.href = 'admin/dashboard.html';
+                    else window.location.href = 'student/dashboard.html';
+                };
+                document.getElementById('already-enrolled-screen').style.display = 'block';
+                document.getElementById('progress-container').style.display = 'none';
+                document.getElementById('form-container').style.display = 'none';
+            } catch (e) {
+                console.error('Error checking existing session', e);
+            }
+        }
+
+        function dismissAlreadyEnrolled(e) {
+            if (e) e.preventDefault();
+            document.getElementById('already-enrolled-screen').style.display = 'none';
+            document.getElementById('progress-container').style.display = '';
+            document.getElementById('form-container').style.display = '';
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
-            loadProgrammes();
+            loadProgrammes().then(applyPrefill);
+            checkExistingSession();
         });
 
         function updateFileName(input) {
@@ -1107,7 +1181,14 @@
                 password: formData.password,
                 options: { data: { role: 'student', name: formData.name, phone: formData.phone } }
             });
-            if (signUpError) { showError(signUpError.message); return; }
+            if (signUpError) {
+                if (/already registered|already exists/i.test(signUpError.message || '')) {
+                    showError('An account with this email already exists. If you\'ve already applied or are an enrolled student, please sign in to your portal from the school website instead of applying again. If you believe this is a mistake, contact admissions.');
+                } else {
+                    showError(signUpError.message);
+                }
+                return;
+            }
 
             // Try to sign in immediately if no session yet
             if (!signUpData.session) {

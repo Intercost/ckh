@@ -157,7 +157,16 @@
           </div>
           <div class="field">
             <label for="certCourseCurriculum">Curriculum</label>
-            <input id="certCourseCurriculum" type="text" placeholder="e.g. Cambridge IGCSE" required>
+            <select id="certCourseCurriculum" required>
+              <option value="">Select...</option>
+              <option value="Cambridge International">Cambridge International</option>
+              <option value="Pearson Edexcel">Pearson Edexcel</option>
+              <option value="International Baccalaureate">International Baccalaureate (IB)</option>
+              <option value="Common Core State Standards (USA)">Common Core State Standards (USA)</option>
+              <option value="American Curriculum">American Curriculum</option>
+              <option value="SAT Preparation">SAT Preparation</option>
+              <option value="Competency-Based Education">Competency-Based Education (CBE)</option>
+            </select>
           </div>
           <div class="field">
             <label for="certCourseStatus">Open to teacher applicants on the school site?</label>

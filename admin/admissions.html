@@ -199,12 +199,13 @@
           <div class="field">
             <label for="programmeCurriculum">Curriculum</label>
             <select id="programmeCurriculum">
-              <option value="Cambridge IGCSE">Cambridge IGCSE</option>
-              <option value="Edexcel">Pearson Edexcel</option>
-              <option value="IB">International Baccalaureate</option>
-              <option value="Common Core">Common Core</option>
-              <option value="SAT">SAT Preparation</option>
-              <option value="CBE">Competency-Based Education</option>
+              <option value="Cambridge International">Cambridge International</option>
+              <option value="Pearson Edexcel">Pearson Edexcel</option>
+              <option value="International Baccalaureate">International Baccalaureate (IB)</option>
+              <option value="Common Core State Standards (USA)">Common Core State Standards (USA)</option>
+              <option value="American Curriculum">American Curriculum</option>
+              <option value="SAT Preparation">SAT Preparation</option>
+              <option value="Competency-Based Education">Competency-Based Education (CBE)</option>
             </select>
           </div>
           <div class="field">
@@ -606,7 +607,7 @@
         document.getElementById('programmeModalTitle').textContent = 'Edit programme';
         document.getElementById('programmeEditId').value = programme.id;
         document.getElementById('programmeName').value = programme.name || '';
-        document.getElementById('programmeCurriculum').value = programme.curriculum || 'Cambridge IGCSE';
+        document.getElementById('programmeCurriculum').value = programme.curriculum || 'Cambridge International';
         document.getElementById('programmeLevel').value = programme.level || '';
         document.getElementById('programmeVacancies').value = typeof programme.vacancies === 'number' ? programme.vacancies : 0;
         document.getElementById('programmeSummary').value = programme.summary || '';
