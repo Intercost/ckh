@@ -1455,12 +1455,12 @@
         <h2>Every curriculum, properly supported.</h2>
       </div>
       <div class="curr-grid">
-        <div class="curr-card"><div class="tag">CAIE</div><div class="full">Cambridge International</div></div>
-        <div class="curr-card"><div class="tag">Edexcel</div><div class="full">Pearson Edexcel</div></div>
-        <div class="curr-card"><div class="tag">IB</div><div class="full">International Baccalaureate</div></div>
-        <div class="curr-card"><div class="tag">CC</div><div class="full">Common Core</div></div>
-        <div class="curr-card"><div class="tag">SAT</div><div class="full">SAT Preparation</div></div>
-        <div class="curr-card"><div class="tag">CBE</div><div class="full">Competency-Based Ed.</div></div>
+        <div class="curr-card" onclick="openCurriculumLevels('CAIE')" style="cursor:pointer"><div class="tag">CAIE</div><div class="full">Cambridge International</div></div>
+        <div class="curr-card" onclick="openCurriculumLevels('Edexcel')" style="cursor:pointer"><div class="tag">Edexcel</div><div class="full">Pearson Edexcel</div></div>
+        <div class="curr-card" onclick="openCurriculumLevels('IB')" style="cursor:pointer"><div class="tag">IB</div><div class="full">International Baccalaureate</div></div>
+        <div class="curr-card" onclick="openCurriculumLevels('CC')" style="cursor:pointer"><div class="tag">CC</div><div class="full">Common Core</div></div>
+        <div class="curr-card" onclick="openCurriculumLevels('SAT')" style="cursor:pointer"><div class="tag">SAT</div><div class="full">SAT Preparation</div></div>
+        <div class="curr-card" onclick="openCurriculumLevels('CBE')" style="cursor:pointer"><div class="tag">CBE</div><div class="full">Competency-Based Ed.</div></div>
       </div>
     </div>
     <div class="curricula-photo">
@@ -1489,7 +1489,7 @@
       <span class="eyebrow">Careers</span>
       <h2>Teach with us.</h2>
       <p class="admissions-lede">See the certificate courses we're currently looking for teachers on, apply for the one you teach, and our school team will contact you with additional details.</p>
-      <button class="btn btn-gold" onclick="openTeacherApplyModal()">Apply to Teach</button>
+      <a href="apply-teacher.html" class="btn btn-gold">Apply to Teach</a>
     </div>
     <div class="careers-photo">
       <img src="pillar6.jpg" alt="Online tutor preparing a live class from home" loading="lazy">
@@ -1613,13 +1613,32 @@
           </div>
           <div class="login-foot">
             <span style="font-size:12.5px;color:var(--ink-soft);">You'll stay signed in on this device.</span>
-            <a href="#">Forgot password?</a>
+            <a href="#" onclick="showForgotPassword(event)">Forgot password?</a>
           </div>
           <button type="submit" class="btn btn-gold full-btn">Enter Portal</button>
           <div id="errorMessage" class="error-message"></div>
         </form>
+
+        <!-- Inline forgot-password panel -->
+        <div id="forgotPasswordPanel" style="display:none;margin-top:16px;">
+          <div style="border-top:1px solid var(--line);padding-top:16px;">
+            <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 14px;">Enter your school email address and we'll send you a link to reset your password.</p>
+            <form onsubmit="submitForgotPassword(event)">
+              <div class="field">
+                <label for="forgotEmail">Email address</label>
+                <input id="forgotEmail" type="email" placeholder="e.g. amara.k@ckhschool.ac.ke" required>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button type="submit" class="btn btn-gold" style="flex:1;">Send reset link</button>
+                <button type="button" class="btn btn-outline" style="flex:1;" onclick="hideForgotPassword()">Cancel</button>
+              </div>
+              <div id="forgotMessage" style="font-size:13px;margin-top:12px;"></div>
+            </form>
+          </div>
+        </div>
+
         <div class="switch-form" id="switchToRegister">
-          New student? <a onclick="showRegisterForm()">Apply for admission</a>
+          New student? <a href="apply-student.html">Apply for admission</a>
         </div>
       </div>
 
@@ -1715,6 +1734,16 @@
   </div>
 </div>
 
+<!-- Curriculum levels modal -->
+<div class="modal-overlay" id="curriculumLevelsModal">
+  <div class="modal-box wide">
+    <div class="modal-close"><button onclick="closeCurriculumLevelsModal()">✕</button></div>
+    <h2 id="curriculumLevelsTitle">Curriculum Levels</h2>
+    <p id="curriculumLevelsDescription" style="font-size:13.5px;color:var(--ink-soft);margin:-12px 0 20px;"></p>
+    <div class="prog-grid" id="curriculumLevelsGrid"></div>
+  </div>
+</div>
+
 <section class="contact-band" id="contact">
   <div class="wrap">
     <div>
@@ -1770,6 +1799,67 @@
   let currentRole = 'student';
   const currentRegisterRole = 'student'; // public sign-up is students only
 
+  // Curriculum data based on the brochure
+  const CURRICULUM_DATA = {
+    CAIE: {
+      name: 'Cambridge International',
+      description: 'A world-class curriculum that develops students\' skills in creative thinking, enquiry and problem solving.',
+      levels: [
+        { name: 'Cambridge Primary', ageRange: '5-11 years', description: 'Builds strong foundations in English, Mathematics and Science.' },
+        { name: 'Cambridge Lower Secondary', ageRange: '11-14 years', description: 'Develops skills and understanding in English, Mathematics and Science.' },
+        { name: 'Cambridge Upper Secondary', ageRange: '14-16 years', description: 'Includes IGCSE qualifications recognized worldwide.' },
+        { name: 'Cambridge Advanced', ageRange: '16-19 years', description: 'Includes AS & A Level qualifications for university preparation.' }
+      ]
+    },
+    Edexcel: {
+      name: 'Pearson Edexcel',
+      description: 'UK qualifications that are recognized by universities and employers around the world.',
+      levels: [
+        { name: 'Edexcel Primary', ageRange: '5-11 years', description: 'Foundation stage building core skills.' },
+        { name: 'Edexcel Lower Secondary', ageRange: '11-14 years', description: 'Develops knowledge and skills across subjects.' },
+        { name: 'Edexcel IGCSE', ageRange: '14-16 years', description: 'International GCSE qualifications for global recognition.' },
+        { name: 'Edexcel AS Level', ageRange: '16-17 years', description: 'Advanced Subsidiary level for university preparation.' },
+        { name: 'Edexcel A Level', ageRange: '17-19 years', description: 'Advanced Level qualifications for higher education.' }
+      ]
+    },
+    IB: {
+      name: 'International Baccalaureate',
+      description: 'A challenging framework that encourages students to think critically and independently.',
+      levels: [
+        { name: 'PYP (Primary Years Programme)', ageRange: '3-12 years', description: 'Nurtures and develops young students as caring, active participants.' },
+        { name: 'MYP (Middle Years Programme)', ageRange: '11-16 years', description: 'Encourages students to make practical connections between their studies.' },
+        { name: 'DP (Diploma Programme)', ageRange: '16-19 years', description: 'Prepares students for university and encourages them to become active learners.' },
+        { name: 'CP (Career-related Programme)', ageRange: '16+ years', description: 'Combines academic study with career-related learning.' }
+      ]
+    },
+    CC: {
+      name: 'Common Core',
+      description: 'American curriculum standards ensuring students are prepared for college and career success.',
+      levels: [
+        { name: 'Elementary School', ageRange: '5-11 years', description: 'Foundational skills in English Language Arts and Mathematics.' },
+        { name: 'Middle School', ageRange: '11-14 years', description: 'Building on foundational skills with advanced concepts.' },
+        { name: 'High School', ageRange: '14-18 years', description: 'College preparatory coursework aligned with US standards.' }
+      ]
+    },
+    SAT: {
+      name: 'SAT Preparation',
+      description: 'Comprehensive preparation for the SAT standardized test used for college admissions.',
+      levels: [
+        { name: 'SAT Foundation', ageRange: '14-16 years', description: 'Introduction to SAT format and basic test-taking strategies.' },
+        { name: 'SAT Advanced', ageRange: '16-18 years', description: 'Intensive preparation for high-scoring performance.' }
+      ]
+    },
+    CBE: {
+      name: 'Competency-Based Education',
+      description: 'Personalized learning focused on mastery of skills at each student\'s own pace.',
+      levels: [
+        { name: 'Foundational Skills', ageRange: '5-11 years', description: 'Core competencies in literacy and numeracy.' },
+        { name: 'Intermediate Skills', ageRange: '11-14 years', description: 'Building on foundations with applied learning.' },
+        { name: 'Advanced Mastery', ageRange: '14-18 years', description: 'Demonstrating mastery through projects and assessments.' }
+      ]
+    }
+  };
+
   const ROLE_META = {
     student: {
       title: 'Student Portal',
@@ -1812,6 +1902,41 @@
     document.getElementById('loginForm').style.display = 'none';
     document.getElementById('registerForm').style.display = 'none';
     document.getElementById('portalChoice').style.display = 'block';
+    hideForgotPassword();
+  }
+
+  function showForgotPassword(e) {
+    if (e) e.preventDefault();
+    document.getElementById('forgotPasswordPanel').style.display = 'block';
+    document.getElementById('forgotMessage').textContent = '';
+    document.getElementById('forgotEmail').value = document.getElementById('loginId').value || '';
+    document.getElementById('forgotEmail').focus();
+  }
+
+  function hideForgotPassword() {
+    document.getElementById('forgotPasswordPanel').style.display = 'none';
+    document.getElementById('forgotMessage').textContent = '';
+  }
+
+  async function submitForgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgotEmail').value.trim();
+    const msgEl = document.getElementById('forgotMessage');
+    msgEl.style.color = 'var(--ink-soft)';
+    msgEl.textContent = 'Sending…';
+
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+
+    if (error) {
+      msgEl.style.color = 'var(--red, #c0392b)';
+      msgEl.textContent = error.message || 'Something went wrong. Please try again.';
+    } else {
+      msgEl.style.color = 'var(--green, #27ae60)';
+      msgEl.textContent = '✓ Check your email — a reset link is on its way.';
+    }
+    return false;
   }
 
   function showLogin() {
@@ -2005,6 +2130,46 @@
     e.target.reset();
 
     return false;
+  }
+
+  // --- Curriculum levels modal -----------------------------------------
+
+  function openCurriculumLevels(curriculumKey) {
+    const curriculum = CURRICULUM_DATA[curriculumKey];
+    if (!curriculum) return;
+
+    document.getElementById('curriculumLevelsTitle').textContent = curriculum.name;
+    document.getElementById('curriculumLevelsDescription').textContent = curriculum.description;
+
+    const grid = document.getElementById('curriculumLevelsGrid');
+    grid.innerHTML = curriculum.levels.map(level => `
+      <div class="prog-card">
+        <h3>${level.name}</h3>
+        <div class="prog-tags">
+          <span class="status-pill">${level.ageRange}</span>
+        </div>
+        <p>${level.description}</p>
+        <button class="btn btn-gold" style="margin-top:12px;font-size:13px;padding:8px 16px;" onclick="applyForCurriculumLevel('${curriculumKey}', '${level.name}')">
+          Apply
+        </button>
+      </div>
+    `).join('');
+
+    document.getElementById('curriculumLevelsModal').classList.add('open');
+  }
+
+  function closeCurriculumLevelsModal() {
+    document.getElementById('curriculumLevelsModal').classList.remove('open');
+  }
+
+  function applyForCurriculumLevel(curriculumKey, levelName) {
+    closeCurriculumLevelsModal();
+    document.getElementById('portal').scrollIntoView({ behavior: 'smooth' });
+    showRegisterForm();
+    // Pre-fill notes with curriculum and level info
+    const curriculum = CURRICULUM_DATA[curriculumKey];
+    const notesField = document.getElementById('registerNotes');
+    notesField.value = `Applying for ${curriculum.name} - ${levelName}`;
   }
 
   // --- Admissions browsing modal ---------------------------------------

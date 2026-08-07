@@ -302,6 +302,48 @@ async function removeTeacherAccount(teacherId) {
   return data || { success: true };
 }
 
+// Reset the password for ANY user (student or teacher) and return the new
+// temp password + user profile. Used by the admin "Password retrieval" tool.
+async function resetUserPassword(userId) {
+  const { data, error } = await sb.functions.invoke('manage-teacher-account', {
+    body: { action: 'reset_password_for_user', userId }
+  });
+  if (error) return { success: false, message: error.message || 'Could not reset the password.' };
+  if (!data || !data.success) return { success: false, message: (data && data.message) || 'Could not reset the password.' };
+  const user = data.user;
+  const phoneDigits = normalizePhoneForWhatsApp(user.phone);
+  const roleLabel = user.role === 'teacher' ? 'Teacher' : 'Student';
+  const message =
+    `Hello ${user.name}, this is CKH International School.\n\n` +
+    `Your ${roleLabel} Portal login credentials:\n` +
+    `Email: ${user.email}\n` +
+    `New password: ${data.tempPassword}\n\n` +
+    `Please sign in at the school portal and update your password afterwards.`;
+  const whatsappLink = `https://wa.me/${phoneDigits}?text=${encodeURIComponent(message)}`;
+  return { success: true, user, tempPassword: data.tempPassword, whatsappLink };
+}
+
+// ---------------------------------------------------------------------
+// Supabase Storage helpers for application documents
+// ---------------------------------------------------------------------
+
+// Upload a File object to the 'applications' bucket. Returns the storage
+// path on success, or null on failure.
+async function uploadApplicationDocument(path, file) {
+  const { data, error } = await sb.storage.from('applications').upload(path, file, { upsert: true });
+  if (error) { console.error('uploadApplicationDocument error:', error.message); return null; }
+  return data.path;
+}
+
+// Generate a temporary signed URL (1-hour expiry) for an admin to view or
+// download a document stored in the 'applications' bucket. Returns null on
+// error (e.g. if the path doesn't exist).
+async function getSignedDocumentUrl(path, expiresInSeconds = 3600) {
+  const { data, error } = await sb.storage.from('applications').createSignedUrl(path, expiresInSeconds);
+  if (error) { console.error('getSignedDocumentUrl error:', error.message); return null; }
+  return data.signedUrl;
+}
+
 // ---------------------------------------------------------------------
 // Admissions: programmes on offer + admission applications
 // ---------------------------------------------------------------------

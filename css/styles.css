@@ -1111,3 +1111,71 @@ nav.links a:hover, nav.links a:focus-visible {
     padding: 18px;
   }
 }
+
+/* =====================================================================
+   Subject picker — checkbox list inside the Add Teacher modal
+   ===================================================================== */
+.subject-picker {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #fff;
+  padding: 6px 4px;
+}
+
+.subject-picker-loading {
+  padding: 12px 10px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+.subject-check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.subject-check-item:hover {
+  background: var(--ivory);
+}
+
+.subject-check-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold-600);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.subject-check-item span {
+  font-size: 13.5px;
+  color: var(--ink);
+  flex: 1;
+}
+
+.subject-check-item:has(input:checked) {
+  background: var(--gold-100);
+}
+
+.subject-check-item:has(input:checked) span {
+  font-weight: 600;
+  color: var(--navy-900);
+}
+
+.subject-check-tag {
+  font-size: 11px;
+  background: var(--ivory);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2px 8px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  flex: none !important;
+  font-weight: 400 !important;
+}

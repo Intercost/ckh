@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Application | CKH International School</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        :root {
+            --navy-950: #071b3a;
+            --navy-900: #0a274f;
+            --navy-800: #0f3060;
+            --gold-700: #8a6a1f;
+            --gold-600: #a97c22;
+            --gold-500: #c9a13a;
+            --gold-300: #e3c47c;
+            --gold-100: #f3e6c4;
+            --ivory: #f8f4ea;
+            --ink: #14213d;
+            --ink-soft: #4a5674;
+            --line: rgba(10,39,79,0.14);
+            --radius: 14px;
+            --error: #d32f2f;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--ivory);
+            color: var(--ink);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Fraunces', serif;
+            color: var(--navy-950);
+            margin-top: 0;
+        }
+
+        .header {
+            background-color: var(--navy-950);
+            padding: 20px 0;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header img {
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex-grow: 1;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .progress-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .progress-bar-container::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--line);
+            z-index: 1;
+        }
+
+        .step-indicator {
+            position: relative;
+            z-index: 2;
+            background-color: var(--ivory);
+            padding: 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid var(--line);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            color: var(--ink-soft);
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.active .step-circle {
+            background-color: var(--gold-500);
+            border-color: var(--gold-500);
+            color: white;
+        }
+
+        .step-indicator.completed .step-circle {
+            background-color: var(--gold-500);
+            border-color: var(--gold-500);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: var(--ink-soft);
+            text-align: center;
+            max-width: 60px;
+        }
+
+        .step-indicator.active .step-label {
+            color: var(--navy-950);
+            font-weight: 600;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .form-card.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--navy-900);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            color: var(--ink);
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--gold-500);
+            box-shadow: 0 0 0 3px var(--gold-100);
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: var(--ink-soft);
+            margin-top: 4px;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--line);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background-color: #fafafa;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--gold-500);
+            background-color: var(--gold-100);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .drop-zone-icon {
+            font-size: 32px;
+            color: var(--navy-800);
+            margin-bottom: 10px;
+        }
+
+        .btn-upload {
+            background-color: var(--navy-800);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .file-name-display {
+            margin-top: 10px;
+            font-weight: 500;
+            color: var(--navy-900);
+            font-size: 14px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        button {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--gold-500);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--gold-600);
+        }
+        
+        .btn-primary:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--navy-900);
+            border: 1px solid var(--navy-900);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(10,39,79,0.05);
+        }
+
+        .summary-block {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .summary-block:last-child {
+            border-bottom: none;
+        }
+
+        .summary-block h4 {
+            margin-bottom: 12px;
+            color: var(--gold-600);
+        }
+
+        .summary-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .summary-label {
+            width: 150px;
+            font-weight: 500;
+            color: var(--ink-soft);
+            flex-shrink: 0;
+        }
+
+        .summary-value {
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        .checkbox-container input {
+            margin-top: 4px;
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .success-screen .checkmark {
+            width: 80px;
+            height: 80px;
+            background-color: var(--gold-500);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            margin-bottom: 24px;
+        }
+
+        .ref-badge {
+            display: inline-block;
+            background-color: var(--navy-950);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .step-label {
+                display: none;
+            }
+            .form-card {
+                padding: 24px;
+            }
+            .summary-row {
+                flex-direction: column;
+            }
+            .summary-label {
+                width: 100%;
+                margin-bottom: 4px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <img src="ckh-nobg.png" alt="CKH Logo">
+        <h1>CKH International School &mdash; Teach With Us</h1>
+    </header>
+
+    <div class="container">
+        
+        <div id="form-container">
+            <div class="progress-bar-container" id="progress-bar">
+                <div class="step-indicator active" id="indicator-1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Personal</div>
+                </div>
+                <div class="step-indicator" id="indicator-2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Qualifications</div>
+                </div>
+                <div class="step-indicator" id="indicator-3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Position</div>
+                </div>
+                <div class="step-indicator" id="indicator-4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Statement</div>
+                </div>
+                <div class="step-indicator" id="indicator-5">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Documents</div>
+                </div>
+                <div class="step-indicator" id="indicator-6">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">References</div>
+                </div>
+                <div class="step-indicator" id="indicator-7">
+                    <div class="step-circle">7</div>
+                    <div class="step-label">Review</div>
+                </div>
+            </div>
+
+            <form id="application-form">
+                
+                <!-- Step 1 -->
+                <div class="form-card active" id="step-1">
+                    <h2>Personal Information</h2>
+                    <div class="form-group">
+                        <label>Full name*</label>
+                        <input type="text" id="fname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of birth*</label>
+                        <input type="date" id="dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender*</label>
+                        <select id="gender" required>
+                            <option value="">Select...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nationality*</label>
+                        <input type="text" id="nationality" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone / WhatsApp*</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email address*</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>City / Town*</label>
+                        <input type="text" id="city" required>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="form-card" id="step-2">
+                    <h2>Professional Qualifications</h2>
+                    <div class="form-group">
+                        <label>Highest qualification*</label>
+                        <select id="highestQual" required>
+                            <option value="">Select...</option>
+                            <option value="Certificate">Certificate</option>
+                            <option value="Diploma">Diploma</option>
+                            <option value="Bachelor's Degree">Bachelor's Degree</option>
+                            <option value="Master's Degree">Master's Degree</option>
+                            <option value="PhD">PhD</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Field of study / Specialisation*</label>
+                        <input type="text" id="fieldOfStudy" placeholder="e.g. Mathematics Education" required>
+                    </div>
+                    <div class="form-group">
+                        <label>University / Institution*</label>
+                        <input type="text" id="institution" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Year of graduation</label>
+                        <input type="number" id="gradYear" min="1950" max="2030" placeholder="YYYY">
+                    </div>
+                    <div class="form-group">
+                        <label>Years of teaching experience*</label>
+                        <input type="number" id="yearsExp" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subjects previously taught</label>
+                        <textarea id="prevSubjects" rows="3" placeholder="e.g. Physics, Additional Mathematics"></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="form-card" id="step-3">
+                    <h2>Teaching Position</h2>
+                    <div class="form-group">
+                        <label>Certificate course applying for*</label>
+                        <select id="certCourseId" required>
+                            <option value="">Loading courses...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Available start date</label>
+                        <input type="text" id="availStart" placeholder="e.g. September 2025">
+                    </div>
+                    <div class="form-group">
+                        <label>Describe your teaching approach / philosophy*</label>
+                        <textarea id="teachingPhilosophy" rows="4" placeholder="2-5 sentences describing your approach" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="form-card" id="step-4">
+                    <h2>Personal Statement</h2>
+                    <p class="help-text">Tell us why you want to teach at CKH International School and what makes you the right candidate. (Recommended: 300–500 words)</p>
+                    <div class="form-group">
+                        <textarea id="coverLetter" rows="10" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="form-card" id="step-5">
+                    <h2>Documents</h2>
+                    <p class="help-text">CV/Résumé is required. Other documents are strongly recommended. Accepted: PDF, DOCX, JPG, PNG. Max 5MB each.</p>
+                    
+                    <div class="form-group">
+                        <label>CV / Résumé* (REQUIRED)</label>
+                        <div class="drop-zone" id="dz-cv">
+                            <div class="drop-zone-icon">📄</div>
+                            <div>Drag & drop your file here or</div>
+                            <button type="button" class="btn-upload">Browse files</button>
+                            <input type="file" id="fileCv" accept=".pdf,.doc,.docx" required>
+                            <div class="file-name-display" id="name-cv"></div>
+                        </div>
+                        <div class="error-message" id="err-cv">Please upload your CV before proceeding.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Academic certificates (Optional)</label>
+                        <div class="drop-zone" id="dz-cert">
+                            <div class="drop-zone-icon">🎓</div>
+                            <div>Drag & drop your file here or</div>
+                            <button type="button" class="btn-upload">Browse files</button>
+                            <input type="file" id="fileCert" accept=".pdf,.jpg,.png,.doc,.docx">
+                            <div class="file-name-display" id="name-cert"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>National ID / Passport copy (Optional)</label>
+                        <div class="drop-zone" id="dz-id">
+                            <div class="drop-zone-icon">🪪</div>
+                            <div>Drag & drop your file here or</div>
+                            <button type="button" class="btn-upload">Browse files</button>
+                            <input type="file" id="fileId" accept=".pdf,.jpg,.png">
+                            <div class="file-name-display" id="name-id"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6 -->
+                <div class="form-card" id="step-6">
+                    <h2>References</h2>
+                    <p class="help-text">Please provide two professional references who can vouch for your teaching experience.</p>
+                    
+                    <div class="summary-block">
+                        <h4>Reference 1</h4>
+                        <div class="form-group">
+                            <label>Full name*</label>
+                            <input type="text" id="ref1Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone / WhatsApp*</label>
+                            <input type="tel" id="ref1Phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="ref1Email">
+                        </div>
+                        <div class="form-group">
+                            <label>Relationship / Position*</label>
+                            <input type="text" id="ref1Rel" placeholder="e.g. Head of Department, ABC School" required>
+                        </div>
+                    </div>
+
+                    <div class="summary-block" id="ref2-container" style="display:none;">
+                        <h4>Reference 2</h4>
+                        <div class="form-group">
+                            <label>Full name</label>
+                            <input type="text" id="ref2Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone / WhatsApp</label>
+                            <input type="tel" id="ref2Phone">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="ref2Email">
+                        </div>
+                        <div class="form-group">
+                            <label>Relationship / Position</label>
+                            <input type="text" id="ref2Rel">
+                        </div>
+                    </div>
+                    <button type="button" class="btn-outline" id="btn-add-ref" style="width:100%">+ Add second reference</button>
+                </div>
+
+                <!-- Step 7 -->
+                <div class="form-card" id="step-7">
+                    <h2>Review & Submit</h2>
+                    <p class="help-text">Please review your information before submitting.</p>
+                    
+                    <div id="summary-content" style="background:#fafafa; padding:20px; border-radius:8px; border:1px solid var(--line); margin-bottom:20px;">
+                        <!-- Injected via JS -->
+                    </div>
+
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="declaration" required>
+                        <label for="declaration">I confirm that all information provided is accurate and that I am authorised to submit this application.</label>
+                    </div>
+                    <div class="error-message" id="err-submit"></div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="button" class="btn-outline" id="btn-prev" style="display:none;">Previous</button>
+                    <div style="flex-grow:1"></div>
+                    <button type="button" class="btn-primary" id="btn-next">Next Step &rarr;</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="success-screen" id="success-screen">
+            <div class="checkmark">✓</div>
+            <h2>Application Received!</h2>
+            <div class="ref-badge" id="success-ref">JOB-XXXX</div>
+            <p>Our school team will review your application and contact you within 5 working days.</p>
+            <br><br>
+            <a href="index.html" style="text-decoration:none;"><button class="btn-primary">Return to school website</button></a>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/db.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            let currentStep = 1;
+            const totalSteps = 7;
+            const formData = { docs: {} };
+
+            const btnNext = document.getElementById('btn-next');
+            const btnPrev = document.getElementById('btn-prev');
+            
+            // Load courses
+            try {
+                if (window.sb) {
+                    const { data, error } = await sb.from('cert_courses').select('id,name,curriculum').eq('status', 'open');
+                    const select = document.getElementById('certCourseId');
+                    select.innerHTML = '<option value="">Select a course...</option>';
+                    if (data) {
+                        data.forEach(c => {
+                            const opt = document.createElement('option');
+                            opt.value = c.id;
+                            opt.textContent = c.name + (c.curriculum ? ` (${c.curriculum})` : '');
+                            select.appendChild(opt);
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error("Error loading courses:", e);
+            }
+
+            document.getElementById('btn-add-ref').addEventListener('click', (e) => {
+                document.getElementById('ref2-container').style.display = 'block';
+                e.target.style.display = 'none';
+            });
+
+            // File inputs logic
+            const setupDropZone = (id, key) => {
+                const dz = document.getElementById('dz-' + id);
+                const input = document.getElementById('file' + id.charAt(0).toUpperCase() + id.slice(1));
+                const nameDisplay = document.getElementById('name-' + id);
+
+                input.addEventListener('change', (e) => {
+                    if (input.files.length > 0) {
+                        nameDisplay.textContent = input.files[0].name;
+                        formData.docs[key] = input.files[0];
+                        if (id === 'cv') document.getElementById('err-cv').style.display = 'none';
+                    }
+                });
+            };
+            setupDropZone('cv', 'cv');
+            setupDropZone('cert', 'certificate');
+            setupDropZone('id', 'idPassport');
+
+            btnNext.addEventListener('click', async () => {
+                // Validate current step
+                const currentCard = document.getElementById(`step-${currentStep}`);
+                const inputs = currentCard.querySelectorAll('input[required], select[required], textarea[required]');
+                let valid = true;
+                inputs.forEach(inp => {
+                    if (!inp.checkValidity()) {
+                        inp.reportValidity();
+                        valid = false;
+                    }
+                });
+                
+                if (!valid) return;
+
+                if (currentStep === 5) {
+                    if (!formData.docs.cv) {
+                        document.getElementById('err-cv').style.display = 'block';
+                        return;
+                    }
+                }
+
+                if (currentStep === 7) {
+                    if (!document.getElementById('declaration').checked) {
+                        document.getElementById('declaration').reportValidity();
+                        return;
+                    }
+                    await submitApplication();
+                    return;
+                }
+
+                currentStep++;
+                updateUI();
+            });
+
+            btnPrev.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateUI();
+                }
+            });
+
+            function updateUI() {
+                for(let i=1; i<=totalSteps; i++) {
+                    document.getElementById(`step-${i}`).classList.remove('active');
+                    const ind = document.getElementById(`indicator-${i}`);
+                    ind.classList.remove('active', 'completed');
+                    
+                    if (i < currentStep) ind.classList.add('completed');
+                    if (i === currentStep) ind.classList.add('active');
+                }
+                
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                
+                btnPrev.style.display = currentStep === 1 ? 'none' : 'block';
+                btnNext.innerHTML = currentStep === totalSteps ? 'Submit Application' : 'Next Step &rarr;';
+                
+                if (currentStep === 7) {
+                    generateSummary();
+                }
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function generateSummary() {
+                const getVal = id => document.getElementById(id).value;
+                
+                formData.name = getVal('fname');
+                formData.dob = getVal('dob');
+                formData.gender = getVal('gender');
+                formData.nationality = getVal('nationality');
+                formData.phone = getVal('phone');
+                formData.email = getVal('email');
+                formData.city = getVal('city');
+
+                formData.highestQualification = getVal('highestQual');
+                formData.fieldOfStudy = getVal('fieldOfStudy');
+                formData.institution = getVal('institution');
+                formData.gradYear = getVal('gradYear');
+                formData.yearsExperience = getVal('yearsExp');
+                formData.qualifications = getVal('prevSubjects'); // notes
+
+                const courseSel = document.getElementById('certCourseId');
+                formData.certCourseId = courseSel.value;
+                formData.courseNameText = courseSel.options[courseSel.selectedIndex].text;
+                
+                formData.availableStart = getVal('availStart');
+                formData.teachingApproach = getVal('teachingPhilosophy');
+                formData.coverLetter = getVal('coverLetter');
+
+                formData.ref1 = {
+                    name: getVal('ref1Name'),
+                    phone: getVal('ref1Phone'),
+                    email: getVal('ref1Email'),
+                    relationship: getVal('ref1Rel')
+                };
+                
+                if (getVal('ref2Name')) {
+                    formData.ref2 = {
+                        name: getVal('ref2Name'),
+                        phone: getVal('ref2Phone'),
+                        email: getVal('ref2Email'),
+                        relationship: getVal('ref2Rel')
+                    };
+                } else {
+                    formData.ref2 = null;
+                }
+
+                const sumHtml = `
+                    <div class="summary-block">
+                        <h4>Personal Details</h4>
+                        <div class="summary-row"><div class="summary-label">Name:</div><div class="summary-value">${formData.name}</div></div>
+                        <div class="summary-row"><div class="summary-label">Email:</div><div class="summary-value">${formData.email}</div></div>
+                        <div class="summary-row"><div class="summary-label">Phone:</div><div class="summary-value">${formData.phone}</div></div>
+                        <div class="summary-row"><div class="summary-label">Location:</div><div class="summary-value">${formData.city}, ${formData.nationality}</div></div>
+                    </div>
+                    <div class="summary-block">
+                        <h4>Qualifications</h4>
+                        <div class="summary-row"><div class="summary-label">Highest Qual:</div><div class="summary-value">${formData.highestQualification}</div></div>
+                        <div class="summary-row"><div class="summary-label">Field of Study:</div><div class="summary-value">${formData.fieldOfStudy} (${formData.institution})</div></div>
+                        <div class="summary-row"><div class="summary-label">Experience:</div><div class="summary-value">${formData.yearsExperience} years</div></div>
+                    </div>
+                    <div class="summary-block">
+                        <h4>Position</h4>
+                        <div class="summary-row"><div class="summary-label">Course:</div><div class="summary-value">${formData.courseNameText}</div></div>
+                        <div class="summary-row"><div class="summary-label">Start Date:</div><div class="summary-value">${formData.availableStart || 'Not specified'}</div></div>
+                    </div>
+                    <div class="summary-block">
+                        <h4>Documents</h4>
+                        <div class="summary-row"><div class="summary-label">CV:</div><div class="summary-value">${formData.docs.cv ? formData.docs.cv.name : 'Missing'}</div></div>
+                        <div class="summary-row"><div class="summary-label">Certificates:</div><div class="summary-value">${formData.docs.certificate ? formData.docs.certificate.name : 'None'}</div></div>
+                    </div>
+                `;
+                document.getElementById('summary-content').innerHTML = sumHtml;
+            }
+
+            async function submitApplication() {
+                if (!window.sb) {
+                    document.getElementById('err-submit').textContent = "Supabase client not loaded.";
+                    document.getElementById('err-submit').style.display = 'block';
+                    return;
+                }
+
+                btnNext.disabled = true;
+                btnNext.textContent = "Submitting...";
+                btnPrev.disabled = true;
+                
+                try {
+                    const ref = 'JOB-' + Math.floor(1000 + Math.random() * 9000);
+                    const uploadedDocs = [];
+                    const docFields = [
+                        { key: 'cv', label: 'CV / Résumé' },
+                        { key: 'certificate', label: 'Academic Certificate' },
+                        { key: 'idPassport', label: 'National ID / Passport' }
+                    ];
+
+                    for (const df of docFields) {
+                        const file = formData.docs[df.key];
+                        if (!file) continue;
+                        const path = `teachers/${ref}/${df.key}/${file.name}`;
+                        const { error } = await sb.storage.from('applications').upload(path, file, { upsert: true });
+                        if (!error) {
+                            uploadedDocs.push({ name: df.label, path, type: file.type });
+                        }
+                    }
+
+                    let course = null;
+                    if (formData.certCourseId) {
+                        const courseResult = await sb.from('cert_courses').select('name,curriculum').eq('id', formData.certCourseId).single();
+                        course = courseResult.data;
+                    }
+
+                    const { data, error } = await sb.from('teacher_applications').insert({
+                        id: ref,
+                        name: formData.name,
+                        email: formData.email,
+                        phone: formData.phone,
+                        cert_course_id: formData.certCourseId || null,
+                        cert_course_name: course ? course.name : 'Not specified',
+                        curriculum: course ? course.curriculum : '',
+                        qualifications: formData.qualifications || '',
+                        notes: formData.teachingApproach || '',
+                        status: 'pending',
+                        dob: formData.dob || null,
+                        gender: formData.gender || null,
+                        nationality: formData.nationality || null,
+                        city: formData.city || null,
+                        highest_qualification: formData.highestQualification || null,
+                        institution: formData.institution || null,
+                        field_of_study: formData.fieldOfStudy || null,
+                        years_experience: formData.yearsExperience ? parseInt(formData.yearsExperience) : null,
+                        available_start: formData.availableStart || null,
+                        cover_letter: formData.coverLetter || null,
+                        reference_1: formData.ref1,
+                        reference_2: formData.ref2,
+                        documents: uploadedDocs
+                    }).select().single();
+
+                    if (error) { throw error; }
+
+                    document.getElementById('form-container').style.display = 'none';
+                    document.getElementById('success-ref').textContent = ref;
+                    document.getElementById('success-screen').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                } catch (e) {
+                    console.error(e);
+                    document.getElementById('err-submit').textContent = e.message || "An error occurred during submission.";
+                    document.getElementById('err-submit').style.display = 'block';
+                    btnNext.disabled = false;
+                    btnNext.textContent = "Submit Application";
+                    btnPrev.disabled = false;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

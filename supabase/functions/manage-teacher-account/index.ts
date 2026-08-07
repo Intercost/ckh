@@ -22,6 +22,17 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+// ---------------------------------------------------------------------------
+// CORS headers - required for requests from browser origins (e.g. Vercel).
+// The OPTIONS preflight must be answered before the browser will send the
+// real POST, and every real response must echo these headers back too.
+// ---------------------------------------------------------------------------
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey, x-client-info',
+};
+
 function generateTempPassword(): string {
   const num = Math.floor(1000 + Math.random() * 9000);
   return `Ckh-${num}`;
@@ -30,11 +41,16 @@ function generateTempPassword(): string {
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
   });
 }
 
 Deno.serve(async (req) => {
+  // Handle CORS preflight - browsers send this before every cross-origin POST.
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
   if (req.method !== 'POST') {
     return jsonResponse({ success: false, message: 'Method not allowed' }, 405);
   }
@@ -133,6 +149,45 @@ Deno.serve(async (req) => {
         success: true,
         tempPassword,
         teacher: { id: profile.id, name: profile.name, email: profile.email, phone: profile.phone, subjects: profile.subjects }
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // reset_password_for_user - reset password for ANY user (student or
+    // teacher) by userId. Used by the admin "Password retrieval" tool.
+    // ------------------------------------------------------------------
+    if (action === 'reset_password_for_user') {
+      const { userId } = body as { userId: string };
+      if (!userId) {
+        return jsonResponse({ success: false, message: 'userId is required' }, 400);
+      }
+
+      const { data: profile, error: profileFetchErr } = await adminClient
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (profileFetchErr || !profile) {
+        return jsonResponse({ success: false, message: 'User not found' }, 404);
+      }
+
+      const tempPassword = generateTempPassword();
+      const { error } = await adminClient.auth.admin.updateUserById(userId, { password: tempPassword });
+      if (error) {
+        return jsonResponse({ success: false, message: error.message }, 400);
+      }
+
+      return jsonResponse({
+        success: true,
+        tempPassword,
+        user: {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          phone: profile.phone,
+          role: profile.role,
+          subjects: profile.subjects
+        }
       });
     }
 

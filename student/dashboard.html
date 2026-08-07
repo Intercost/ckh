@@ -110,58 +110,43 @@
 
     <div id="admissionStatusBanner" style="display:none;background:#fff8e6;border:1px solid #f0d78c;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;color:var(--navy-900);"></div>
 
-    <div class="badge-row">
-      <span class="pill gold" id="curriculumPill">Cambridge IGCSE</span>
-      <span class="pill" id="gradePill">Year 11 · 2026</span>
+    <div class="badge-row" id="badgeRow" style="display:none;">
+      <span class="pill gold" id="curriculumPill"></span>
+      <span class="pill" id="gradePill"></span>
       <span class="pill">Full-time · Day classes</span>
     </div>
 
     <div class="grid-cards">
       <div class="card span2">
         <h3>Upcoming lessons <span class="more">Full timetable →</span></h3>
-        <div class="list-row"><div><div class="t">Additional Mathematics</div><div class="d">Mr. Otieno · Room 4</div></div><span class="tag-soft">08:00 – 09:00</span></div>
-        <div class="list-row"><div><div class="t">English Language</div><div class="d">Ms. Achieng · Room 2</div></div><span class="tag-soft">09:15 – 10:15</span></div>
-        <div class="list-row"><div><div class="t">Combined Science</div><div class="d">Mr. Wafula · Lab 1</div></div><span class="tag-soft">10:30 – 11:30</span></div>
+        <div id="lessonsList">
+          <p style="color:var(--ink-soft);font-size:13.5px;">No lessons scheduled yet. Your timetable will appear here once you're enrolled.</p>
+        </div>
       </div>
       <div class="card">
         <h3>Attendance</h3>
-        <div class="attend-ring"><span id="attendancePercent">94%</span></div>
-        <div style="text-align:center;font-size:12.5px;color:var(--ink-soft);" id="attendanceInfo">This term · 3 absences</div>
+        <div class="attend-ring"><span id="attendancePercent">--</span></div>
+        <div style="text-align:center;font-size:12.5px;color:var(--ink-soft);" id="attendanceInfo">No attendance data yet</div>
       </div>
 
       <div class="card">
         <h3>Recent announcements</h3>
         <div id="announcementsList">
-          <div class="list-row"><div><div class="t">Mid-term reports released</div><div class="d">From the Registrar</div></div></div>
-          <div class="list-row"><div><div class="t">Science fair moved to July 18</div><div class="d">From Mr. Wafula</div></div></div>
-          <div class="list-row"><div><div class="t">Library extended hours</div><div class="d">From Resources Team</div></div></div>
+          <p style="color:var(--ink-soft);font-size:13.5px;">No announcements yet.</p>
         </div>
       </div>
 
       <div class="card">
         <h3>Assignment deadlines</h3>
         <div id="assignmentsList">
-          <div class="list-row"><div><div class="t">Add Maths - Problem Set 6</div><div class="d">Due tomorrow, 5:00 PM</div></div><span class="tag-soft warn">Due soon</span></div>
-          <div class="list-row"><div><div class="t">English - Essay draft</div><div class="d">Due Fri, 9 Jul</div></div><span class="tag-soft">Upcoming</span></div>
-          <div class="list-row"><div><div class="t">Science - Lab report</div><div class="d">Due Mon, 13 Jul</div></div><span class="tag-soft">Upcoming</span></div>
+          <p style="color:var(--ink-soft);font-size:13.5px;">No assignments due yet.</p>
         </div>
       </div>
 
       <div class="card span2">
         <h3>Academic performance overview</h3>
         <div id="gradesOverview" style="display:flex;flex-direction:column;gap:14px;">
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Mathematics</span><span>88%</span></div>
-            <div class="perf-bar"><div style="width:88%;"></div></div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span>English Language</span><span>76%</span></div>
-            <div class="perf-bar"><div style="width:76%;"></div></div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Combined Science</span><span>81%</span></div>
-            <div class="perf-bar"><div style="width:81%;"></div></div>
-          </div>
+          <p style="color:var(--ink-soft);font-size:13.5px;">No grades available yet. Your performance will appear here once assessments are completed.</p>
         </div>
       </div>
     </div>
@@ -203,14 +188,23 @@
     document.getElementById('userRole').textContent = user.role;
 
     document.getElementById('welcomeHeading').textContent = 'Good to see you, ' + user.name.split(' ')[0] + '!';
-    document.getElementById('userInfo').textContent = user.grade + ' · ' + user.curriculum + ' · ' + user.role.charAt(0).toUpperCase() + user.role.slice(1) + ' Portal';
     
-    if (user.curriculum) {
-      document.getElementById('curriculumPill').textContent = user.curriculum;
-    }
-    
-    if (user.grade) {
-      document.getElementById('gradePill').textContent = user.grade + ' · 2026';
+    // Only show curriculum and grade info if they exist
+    if (user.curriculum || user.grade) {
+      const userInfoParts = [];
+      if (user.grade) userInfoParts.push(user.grade);
+      if (user.curriculum) userInfoParts.push(user.curriculum);
+      userInfoParts.push(user.role.charAt(0).toUpperCase() + user.role.slice(1) + ' Portal');
+      document.getElementById('userInfo').textContent = userInfoParts.join(' · ');
+      
+      // Show badge row only if curriculum and grade exist
+      if (user.curriculum && user.grade) {
+        document.getElementById('badgeRow').style.display = 'flex';
+        document.getElementById('curriculumPill').textContent = user.curriculum;
+        document.getElementById('gradePill').textContent = user.grade + ' · 2026';
+      }
+    } else {
+      document.getElementById('userInfo').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1) + ' Portal';
     }
 
     const attendance = await getDB(DB_KEYS.ATTENDANCE);

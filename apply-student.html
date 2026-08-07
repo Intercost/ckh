@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Admissions Application - CKH International School</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Global styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/db.js"></script>
+
+    <style>
+        :root {
+            --navy-950: #071b3a;
+            --navy-900: #0a274f;
+            --navy-800: #0f3060;
+            --gold-700: #8a6a1f;
+            --gold-600: #a97c22;
+            --gold-500: #c9a13a;
+            --gold-300: #e3c47c;
+            --gold-100: #f3e6c4;
+            --ivory: #f8f4ea;
+            --ink: #14213d;
+            --ink-soft: #4a5674;
+            --line: rgba(10,39,79,0.14);
+            --radius: 14px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--ivory);
+            color: var(--ink);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Fraunces', serif;
+            color: var(--navy-950);
+            margin-top: 0;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--navy-950);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header img {
+            height: 60px;
+        }
+
+        header h1 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid var(--line);
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .progress-bar {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--line);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .step-indicator {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: white;
+            padding: 0 0.5rem;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: 2px solid var(--line);
+            background-color: white;
+            color: var(--ink-soft);
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.active .step-circle {
+            background-color: var(--gold-500);
+            border-color: var(--gold-500);
+            color: white;
+        }
+
+        .step-indicator.completed .step-circle {
+            background-color: var(--gold-100);
+            border-color: var(--gold-500);
+            color: var(--gold-700);
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--ink-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .step-label { display: block; }
+        }
+
+        /* Form Container */
+        main {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        .step-card {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .step-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step-card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 1rem;
+        }
+        
+        .step-desc {
+            color: var(--ink-soft);
+            margin-bottom: 2rem;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--ink);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        input[type="email"],
+        input[type="password"],
+        /* Password strength rules list */
+        .pw-rules {
+          list-style: none;
+          padding: 10px 12px;
+          margin: 8px 0 0;
+          background: var(--ivory, #f8f4ea);
+          border: 1px solid var(--line, rgba(10,39,79,0.14));
+          border-radius: 8px;
+          font-size: 13px;
+        }
+        .pw-rules li { padding: 3px 0; color: #c0392b; transition: color 0.2s; }
+        .pw-rules li.pass { color: #27ae60; }
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--ink);
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            background-color: #fafbfc;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--navy-800);
+            background-color: white;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-group.has-error input,
+        .form-group.has-error select {
+            border-color: #d32f2f;
+        }
+
+        .form-group.has-error .error-message {
+            display: block;
+        }
+
+        /* File Upload */
+        .file-upload-wrapper {
+            border: 2px dashed var(--line);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            background-color: #fafbfc;
+            transition: all 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--navy-800);
+            background-color: white;
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .upload-text {
+            display: block;
+            font-weight: 500;
+            color: var(--navy-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--ivory);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .file-name {
+            display: block;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--gold-600);
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        /* Buttons */
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            border-top: 1px solid var(--line);
+            padding-top: 2rem;
+        }
+
+        button {
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-prev {
+            background-color: white;
+            color: var(--navy-900);
+            border: 1px solid var(--line);
+        }
+
+        .btn-prev:hover {
+            background-color: var(--ivory);
+            border-color: var(--navy-800);
+        }
+
+        .btn-next, .btn-submit {
+            background-color: var(--gold-600);
+            color: white;
+        }
+
+        .btn-next:hover, .btn-submit:hover {
+            background-color: var(--gold-500);
+        }
+        
+        .btn-next:disabled, .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Summary */
+        .summary-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--line);
+        }
+        
+        .summary-section:last-child {
+            border-bottom: none;
+        }
+
+        .summary-section h3 {
+            font-size: 1.25rem;
+            color: var(--navy-900);
+            margin-bottom: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: var(--ink-soft);
+            width: 40%;
+            flex-shrink: 0;
+        }
+
+        .summary-value {
+            color: var(--ink);
+            width: 60%;
+        }
+
+        .declaration {
+            background-color: var(--gold-100);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .declaration label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin: 0;
+            cursor: pointer;
+            color: var(--navy-950);
+        }
+        
+        .declaration input {
+            margin-top: 0.25rem;
+        }
+
+        /* Success Screen */
+        #success-screen {
+            display: none;
+            text-align: center;
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 4rem 2rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            max-width: 600px;
+            margin: 3rem auto;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: var(--gold-100);
+            color: var(--gold-600);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 2rem;
+        }
+
+        #success-screen h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .ref-badge {
+            display: inline-block;
+            background-color: var(--navy-950);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+            margin: 1.5rem 0;
+        }
+        
+        #global-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="ckh-nobg.png" alt="CKH International School Crest">
+        <h1>CKH International School — Student Admissions</h1>
+    </header>
+
+    <div class="progress-container" id="progress-container">
+        <div class="progress-bar">
+            <div class="step-indicator active" data-step="1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Personal</div>
+            </div>
+            <div class="step-indicator" data-step="2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Guardian</div>
+            </div>
+            <div class="step-indicator" data-step="3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Academic</div>
+            </div>
+            <div class="step-indicator" data-step="4">
+                <div class="step-circle">4</div>
+                <div class="step-label">Programme</div>
+            </div>
+            <div class="step-indicator" data-step="5">
+                <div class="step-circle">5</div>
+                <div class="step-label">Documents</div>
+            </div>
+            <div class="step-indicator" data-step="6">
+                <div class="step-circle">6</div>
+                <div class="step-label">Account</div>
+            </div>
+            <div class="step-indicator" data-step="7">
+                <div class="step-circle">7</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+    </div>
+
+    <main id="form-container">
+        <div id="global-error"></div>
+        <form id="application-form" onsubmit="return false;">
+            
+            <!-- Step 1: Personal Information -->
+            <div class="step-card active" id="step-1">
+                <h2>1. Personal Information</h2>
+                <p class="step-desc">Please provide the applicant's personal details.</p>
+                
+                <div class="form-group">
+                    <label for="name">Full name*</label>
+                    <input type="text" id="name" name="name" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dob">Date of birth*</label>
+                    <input type="date" id="dob" name="dob" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">Gender*</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nationality">Nationality*</label>
+                    <input type="text" id="nationality" name="nationality" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nationalId">National ID / Passport number</label>
+                    <input type="text" id="nationalId" name="nationalId">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone / WhatsApp*</label>
+                    <input type="tel" id="phone" name="phone" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+            </div>
+
+            <!-- Step 2: Parent / Guardian -->
+            <div class="step-card" id="step-2">
+                <h2>2. Parent / Guardian</h2>
+                <p class="step-desc">Contact details of the primary caregiver.</p>
+                
+                <div class="form-group">
+                    <label for="guardianName">Guardian full name*</label>
+                    <input type="text" id="guardianName" name="guardianName" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="guardianRelationship">Relationship to learner*</label>
+                    <select id="guardianRelationship" name="guardianRelationship" required>
+                        <option value="">Select...</option>
+                        <option value="Mother">Mother</option>
+                        <option value="Father">Father</option>
+                        <option value="Legal Guardian">Legal Guardian</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="guardianPhone">Guardian phone / WhatsApp*</label>
+                    <input type="tel" id="guardianPhone" name="guardianPhone" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="guardianEmail">Guardian email</label>
+                    <input type="email" id="guardianEmail" name="guardianEmail">
+                </div>
+                
+                <div class="form-group">
+                    <label for="guardianOccupation">Guardian occupation</label>
+                    <input type="text" id="guardianOccupation" name="guardianOccupation">
+                </div>
+                
+                <div class="form-group">
+                    <label for="guardianId">Guardian National ID number</label>
+                    <input type="text" id="guardianId" name="guardianId">
+                </div>
+            </div>
+
+            <!-- Step 3: Academic Background -->
+            <div class="step-card" id="step-3">
+                <h2>3. Academic Background</h2>
+                <p class="step-desc">Previous education details.</p>
+                
+                <div class="form-group">
+                    <label for="previousSchool">Name of previous school*</label>
+                    <input type="text" id="previousSchool" name="previousSchool" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="previousCountry">Country of previous school</label>
+                    <input type="text" id="previousCountry" name="previousCountry">
+                </div>
+                
+                <div class="form-group">
+                    <label for="previousGrade">Highest grade / year completed*</label>
+                    <input type="text" id="previousGrade" name="previousGrade" placeholder="e.g. Year 10" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="previousCurriculum">Curriculum previously followed*</label>
+                    <select id="previousCurriculum" name="previousCurriculum" required>
+                        <option value="">Select...</option>
+                        <option value="Cambridge IGCSE">Cambridge IGCSE</option>
+                        <option value="Pearson Edexcel">Pearson Edexcel</option>
+                        <option value="IB">IB</option>
+                        <option value="CBC">CBC</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="specialRequirements">Any special learning needs or requirements?</label>
+                    <textarea id="specialRequirements" name="specialRequirements"></textarea>
+                </div>
+            </div>
+
+            <!-- Step 4: Programme & Intake -->
+            <div class="step-card" id="step-4">
+                <h2>4. Programme & Intake</h2>
+                <p class="step-desc">Select the desired programme and intake date.</p>
+                
+                <div class="form-group">
+                    <label for="programmeId">Programme applying for*</label>
+                    <select id="programmeId" name="programmeId" required>
+                        <option value="">Loading programmes...</option>
+                    </select>
+                    <div class="error-message">This field is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gradeApplyingFor">Year / Grade applying for</label>
+                    <input type="text" id="gradeApplyingFor" name="gradeApplyingFor">
+                </div>
+                
+                <div class="form-group">
+                    <label for="preferredIntake">Preferred intake date</label>
+                    <input type="text" id="preferredIntake" name="preferredIntake" placeholder="e.g. January 2025">
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Additional notes</label>
+                    <textarea id="notes" name="notes"></textarea>
+                </div>
+            </div>
+
+            <!-- Step 5: Supporting Documents -->
+            <div class="step-card" id="step-5">
+                <h2>5. Supporting Documents</h2>
+                <p class="step-desc">Accepted formats: PDF, JPG, PNG. Max 5MB per file.</p>
+                
+                <div class="form-group">
+                    <label>Birth certificate*</label>
+                    <div class="file-upload-wrapper" onclick="document.getElementById('birthCert').click()">
+                        <span class="upload-icon">📄</span>
+                        <span class="upload-text">Upload Birth Certificate</span>
+                        <span class="upload-btn">Browse files</span>
+                        <input type="file" id="birthCert" name="birthCert" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
+                        <span class="file-name" id="birthCert-name"></span>
+                    </div>
+                    <div class="error-message" id="birthCert-error">This file is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Latest school report / transcript*</label>
+                    <div class="file-upload-wrapper" onclick="document.getElementById('schoolReport').click()">
+                        <span class="upload-icon">📄</span>
+                        <span class="upload-text">Upload School Report</span>
+                        <span class="upload-btn">Browse files</span>
+                        <input type="file" id="schoolReport" name="schoolReport" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
+                        <span class="file-name" id="schoolReport-name"></span>
+                    </div>
+                    <div class="error-message" id="schoolReport-error">This file is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Parent / Guardian ID copy*</label>
+                    <div class="file-upload-wrapper" onclick="document.getElementById('guardianIdFile').click()">
+                        <span class="upload-icon">📄</span>
+                        <span class="upload-text">Upload Guardian ID</span>
+                        <span class="upload-btn">Browse files</span>
+                        <input type="file" id="guardianIdFile" name="guardianIdFile" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
+                        <span class="file-name" id="guardianIdFile-name"></span>
+                    </div>
+                    <div class="error-message" id="guardianIdFile-error">This file is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Passport-size photo (optional)</label>
+                    <div class="file-upload-wrapper" onclick="document.getElementById('passportPhoto').click()">
+                        <span class="upload-icon">🖼️</span>
+                        <span class="upload-text">Upload Photo</span>
+                        <span class="upload-btn">Browse files</span>
+                        <input type="file" id="passportPhoto" name="passportPhoto" accept=".jpg,.jpeg,.png" onchange="updateFileName(this)">
+                        <span class="file-name" id="passportPhoto-name"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Portal Account -->
+            <div class="step-card" id="step-6">
+                <h2>6. Portal Account</h2>
+                <p class="step-desc">Create an account to track your application.</p>
+                
+                <div class="form-group">
+                    <label for="email">Email address*</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error-message">A valid email is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Create a portal password*</label>
+                    <input type="password" id="password" name="password" required oninput="checkPasswordStrength(this.value)">
+                    <div class="error-message" id="passwordError">Password does not meet all requirements</div>
+                    <!-- Live strength checklist -->
+                    <ul class="pw-rules" id="pwRules">
+                      <li id="rule-len">❌ At least 8 characters</li>
+                      <li id="rule-upper">❌ One uppercase letter (A–Z)</li>
+                      <li id="rule-lower">❌ One lowercase letter (a–z)</li>
+                      <li id="rule-num">❌ One number (0–9)</li>
+                      <li id="rule-special">❌ One special character (!@#$%^&amp;* …)</li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm password*</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <div class="error-message">Passwords must match</div>
+                </div>
+            </div>
+
+            <!-- Step 7: Review & Submit -->
+            <div class="step-card" id="step-7">
+                <h2>7. Review & Submit</h2>
+                <p class="step-desc">Please review your information before submitting.</p>
+                
+                <div id="summary-content">
+                    <!-- Summary populated by JS -->
+                </div>
+                
+                <div class="declaration">
+                    <label>
+                        <input type="checkbox" id="declaration" required>
+                        <span>I declare that all information provided is true and accurate.</span>
+                    </label>
+                    <div class="error-message" id="declaration-error" style="margin-left: 2rem;">You must agree to the declaration</div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="actions">
+                <button type="button" class="btn-prev" id="btn-prev" style="display: none;" onclick="prevStep()">Previous</button>
+                <div style="flex-grow: 1;"></div>
+                <button type="button" class="btn-next" id="btn-next" onclick="nextStep()">Next Step &rarr;</button>
+                <button type="button" class="btn-submit" id="btn-submit" style="display: none;" onclick="handleFinalSubmit()">Submit Application</button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Success Screen -->
+    <div id="success-screen">
+        <div class="success-icon">✓</div>
+        <h2>Application Received!</h2>
+        <p>Thank you for choosing CKH International School.</p>
+        <div class="ref-badge" id="ref-badge-text">ADM-XXXX</div>
+        <p>Our admissions team will review your application and contact you within 3 working days.</p>
+        <br>
+        <button onclick="window.location.href='index.html'" class="btn-prev">Return to school website</button>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 7;
+        const formData = {};
+
+        // Load Programmes
+        async function loadProgrammes() {
+            if (typeof sb !== 'undefined') {
+                try {
+                    const { data, error } = await sb.from('programmes').select('id,name,curriculum,level').eq('status', 'open');
+                    if (!error && data) {
+                        const select = document.getElementById('programmeId');
+                        select.innerHTML = '<option value="">Select...</option>';
+                        data.forEach(p => {
+                            select.innerHTML += `<option value="${p.id}">${p.name} (${p.curriculum})</option>`;
+                        });
+                    }
+                } catch(e) {
+                    console.error("Error loading programmes", e);
+                    document.getElementById('programmeId').innerHTML = '<option value="">Error loading</option>';
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadProgrammes();
+        });
+
+        function updateFileName(input) {
+            const nameSpan = document.getElementById(`${input.id}-name`);
+            if (input.files && input.files.length > 0) {
+                nameSpan.textContent = input.files[0].name;
+            } else {
+                nameSpan.textContent = '';
+            }
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+            const currentCard = document.getElementById(`step-${step}`);
+            
+            // Standard inputs
+            const inputs = currentCard.querySelectorAll('input[required], select[required]');
+            inputs.forEach(input => {
+                const group = input.closest('.form-group') || input.parentElement;
+                if (!input.value.trim() && input.type !== 'checkbox' && input.type !== 'file') {
+                    group.classList.add('has-error');
+                    isValid = false;
+                } else if (input.type === 'email' && !input.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                    group.classList.add('has-error');
+                    isValid = false;
+                } else {
+                    group.classList.remove('has-error');
+                }
+            });
+
+            // Passwords in step 6
+            if (step === 6) {
+                const pass = document.getElementById('password');
+                const conf = document.getElementById('confirmPassword');
+                const val = pass.value;
+                const strong = /[A-Z]/.test(val) && /[a-z]/.test(val) && /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val) && val.length >= 8;
+                if (!strong) {
+                    pass.closest('.form-group').classList.add('has-error');
+                    document.getElementById('passwordError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('passwordError').style.display = 'none';
+                }
+                if (val !== conf.value) {
+                    conf.closest('.form-group').classList.add('has-error');
+                    isValid = false;
+                }
+            }
+
+            // Files in step 5
+            if (step === 5) {
+                ['birthCert', 'schoolReport', 'guardianIdFile'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el.files || el.files.length === 0) {
+                        document.getElementById(`${id}-error`).style.display = 'block';
+                        isValid = false;
+                    } else {
+                        document.getElementById(`${id}-error`).style.display = 'none';
+                    }
+                });
+            }
+
+            // Declaration in step 7
+            if (step === 7) {
+                const decl = document.getElementById('declaration');
+                if (!decl.checked) {
+                    document.getElementById('declaration-error').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('declaration-error').style.display = 'none';
+                }
+            }
+
+            return isValid;
+        }
+
+        function collectFormData() {
+            const inputs = document.querySelectorAll('input:not([type="file"]), select, textarea');
+            inputs.forEach(i => {
+                if (i.name) formData[i.name] = i.value;
+            });
+
+            // Collect files
+            formData.docs = {};
+            const files = ['birthCert', 'schoolReport', 'guardianIdFile', 'passportPhoto'];
+            files.forEach(f => {
+                const el = document.getElementById(f === 'guardianIdFile' ? 'guardianIdFile' : f);
+                if (el && el.files && el.files.length > 0) {
+                    // Map HTML ids to expected submit logic keys
+                    let key = f;
+                    if (f === 'guardianIdFile') key = 'guardianId';
+                    formData.docs[key] = el.files[0];
+                }
+            });
+        }
+
+        function generateSummary() {
+            collectFormData();
+            const summary = document.getElementById('summary-content');
+            
+            const sections = [
+                {
+                    title: "Personal Information",
+                    data: [
+                        { label: "Name", val: formData.name },
+                        { label: "DOB", val: formData.dob },
+                        { label: "Gender", val: formData.gender },
+                        { label: "Nationality", val: formData.nationality },
+                        { label: "Phone", val: formData.phone }
+                    ]
+                },
+                {
+                    title: "Guardian Information",
+                    data: [
+                        { label: "Guardian Name", val: formData.guardianName },
+                        { label: "Relationship", val: formData.guardianRelationship },
+                        { label: "Phone", val: formData.guardianPhone },
+                        { label: "Email", val: formData.guardianEmail || "N/A" }
+                    ]
+                },
+                {
+                    title: "Academic Background",
+                    data: [
+                        { label: "Previous School", val: formData.previousSchool },
+                        { label: "Grade", val: formData.previousGrade },
+                        { label: "Curriculum", val: formData.previousCurriculum }
+                    ]
+                },
+                {
+                    title: "Programme & Account",
+                    data: [
+                        { label: "Programme ID", val: formData.programmeId },
+                        { label: "Account Email", val: formData.email }
+                    ]
+                }
+            ];
+
+            let html = "";
+            sections.forEach(sec => {
+                html += `<div class="summary-section">
+                    <h3>${sec.title}</h3>`;
+                sec.data.forEach(row => {
+                    html += `<div class="summary-row">
+                        <div class="summary-label">${row.label}</div>
+                        <div class="summary-value">${row.val}</div>
+                    </div>`;
+                });
+                html += `</div>`;
+            });
+
+            summary.innerHTML = html;
+        }
+
+        function updateUI() {
+            // Cards
+            document.querySelectorAll('.step-card').forEach((card, idx) => {
+                if (idx + 1 === currentStep) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+
+            // Progress bar
+            document.querySelectorAll('.step-indicator').forEach((ind, idx) => {
+                const step = idx + 1;
+                ind.classList.remove('active', 'completed');
+                if (step === currentStep) {
+                    ind.classList.add('active');
+                } else if (step < currentStep) {
+                    ind.classList.add('completed');
+                    ind.querySelector('.step-circle').innerHTML = '✓';
+                } else {
+                    ind.querySelector('.step-circle').innerHTML = step;
+                }
+            });
+
+            // Buttons
+            document.getElementById('btn-prev').style.display = currentStep > 1 ? 'block' : 'none';
+            if (currentStep === totalSteps) {
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('btn-submit').style.display = 'block';
+                generateSummary();
+            } else {
+                document.getElementById('btn-next').style.display = 'block';
+                document.getElementById('btn-submit').style.display = 'none';
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function checkPasswordStrength(val) {
+          const rules = [
+            { id: 'rule-len',     test: v => v.length >= 8 },
+            { id: 'rule-upper',   test: v => /[A-Z]/.test(v) },
+            { id: 'rule-lower',   test: v => /[a-z]/.test(v) },
+            { id: 'rule-num',     test: v => /[0-9]/.test(v) },
+            { id: 'rule-special', test: v => /[^A-Za-z0-9]/.test(v) }
+          ];
+          const labels = {
+            'rule-len':     ['\u274c At least 8 characters',               '\u2705 At least 8 characters'],
+            'rule-upper':   ['\u274c One uppercase letter (A\u2013Z)',       '\u2705 One uppercase letter (A\u2013Z)'],
+            'rule-lower':   ['\u274c One lowercase letter (a\u2013z)',       '\u2705 One lowercase letter (a\u2013z)'],
+            'rule-num':     ['\u274c One number (0\u20139)',                 '\u2705 One number (0\u20139)'],
+            'rule-special': ['\u274c One special character (!@#$%^&* \u2026)', '\u2705 One special character (!@#$%^&* \u2026)']
+          };
+          rules.forEach(r => {
+            const li = document.getElementById(r.id);
+            if (!li) return;
+            const ok = r.test(val);
+            li.textContent = labels[r.id][ok ? 1 : 0];
+            li.classList.toggle('pass', ok);
+          });
+        }
+
+        function nextStep() {
+            if (validateStep(currentStep)) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateUI();
+                }
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        function showError(msg) {
+            const err = document.getElementById('global-error');
+            err.textContent = msg;
+            err.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Re-enable submit button
+            const subBtn = document.getElementById('btn-submit');
+            subBtn.disabled = false;
+            subBtn.textContent = 'Submit Application';
+        }
+
+        function showSuccess(ref) {
+            document.getElementById('progress-container').style.display = 'none';
+            document.getElementById('form-container').style.display = 'none';
+            const success = document.getElementById('success-screen');
+            success.style.display = 'block';
+            document.getElementById('ref-badge-text').textContent = ref;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function handleFinalSubmit() {
+            if (!validateStep(currentStep)) return;
+            collectFormData();
+
+            const subBtn = document.getElementById('btn-submit');
+            subBtn.disabled = true;
+            subBtn.textContent = 'Submitting...';
+            document.getElementById('global-error').style.display = 'none';
+
+            try {
+                await submitApplication();
+            } catch (e) {
+                showError(e.message || "An unexpected error occurred.");
+            }
+        }
+
+        async function submitApplication() {
+            // 1. Sign up
+            const { data: signUpData, error: signUpError } = await sb.auth.signUp({
+                email: formData.email,
+                password: formData.password,
+                options: { data: { role: 'student', name: formData.name, phone: formData.phone } }
+            });
+            if (signUpError) { showError(signUpError.message); return; }
+
+            // Try to sign in immediately if no session yet
+            if (!signUpData.session) {
+                await sb.auth.signInWithPassword({ email: formData.email, password: formData.password }).catch(()=>{});
+            }
+
+            // 2. Generate application reference
+            const ref = 'ADM-' + Math.floor(1000 + Math.random() * 9000);
+
+            // 3. Upload documents
+            const uploadedDocs = [];
+            const docFields = [
+                { key: 'birthCert', label: 'Birth Certificate' },
+                { key: 'schoolReport', label: 'School Report' },
+                { key: 'guardianId', label: 'Guardian ID' },
+                { key: 'passportPhoto', label: 'Passport Photo' }
+            ];
+            for (const df of docFields) {
+                const file = formData.docs[df.key];
+                if (!file) continue;
+                const path = `students/${ref}/${df.key}/${file.name}`;
+                const { error } = await sb.storage.from('applications').upload(path, file, { upsert: true });
+                if (!error) uploadedDocs.push({ name: df.label, path, type: file.type });
+            }
+
+            // 4. Insert admission record
+            let programme = null;
+            if (formData.programmeId) {
+                const { data } = await sb.from('programmes').select('name,curriculum,level').eq('id', formData.programmeId).single();
+                if (data) programme = data;
+            }
+            
+            const { data: admissionData, error: admissionError } = await sb.from('admissions').insert({
+                id: ref,
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                programme_id: formData.programmeId || null,
+                programme_name: programme ? programme.name : 'Not specified',
+                curriculum: programme ? programme.curriculum : '',
+                level: formData.gradeApplyingFor || (programme ? programme.level : ''),
+                notes: formData.notes || '',
+                status: 'pending',
+                student_id: signUpData.user ? signUpData.user.id : null,
+                dob: formData.dob || null,
+                gender: formData.gender || null,
+                nationality: formData.nationality || null,
+                national_id: formData.nationalId || null,
+                guardian_name: formData.guardianName || null,
+                guardian_relationship: formData.guardianRelationship || null,
+                guardian_phone: formData.guardianPhone || null,
+                guardian_email: formData.guardianEmail || null,
+                guardian_occupation: formData.guardianOccupation || null,
+                guardian_id: formData.guardianId || null,
+                previous_school: formData.previousSchool || null,
+                previous_grade: formData.previousGrade || null,
+                special_requirements: formData.specialRequirements || null,
+                preferred_intake: formData.preferredIntake || null,
+                documents: uploadedDocs
+            }).select().single();
+
+            if (admissionError) { showError(admissionError.message); return; }
+            
+            showSuccess(ref);
+        }
+    </script>
+</body>
+</html>

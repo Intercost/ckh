@@ -50,6 +50,24 @@
       font-size: 14.5px;
       color: var(--ink);
     }
+    /* Document viewer */
+    .doc-btn-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+    .doc-view-btn {
+      display: inline-flex; align-items: center; gap:6px;
+      background: var(--ivory); border: 1px solid var(--line);
+      border-radius: 8px; padding: 7px 12px;
+      font-size: 13px; cursor: pointer; color: var(--navy-900);
+      font-family: inherit; transition: background 0.15s;
+    }
+    .doc-view-btn:hover { background: var(--gold-100); border-color: var(--gold-300); }
+    .doc-view-btn svg { flex-shrink:0; }
+    #docViewerModal .modal-box { max-width: 860px; width: 95vw; }
+    #docViewerFrame { width:100%; height:68vh; border:none; border-radius:10px;
+      background:#f5f5f5; display:block; }
+    #docViewerImg { max-width:100%; max-height:68vh; border-radius:10px;
+      display:none; margin:0 auto; }
+    #docViewerDownload { display:none; text-align:center; padding:40px 20px;
+      font-size:15px; color:var(--ink-soft); }
   </style>
   <link rel="icon" type="image/png" href="../ckh-nobg.png">
 </head>
@@ -260,6 +278,11 @@
             <div class="profile-value" id="appModalAdminNote"></div>
           </div>
         </div>
+        <!-- Uploaded documents -->
+        <div class="profile-field" id="appModalDocsWrap" style="display:none;">
+          <label>Uploaded documents</label>
+          <div class="doc-btn-list" id="appModalDocs"></div>
+        </div>
         <div id="appModalActions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
           <button class="btn btn-gold btn-sm" onclick="handleApprove()">Approve application</button>
           <button class="btn btn-outline btn-sm" onclick="handleRequestDocs()">Request more documents</button>
@@ -283,6 +306,24 @@
         </div>
         <p style="color:var(--ink-soft);font-size:13px;margin:14px 0;">They already set their own portal password when they applied, so there's nothing more to send - they can sign in any time. Tap below to let them know on WhatsApp.</p>
         <button class="btn btn-gold full-btn" onclick="sendCredentialsWhatsApp()">Notify on WhatsApp</button>
+      </div>
+    </div>
+    </div>
+
+    <!-- Inline document viewer modal -->
+    <div class="modal-overlay" id="docViewerModal">
+      <div class="modal-box" style="padding:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <h2 id="docViewerTitle" style="font-size:17px;margin:0;"></h2>
+          <button onclick="closeDocViewer()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink-soft);">✕</button>
+        </div>
+        <iframe id="docViewerFrame" src=""></iframe>
+        <img id="docViewerImg" src="" alt="Document">
+        <div id="docViewerDownload">
+          <p>This file type cannot be previewed in the browser.</p>
+          <a id="docViewerDownloadLink" href="" target="_blank" class="btn btn-gold" style="display:inline-block;margin-top:12px;">Download to view</a>
+        </div>
+        <div id="docViewerLoading" style="text-align:center;padding:40px;color:var(--ink-soft);font-size:14px;">Loading document…</div>
       </div>
     </div>
 
@@ -380,6 +421,21 @@
     document.getElementById('appModalLevel').textContent = application.level || '-';
     document.getElementById('appModalNotes').textContent = application.notes || 'None provided';
 
+    // Uploaded documents
+    const docsWrap = document.getElementById('appModalDocsWrap');
+    const docsList = document.getElementById('appModalDocs');
+    const docs = application.documents || [];
+    if (docs.length > 0) {
+      docsWrap.style.display = 'block';
+      docsList.innerHTML = docs.map(d => `
+        <button class="doc-view-btn" onclick="openDocViewer('${d.path}','${d.name}','${d.type || ''}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          ${d.name}
+        </button>`).join('');
+    } else {
+      docsWrap.style.display = 'none';
+    }
+
     const programmes = await getProgrammes();
     const programme = programmes.find(p => p.id === application.programmeId);
     const vacancyWrap = document.getElementById('appModalVacancyWrap');
@@ -460,6 +516,51 @@
     if (pendingWhatsAppLink) {
       window.open(pendingWhatsAppLink, '_blank');
     }
+  }
+
+  // --- Inline document viewer ------------------------------------------
+
+  async function openDocViewer(path, name, mimeType) {
+    const viewer = document.getElementById('docViewerModal');
+    document.getElementById('docViewerTitle').textContent = name;
+    document.getElementById('docViewerFrame').style.display = 'none';
+    document.getElementById('docViewerImg').style.display = 'none';
+    document.getElementById('docViewerDownload').style.display = 'none';
+    document.getElementById('docViewerLoading').style.display = 'block';
+    viewer.classList.add('open');
+
+    const url = await getSignedDocumentUrl(path);
+    document.getElementById('docViewerLoading').style.display = 'none';
+
+    if (!url) {
+      document.getElementById('docViewerDownload').style.display = 'block';
+      document.getElementById('docViewerDownloadLink').href = '#';
+      return;
+    }
+
+    const isImage = /^image\//i.test(mimeType) || /\.(jpg|jpeg|png|gif|webp)$/i.test(path);
+    const isPdf = mimeType === 'application/pdf' || /\.pdf$/i.test(path);
+
+    if (isImage) {
+      const img = document.getElementById('docViewerImg');
+      img.src = url;
+      img.style.display = 'block';
+    } else if (isPdf) {
+      const frame = document.getElementById('docViewerFrame');
+      frame.src = url;
+      frame.style.display = 'block';
+    } else {
+      // DOCX or other non-previewable types
+      const dl = document.getElementById('docViewerDownload');
+      dl.style.display = 'block';
+      document.getElementById('docViewerDownloadLink').href = url;
+    }
+  }
+
+  function closeDocViewer() {
+    document.getElementById('docViewerModal').classList.remove('open');
+    document.getElementById('docViewerFrame').src = '';
+    document.getElementById('docViewerImg').src = '';
   }
 
   // --- Programme management -----------------------------------------------

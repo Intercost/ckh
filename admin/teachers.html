@@ -96,6 +96,23 @@
       <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
     </div>
 
+    <!-- ===== PASSWORD RETRIEVAL SECTION ===== -->
+    <div class="section-head" style="margin-bottom:0;">
+      <h2>Password retrieval</h2>
+    </div>
+    <p style="color:var(--ink-soft);font-size:13.5px;margin:-8px 0 16px;">Search for a student or teacher by name or email. Click <strong>Reset &amp; send</strong> to generate a new temporary password and send it to them on WhatsApp.</p>
+    <div class="card" style="margin-bottom:32px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+        <input id="pwSearchInput" type="text" placeholder="Search by name or email…" style="flex:1;min-width:200px;" oninput="onPwSearch()">
+        <select id="pwRoleFilter" onchange="onPwSearch()" style="min-width:140px;">
+          <option value="all">All roles</option>
+          <option value="student">Students only</option>
+          <option value="teacher">Teachers only</option>
+        </select>
+      </div>
+      <div id="pwResults"></div>
+    </div>
+
     <div class="section-head">
       <h2>All teachers</h2>
       <button class="btn btn-gold btn-sm" onclick="openAddTeacherModal()">+ Add teacher</button>
@@ -201,11 +218,33 @@
             <div class="profile-value" id="jobModalAdminNote"></div>
           </div>
         </div>
+        <!-- Uploaded documents -->
+        <div class="profile-field" id="jobModalDocsWrap" style="display:none;">
+          <label>Uploaded documents</label>
+          <div class="doc-btn-list" id="jobModalDocs"></div>
+        </div>
         <div id="jobModalActions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
           <button class="btn btn-gold btn-sm" onclick="handleJobApprove()">Approve & create teacher account</button>
           <button class="btn btn-outline btn-sm" onclick="handleJobRequestInfo()">Request more info</button>
           <button class="btn btn-outline btn-sm" onclick="handleJobReject()">Reject</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Inline document viewer modal -->
+    <div class="modal-overlay" id="docViewerModal">
+      <div class="modal-box" style="padding:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <h2 id="docViewerTitle" style="font-size:17px;margin:0;"></h2>
+          <button onclick="closeDocViewer()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink-soft);">✕</button>
+        </div>
+        <iframe id="docViewerFrame" src=""></iframe>
+        <img id="docViewerImg" src="" alt="Document">
+        <div id="docViewerDownload">
+          <p>This file type cannot be previewed in the browser.</p>
+          <a id="docViewerDownloadLink" href="" target="_blank" class="btn btn-gold" style="display:inline-block;margin-top:12px;">Download to view</a>
+        </div>
+        <div id="docViewerLoading" style="text-align:center;padding:40px;color:var(--ink-soft);font-size:14px;">Loading document…</div>
       </div>
     </div>
 
@@ -229,8 +268,11 @@
             <input id="teacherPhone" type="tel" placeholder="e.g. +254712345678" required>
           </div>
           <div class="field">
-            <label for="teacherSubjects">Subjects (comma-separated)</label>
-            <input id="teacherSubjects" type="text" placeholder="e.g. Physics, Additional Mathematics">
+            <label>Subjects taught</label>
+            <div id="subjectPickerList" class="subject-picker">
+              <div class="subject-picker-loading">Loading subjects…</div>
+            </div>
+            <p style="font-size:12px;color:var(--ink-soft);margin:6px 0 0;">Select one or more from the list. Subjects are managed under <em>Certificate courses</em> below.</p>
           </div>
           <button type="submit" class="btn btn-gold full-btn">Create teacher account</button>
           <div id="addTeacherError" class="error-message"></div>
@@ -331,10 +373,24 @@
     });
   }
 
-  function openAddTeacherModal() {
+  async function openAddTeacherModal() {
     document.getElementById('addTeacherError').textContent = '';
+    // Populate subject checkboxes from cert_courses
+    const courses = await getCertCourses();
+    const list = document.getElementById('subjectPickerList');
+    if (courses.length === 0) {
+      list.innerHTML = '<div class="subject-picker-loading">No subjects set up yet. Add certificate courses below first.</div>';
+    } else {
+      list.innerHTML = courses.map(c => `
+        <label class="subject-check-item">
+          <input type="checkbox" name="subjectPick" value="${c.name}">
+          <span>${c.name}</span>
+          ${c.curriculum ? `<span class="subject-check-tag">${c.curriculum}</span>` : ''}
+        </label>`).join('');
+    }
     document.getElementById('addTeacherModal').classList.add('open');
   }
+
   function closeAddTeacherModal() {
     document.getElementById('addTeacherModal').classList.remove('open');
   }
@@ -344,8 +400,10 @@
     const name = document.getElementById('teacherName').value.trim();
     const email = document.getElementById('teacherEmail').value.trim();
     const phone = document.getElementById('teacherPhone').value.trim();
-    const subjectsRaw = document.getElementById('teacherSubjects').value;
-    const subjects = subjectsRaw.split(',').map(s => s.trim()).filter(Boolean);
+    // Collect checked subjects from the picker
+    const subjects = Array.from(
+      document.querySelectorAll('#subjectPickerList input[type="checkbox"]:checked')
+    ).map(cb => cb.value);
     const errEl = document.getElementById('addTeacherError');
     errEl.textContent = '';
 
@@ -357,6 +415,8 @@
 
     closeAddTeacherModal();
     e.target.reset();
+    // Uncheck all subject boxes for next time
+    document.querySelectorAll('#subjectPickerList input[type="checkbox"]').forEach(cb => cb.checked = false);
     await renderTeachers();
     showCredentials('Teacher account created', result.user, result.tempPassword, result.whatsappLink);
     return false;
@@ -551,12 +611,71 @@
     const actions = document.getElementById('jobModalActions');
     actions.style.display = application.status === 'approved' ? 'none' : 'flex';
 
+    // Uploaded documents
+    const docsWrap = document.getElementById('jobModalDocsWrap');
+    const docsList = document.getElementById('jobModalDocs');
+    const docs = application.documents || [];
+    if (docs.length > 0) {
+      docsWrap.style.display = 'block';
+      docsList.innerHTML = docs.map(d => `
+        <button class="doc-view-btn" onclick="openDocViewer('${d.path}','${d.name}','${d.type || ''}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          ${d.name}
+        </button>`).join('');
+    } else {
+      docsWrap.style.display = 'none';
+    }
+
     document.getElementById('jobApplicationModal').classList.add('open');
   }
 
   function closeJobApplicationModal() {
     document.getElementById('jobApplicationModal').classList.remove('open');
     activeJobApplicationId = null;
+  }
+
+  // --- Inline document viewer ------------------------------------------
+
+  async function openDocViewer(path, name, mimeType) {
+    const viewer = document.getElementById('docViewerModal');
+    document.getElementById('docViewerTitle').textContent = name;
+    document.getElementById('docViewerFrame').style.display = 'none';
+    document.getElementById('docViewerImg').style.display = 'none';
+    document.getElementById('docViewerDownload').style.display = 'none';
+    document.getElementById('docViewerLoading').style.display = 'block';
+    viewer.classList.add('open');
+
+    const url = await getSignedDocumentUrl(path);
+    document.getElementById('docViewerLoading').style.display = 'none';
+
+    if (!url) {
+      document.getElementById('docViewerDownload').style.display = 'block';
+      document.getElementById('docViewerDownloadLink').href = '#';
+      return;
+    }
+
+    const isImage = /^image\//i.test(mimeType) || /\.(jpg|jpeg|png|gif|webp)$/i.test(path);
+    const isPdf = mimeType === 'application/pdf' || /\.pdf$/i.test(path);
+
+    if (isImage) {
+      const img = document.getElementById('docViewerImg');
+      img.src = url;
+      img.style.display = 'block';
+    } else if (isPdf) {
+      const frame = document.getElementById('docViewerFrame');
+      frame.src = url;
+      frame.style.display = 'block';
+    } else {
+      const dl = document.getElementById('docViewerDownload');
+      dl.style.display = 'block';
+      document.getElementById('docViewerDownloadLink').href = url;
+    }
+  }
+
+  function closeDocViewer() {
+    document.getElementById('docViewerModal').classList.remove('open');
+    document.getElementById('docViewerFrame').src = '';
+    document.getElementById('docViewerImg').src = '';
   }
 
   async function handleJobApprove() {
@@ -590,12 +709,77 @@
     await renderJobApplications();
   }
 
+  // ===== PASSWORD RETRIEVAL ===========================================
+
+  let _pwAllUsers = [];
+
+  async function loadPwUsers() {
+    const [teachers, students] = await Promise.all([getAllTeachers(), getAllStudents()]);
+    _pwAllUsers = [...teachers, ...students];
+  }
+
+  function onPwSearch() {
+    const q = document.getElementById('pwSearchInput').value.trim().toLowerCase();
+    const role = document.getElementById('pwRoleFilter').value;
+    const container = document.getElementById('pwResults');
+
+    if (!q) {
+      container.innerHTML = '<div class="empty-state" style="padding:10px 0;">Type a name or email above to search.</div>';
+      return;
+    }
+
+    const filtered = _pwAllUsers.filter(u => {
+      const matchRole = role === 'all' || u.role === role;
+      const matchQ = (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q);
+      return matchRole && matchQ;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div class="empty-state" style="padding:10px 0;">No matching users found.</div>';
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Email</th><th>WhatsApp</th><th>Role</th><th>Action</th></tr></thead>
+          <tbody>${filtered.map(u => `
+            <tr>
+              <td data-label="Name">${u.name}</td>
+              <td data-label="Email">${u.email}</td>
+              <td data-label="WhatsApp">${u.phone || '-'}</td>
+              <td data-label="Role"><span class="status-pill ${u.role === 'teacher' ? 'good' : ''}">${
+                u.role.charAt(0).toUpperCase() + u.role.slice(1)
+              }</span></td>
+              <td class="table-actions" data-label="Action">
+                <button class="btn btn-gold btn-sm" onclick="pwResetAndSend('${u.id}')">Reset &amp; send</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  async function pwResetAndSend(userId) {
+    if (!confirm('This will reset this person\'s password to a new temporary one. Continue?')) return;
+    const result = await resetUserPassword(userId);
+    if (!result.success) {
+      alert(result.message || 'Could not reset the password.');
+      return;
+    }
+    // Reload the user list so the card reflects any name changes
+    await loadPwUsers();
+    showCredentials('Password reset', result.user, result.tempPassword, result.whatsappLink);
+  }
+
+  // ====================================================================
+
   window.onload = async function() {
     currentUser = await requireAdmin();
     if (!currentUser) return;
-    await renderTeachers();
-    await renderCertCourses();
-    await renderJobApplications();
+    await Promise.all([renderTeachers(), renderCertCourses(), renderJobApplications(), loadPwUsers()]);
+    // Show initial empty-state message
+    document.getElementById('pwResults').innerHTML = '<div class="empty-state" style="padding:10px 0;">Type a name or email above to search.</div>';
   };
 
 </script>
