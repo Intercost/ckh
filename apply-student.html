@@ -678,6 +678,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="pt-student-email">Student's own email <span style="color:var(--ink-soft);font-weight:400;">(optional — for direct confirmation)</span></label>
+                    <input type="email" id="pt-student-email" name="pt-student-email">
+                    <div class="error-message">Please enter a valid email address</div>
+                </div>
+
+                <div class="form-group">
                     <label for="pt-phone">Phone number*</label>
                     <input type="tel" id="pt-phone" name="pt-phone" required>
                     <div class="error-message">This field is required</div>
@@ -1207,12 +1213,22 @@
             const ptData = {
                 name:         document.getElementById('pt-name').value.trim(),
                 parentEmail:  document.getElementById('pt-parent-email').value.trim(),
+                studentEmail: document.getElementById('pt-student-email').value.trim(),
                 phone:        document.getElementById('pt-phone').value.trim(),
                 gender:       document.getElementById('pt-gender').value,
                 grade:        document.getElementById('pt-grade').value.trim(),
                 curriculum:   document.getElementById('pt-curriculum').value,
                 learningType: 'Part-Time'
             };
+
+            // Validate optional student email format if provided
+            if (ptData.studentEmail && !ptData.studentEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                document.getElementById('pt-student-email').closest('.form-group').classList.add('has-error');
+                btn.disabled = false;
+                btn.textContent = 'Submit Application';
+                return;
+            }
+            document.getElementById('pt-student-email').closest('.form-group').classList.remove('has-error');
 
             try {
                 const ref = 'ADM-PT-' + Math.floor(1000 + Math.random() * 9000);
@@ -1226,20 +1242,31 @@
                         gender:      ptData.gender,
                         level:       ptData.grade,
                         curriculum:  ptData.curriculum,
-                        notes:       'Part-Time application. Learning type: Part-Time.',
+                        notes:       `Part-Time application. Learning type: Part-Time.${ptData.studentEmail ? ' Student email: ' + ptData.studentEmail : ''}`,
                         status:      'pending',
                         programme_name: 'Part-Time'
                     });
                 }
 
-                // Send confirmation email to parent + admin notification
+                // 1. Send confirmation to parent
                 await sendApplicationEmails({
                     toName:          ptData.name,
                     toEmail:         ptData.parentEmail,
                     refNumber:       ref,
                     applicationType: 'Student Application (Part-Time)',
                     extraDetails:    `Grade: ${ptData.grade} | Curriculum: ${ptData.curriculum}`
-                }).catch(e => console.warn('[EmailJS] Part-time email error:', e));
+                }).catch(e => console.warn('[EmailJS] Part-time parent email error:', e));
+
+                // 2. Send confirmation to student directly (if they provided their own email)
+                if (ptData.studentEmail) {
+                    await sendApplicationEmails({
+                        toName:          ptData.name,
+                        toEmail:         ptData.studentEmail,
+                        refNumber:       ref,
+                        applicationType: 'Student Application (Part-Time)',
+                        extraDetails:    `Grade: ${ptData.grade} | Curriculum: ${ptData.curriculum}`
+                    }).catch(e => console.warn('[EmailJS] Part-time student email error:', e));
+                }
 
                 showSuccess(ref);
             } catch (e) {
