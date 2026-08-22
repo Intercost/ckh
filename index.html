@@ -1598,9 +1598,13 @@
           </div>
         </div>
         <form onsubmit="enterPortal(event)">
-          <div class="field">
+          <div class="field" id="loginEmailField">
             <label for="loginId">School email or admission number</label>
             <input id="loginId" type="text" placeholder="e.g. amara.k@ckhschool.ac.ke" required>
+          </div>
+          <!-- Shown only for admin login -->
+          <div id="adminLoginHint" style="display:none; margin-bottom:14px; padding:10px 14px; background:var(--ivory,#f8f4ea); border-radius:8px; border-left:3px solid var(--gold-500,#c9a13a);">
+            <p style="margin:0; font-size:13px; color:var(--ink-soft,#4a5674);">🔐 Enter your administrator password to access the portal.</p>
           </div>
           <div class="field password-field">
             <label for="loginPass">Password</label>
@@ -1940,15 +1944,29 @@
     document.getElementById('portalChoice').style.display = 'none';
     document.getElementById('registerForm').style.display = 'none';
     document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('loginId').placeholder = meta.placeholder;
     document.getElementById('loginRoleTitle').textContent = meta.title;
     document.getElementById('loginRoleSub').textContent = meta.sub;
     document.getElementById('loginRoleIcon').innerHTML = meta.icon;
     document.getElementById('switchToRegister').style.display = role === 'student' ? 'block' : 'none';
     document.getElementById('errorMessage').textContent = '';
-    document.getElementById('loginId').value = '';
     document.getElementById('loginPass').value = '';
-    document.getElementById('loginId').focus();
+
+    // Admin: hide the email field — email is hardcoded, password only
+    const emailField = document.getElementById('loginId').closest('.field');
+    const adminHint  = document.getElementById('adminLoginHint');
+    if (role === 'admin') {
+      emailField.style.display = 'none';
+      document.getElementById('loginId').removeAttribute('required');
+      if (adminHint) adminHint.style.display = 'block';
+      document.getElementById('loginPass').focus();
+    } else {
+      emailField.style.display = '';
+      document.getElementById('loginId').setAttribute('required', '');
+      document.getElementById('loginId').placeholder = meta.placeholder;
+      if (adminHint) adminHint.style.display = 'none';
+      document.getElementById('loginId').value = '';
+      document.getElementById('loginId').focus();
+    }
   }
 
   function backToPortalChoice() {
@@ -2039,19 +2057,21 @@
 
   async function enterPortal(e) {
     e.preventDefault();
-    const email = document.getElementById('loginId').value;
+    // Admin login uses a hardcoded email — only the password is entered
+    const ADMIN_EMAIL = 'ckh@gmail.com';
+    const email    = currentRole === 'admin' ? ADMIN_EMAIL : document.getElementById('loginId').value;
     const password = document.getElementById('loginPass').value;
     const errorElement = document.getElementById('errorMessage');
     errorElement.textContent = '';
 
-    // Supabase keeps you signed in across reloads/tabs on its own, so
-    // there's no separate "remember me" password store anymore.
     const user = await getUser(email, password);
 
     if (user) {
       goToPortal(user);
     } else {
-      errorElement.textContent = 'Invalid email or password. Please try again.';
+      errorElement.textContent = currentRole === 'admin'
+        ? 'Incorrect password. Please try again.'
+        : 'Invalid email or password. Please try again.';
     }
 
     return false;
