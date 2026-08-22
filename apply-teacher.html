@@ -664,6 +664,10 @@
     <script src="js/supabaseClient.js"></script>
     <script src="js/db.js"></script>
 
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="js/emailservice.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             let currentStep = 1;
@@ -913,6 +917,16 @@
                     }).select().single();
 
                     if (error) { throw error; }
+
+                    // Send confirmation email to teacher + admin notification
+                    const courseLabel = course ? course.name : 'Not specified';
+                    await sendApplicationEmails({
+                        toName:          formData.name,
+                        toEmail:         formData.email,
+                        refNumber:       ref,
+                        applicationType: 'Teacher Application',
+                        extraDetails:    `Position: ${courseLabel} | Experience: ${formData.yearsExperience || 'N/A'} years`
+                    }).catch(e => console.warn('[EmailJS] Teacher email error:', e));
 
                     document.getElementById('form-container').style.display = 'none';
                     document.getElementById('success-ref').textContent = ref;

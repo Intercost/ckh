@@ -18,6 +18,10 @@
     <script src="js/supabaseClient.js"></script>
     <script src="js/db.js"></script>
 
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="js/emailservice.js"></script>
+
     <style>
         :root {
             --navy-950: #071b3a;
@@ -423,7 +427,152 @@
             margin-top: 0.25rem;
         }
 
-        /* Success Screen */
+        /* ── Enrollment-type overlay ── */
+        #enrollment-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 27, 58, 0.72);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 1rem;
+            opacity: 0;
+            animation: overlayIn 0.35s ease forwards;
+        }
+
+        @keyframes overlayIn {
+            to { opacity: 1; }
+        }
+
+        #enrollment-overlay.hidden {
+            display: none;
+        }
+
+        .enrollment-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            max-width: 540px;
+            width: 100%;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+            text-align: center;
+            transform: translateY(20px);
+            animation: cardIn 0.4s ease forwards;
+        }
+
+        @keyframes cardIn {
+            to { transform: translateY(0); }
+        }
+
+        .enrollment-card .ec-icon {
+            font-size: 2.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .enrollment-card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--navy-950);
+        }
+
+        .enrollment-card p {
+            color: var(--ink-soft);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .enrollment-choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .enrollment-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem 1rem;
+            border-radius: 14px;
+            border: 2px solid var(--line);
+            background: var(--ivory);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .enrollment-btn:hover {
+            border-color: var(--gold-500);
+            background: var(--gold-100);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .enrollment-btn .eb-icon {
+            font-size: 2rem;
+        }
+
+        .enrollment-btn .eb-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--navy-950);
+            font-family: 'Fraunces', serif;
+        }
+
+        .enrollment-btn .eb-desc {
+            font-size: 0.8rem;
+            color: var(--ink-soft);
+        }
+
+        /* ── Part-Time single-page form ── */
+        #parttime-container {
+            display: none;
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        .pt-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+
+        .pt-card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 1rem;
+        }
+
+        .pt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--gold-100);
+            color: var(--gold-700);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+        }
+
+        #pt-global-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* ── Success Screen ── */
         #success-screen {
             display: none;
             text-align: center;
@@ -483,6 +632,106 @@
         <img src="ckh-nobg.png" alt="CKH International School Crest">
         <h1>CKH International School — Student Admissions</h1>
     </header>
+
+    <!-- ── Enrollment-type overlay ── -->
+    <div id="enrollment-overlay">
+        <div class="enrollment-card">
+            <div class="ec-icon">🎓</div>
+            <h2>How will you be attending?</h2>
+            <p>Please select your enrolment type so we can take you to the right application.</p>
+            <div class="enrollment-choices">
+                <button class="enrollment-btn" id="choose-fulltime" onclick="selectEnrollmentType('fulltime')">
+                    <span class="eb-icon">📚</span>
+                    <span class="eb-title">Full-Time</span>
+                    <span class="eb-desc">Complete multi-step application</span>
+                </button>
+                <button class="enrollment-btn" id="choose-parttime" onclick="selectEnrollmentType('parttime')">
+                    <span class="eb-icon">⏱️</span>
+                    <span class="eb-title">Part-Time</span>
+                    <span class="eb-desc">Quick single-page application</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Part-Time single-page form ── -->
+    <div id="parttime-container">
+        <div class="pt-card">
+            <h2>Part-Time Student Application</h2>
+            <div class="pt-badge">⏱️ Part-Time Enrolment</div>
+            <p class="step-desc">Fill in the details below to apply as a part-time student. Our admissions team will contact you within 3 working days.</p>
+
+            <div id="pt-global-error"></div>
+
+            <form id="pt-form" onsubmit="return false;">
+
+                <div class="form-group">
+                    <label for="pt-name">Full name*</label>
+                    <input type="text" id="pt-name" name="pt-name" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pt-parent-email">Parent's email*</label>
+                    <input type="email" id="pt-parent-email" name="pt-parent-email" required>
+                    <div class="error-message">A valid email is required</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pt-phone">Phone number*</label>
+                    <input type="tel" id="pt-phone" name="pt-phone" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pt-gender">Gender*</label>
+                    <select id="pt-gender" name="pt-gender" required>
+                        <option value="">Select...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                    <div class="error-message">This field is required</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pt-grade">Grade / Year applying for*</label>
+                    <input type="text" id="pt-grade" name="pt-grade" placeholder="e.g. Year 8" required>
+                    <div class="error-message">This field is required</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pt-learning-type">Type of learning</label>
+                    <input type="text" id="pt-learning-type" name="pt-learning-type" value="Part-Time" readonly
+                        style="background:#f0f4f8; color:var(--ink-soft); cursor:default;">
+                </div>
+
+                <div class="form-group">
+                    <label for="pt-curriculum">Curriculum*</label>
+                    <select id="pt-curriculum" name="pt-curriculum" required>
+                        <option value="">Select...</option>
+                        <option value="Cambridge IGCSE">Cambridge IGCSE</option>
+                        <option value="Pearson Edexcel">Pearson Edexcel</option>
+                        <option value="IB">IB</option>
+                        <option value="CBC">CBC</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="error-message">This field is required</div>
+                </div>
+
+                <div class="actions" style="margin-top:2rem;">
+                    <button type="button" class="btn-prev" onclick="selectEnrollmentType(null)" style="border:1px solid var(--line);">
+                        ← Change type
+                    </button>
+                    <div style="flex-grow:1;"></div>
+                    <button type="button" class="btn-submit" id="pt-submit-btn" onclick="handlePartTimeSubmit()">
+                        Submit Application
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 
     <!-- Shown instead of the form when the visitor is already signed in to
          a CKH portal account, so an already-enrolled student doesn't
@@ -903,7 +1152,109 @@
             document.getElementById('form-container').style.display = '';
         }
 
+        /* ── Enrollment-type selection ── */
+        function selectEnrollmentType(type) {
+            const overlay = document.getElementById('enrollment-overlay');
+            const progressContainer = document.getElementById('progress-container');
+            const formContainer = document.getElementById('form-container');
+            const parttimeContainer = document.getElementById('parttime-container');
+
+            if (type === 'fulltime') {
+                overlay.classList.add('hidden');
+                progressContainer.style.display = '';
+                formContainer.style.display = '';
+                parttimeContainer.style.display = 'none';
+            } else if (type === 'parttime') {
+                overlay.classList.add('hidden');
+                progressContainer.style.display = 'none';
+                formContainer.style.display = 'none';
+                parttimeContainer.style.display = 'block';
+            } else {
+                // Re-open overlay ("Change type" button)
+                overlay.classList.remove('hidden');
+                progressContainer.style.display = 'none';
+                formContainer.style.display = 'none';
+                parttimeContainer.style.display = 'none';
+            }
+        }
+
+        /* ── Part-Time form submit ── */
+        function validatePartTimeForm() {
+            let valid = true;
+            const form = document.getElementById('pt-form');
+            form.querySelectorAll('input[required], select[required]').forEach(el => {
+                const group = el.closest('.form-group');
+                const isEmpty = !el.value.trim();
+                const isEmailBad = el.type === 'email' && el.value && !el.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+                if (isEmpty || isEmailBad) {
+                    group.classList.add('has-error');
+                    valid = false;
+                } else {
+                    group.classList.remove('has-error');
+                }
+            });
+            return valid;
+        }
+
+        async function handlePartTimeSubmit() {
+            if (!validatePartTimeForm()) return;
+
+            const btn = document.getElementById('pt-submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            document.getElementById('pt-global-error').style.display = 'none';
+
+            const ptData = {
+                name:         document.getElementById('pt-name').value.trim(),
+                parentEmail:  document.getElementById('pt-parent-email').value.trim(),
+                phone:        document.getElementById('pt-phone').value.trim(),
+                gender:       document.getElementById('pt-gender').value,
+                grade:        document.getElementById('pt-grade').value.trim(),
+                curriculum:   document.getElementById('pt-curriculum').value,
+                learningType: 'Part-Time'
+            };
+
+            try {
+                const ref = 'ADM-PT-' + Math.floor(1000 + Math.random() * 9000);
+
+                if (typeof sb !== 'undefined') {
+                    await sb.from('admissions').insert({
+                        id:          ref,
+                        name:        ptData.name,
+                        email:       ptData.parentEmail,
+                        phone:       ptData.phone,
+                        gender:      ptData.gender,
+                        level:       ptData.grade,
+                        curriculum:  ptData.curriculum,
+                        notes:       'Part-Time application. Learning type: Part-Time.',
+                        status:      'pending',
+                        programme_name: 'Part-Time'
+                    });
+                }
+
+                // Send confirmation email to parent + admin notification
+                await sendApplicationEmails({
+                    toName:          ptData.name,
+                    toEmail:         ptData.parentEmail,
+                    refNumber:       ref,
+                    applicationType: 'Student Application (Part-Time)',
+                    extraDetails:    `Grade: ${ptData.grade} | Curriculum: ${ptData.curriculum}`
+                }).catch(e => console.warn('[EmailJS] Part-time email error:', e));
+
+                showSuccess(ref);
+            } catch (e) {
+                const errEl = document.getElementById('pt-global-error');
+                errEl.textContent = e.message || 'An unexpected error occurred.';
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Submit Application';
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            // Hide the main multi-step UI initially; the overlay will direct the user
+            document.getElementById('progress-container').style.display = 'none';
+            document.getElementById('form-container').style.display = 'none';
             loadProgrammes().then(applyPrefill);
             checkExistingSession();
         });
@@ -1251,6 +1602,16 @@
             }).select().single();
 
             if (admissionError) { showError(admissionError.message); return; }
+
+            // Send confirmation email to applicant + admin notification
+            const programmeName = programme ? programme.name : 'Not specified';
+            await sendApplicationEmails({
+                toName:          formData.name,
+                toEmail:         formData.email,
+                refNumber:       ref,
+                applicationType: 'Student Application (Full-Time)',
+                extraDetails:    `Programme: ${programmeName} | Grade: ${formData.gradeApplyingFor || 'N/A'}`
+            }).catch(e => console.warn('[EmailJS] Full-time email error:', e));
             
             showSuccess(ref);
         }
