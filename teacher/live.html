@@ -548,15 +548,27 @@
     if (!error) await loadClasses();
   }
 
-  function classStatus(scheduledAt, durationMins) {
-    const now = Date.now();
+  function classStatus(scheduledAt, durationMins, startedAt) {
+    const now   = Date.now();
     const start = new Date(scheduledAt).getTime();
     const end   = start + durationMins * 60000;
     const soon  = start - 10 * 60000; // 10 mins before
-    if (now >= start && now <= end) return 'live';
-    if (now >= soon && now < start)  return 'soon';
-    if (now > end)                   return 'ended';
+    if (now > end) return 'ended';
+    if (startedAt)  return 'live';      // teacher has started it
+    if (now >= soon) return 'soon';     // within start window, not yet started
     return 'upcoming';
+  }
+
+  async function startClass(id, jitsiUrl) {
+    // Mark class as started in DB so students' Join button activates
+    const { error } = await sb
+      .from('virtual_classes')
+      .update({ started_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) { alert('Could not start the class: ' + error.message); return; }
+    // Open the Jitsi room — teacher is first in, becomes moderator automatically
+    window.open(jitsiUrl, '_blank');
+    await loadClasses(); // refresh to show Rejoin button
   }
 
   async function loadClasses() {
@@ -581,23 +593,42 @@
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
     container.innerHTML = data.map(cls => {
-      const dt = new Date(cls.scheduled_at);
-      const day = dt.getDate();
-      const mon = months[dt.getMonth()];
-      const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const dateStr = dt.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      const status  = classStatus(cls.scheduled_at, cls.duration_minutes);
+      const dt       = new Date(cls.scheduled_at);
+      const day      = dt.getDate();
+      const mon      = months[dt.getMonth()];
+      const timeStr  = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const status   = classStatus(cls.scheduled_at, cls.duration_minutes, cls.started_at);
       const jitsiUrl = `https://meet.jit.si/ckh-${cls.room_name}`;
+      const hasStarted = !!cls.started_at;
 
       let statusBadge = '';
-      let startDisabled = '';
-      if (status === 'live') {
+      let actionBtn   = '';
+
+      if (status === 'ended') {
+        statusBadge = `<span class="badge-ended">✓ Ended</span>`;
+        actionBtn   = `<button class="btn-start" disabled>Class Ended</button>`;
+
+      } else if (status === 'live') {
         statusBadge = `<span class="badge-live"><span class="live-dot"></span> LIVE NOW</span>`;
+        // Teacher already started — show Rejoin
+        actionBtn = `<button class="btn-start" style="background:#16a34a;"
+          onclick="window.open('${jitsiUrl}', '_blank')">
+          📹 Rejoin Class
+        </button>`;
+
       } else if (status === 'soon') {
         statusBadge = `<span class="badge-soon">⏳ Starting soon</span>`;
-      } else if (status === 'ended') {
-        statusBadge = `<span class="badge-ended">✓ Ended</span>`;
-        startDisabled = 'disabled title="This class has ended"';
+        actionBtn = `<button class="btn-start"
+          onclick="startClass('${cls.id}', '${jitsiUrl}')">
+          📹 Start Class
+        </button>`;
+
+      } else {
+        // upcoming — still allow scheduling start early
+        actionBtn = `<button class="btn-start" style="background:#6b7280;"
+          onclick="startClass('${cls.id}', '${jitsiUrl}')">
+          📹 Start Early
+        </button>`;
       }
 
       return `
@@ -616,13 +647,8 @@
             </div>
             ${cls.description ? `<div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;">${cls.description}</div>` : ''}
             <div class="class-actions">
-              <button class="btn-start" ${startDisabled}
-                onclick="window.open('${jitsiUrl}', '_blank')">
-                📹 Start Class
-              </button>
-              <button class="btn-delete" onclick="deleteClass('${cls.id}')">
-                Cancel
-              </button>
+              ${actionBtn}
+              ${status !== 'ended' ? `<button class="btn-delete" onclick="deleteClass('${cls.id}')">Cancel</button>` : ''}
             </div>
           </div>
         </div>`;

@@ -279,14 +279,14 @@
     window.location.href = '../index.html';
   }
 
-  function classStatus(scheduledAt, durationMins) {
+  function classStatus(scheduledAt, durationMins, startedAt) {
     const now   = Date.now();
     const start = new Date(scheduledAt).getTime();
     const end   = start + durationMins * 60000;
     const soon  = start - 10 * 60000; // 10 min before
-    if (now >= start && now <= end) return 'live';
-    if (now >= soon && now < start)  return 'soon';
-    if (now > end)                   return 'ended';
+    if (now > end)   return 'ended';
+    if (startedAt)   return 'live';    // teacher started — students may join
+    if (now >= soon) return 'waiting'; // in window but teacher hasn't started yet
     return 'upcoming';
   }
 
@@ -342,7 +342,7 @@
       html += `<div class="day-heading">${dayLabel}</div>`;
 
       classes.forEach(cls => {
-        const status   = classStatus(cls.scheduled_at, cls.duration_minutes);
+        const status   = classStatus(cls.scheduled_at, cls.duration_minutes, cls.started_at);
         const jitsiUrl = `https://meet.jit.si/ckh-${cls.room_name}`;
         const dtObj    = new Date(cls.scheduled_at);
         const timeStr  = dtObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -355,16 +355,24 @@
         if (status === 'live') {
           statusBadge = `<span class="badge-live"><span class="live-dot"></span> LIVE NOW</span>`;
           joinBtn = `<button class="btn-join live-pulse" onclick="window.open('${jitsiUrl}','_blank')">📹 Join Now</button>`;
-        } else if (status === 'soon') {
-          statusBadge = `<span class="badge-soon">⏳ Starting soon</span>`;
-          joinBtn = `<button class="btn-join" onclick="window.open('${jitsiUrl}','_blank')">📹 Join Class</button>`;
+
+        } else if (status === 'waiting') {
+          // Class window open but teacher hasn't started yet
+          statusBadge = `<span class="badge-soon" style="background:#fef3c7;color:#92400e;">
+            <span style="display:inline-block;width:7px;height:7px;background:#d97706;border-radius:50%;
+              animation:pulse 1.5s infinite;margin-right:5px;vertical-align:middle;"></span>
+            Waiting for teacher…
+          </span>`;
+          joinBtn = `<button class="btn-join" disabled title="The teacher hasn't started the class yet">Waiting…</button>`;
+
         } else if (status === 'ended') {
           statusBadge = `<span class="badge-ended">✓ Ended</span>`;
           joinBtn = `<button class="btn-join" disabled>Class Ended</button>`;
+
         } else {
           const countdown = formatCountdown(cls.scheduled_at);
           statusBadge = `<span class="badge-upcoming">🗓 Upcoming</span>`;
-          joinBtn = `<button class="btn-join" disabled title="Available 10 minutes before class starts">Join Class</button>
+          joinBtn = `<button class="btn-join" disabled title="Available when the teacher starts the class">Join Class</button>
                      ${countdown ? `<div class="countdown">${countdown}</div>` : ''}`;
         }
 
