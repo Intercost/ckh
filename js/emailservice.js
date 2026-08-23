@@ -17,14 +17,22 @@ const EMAILJS_SERVICE_ID  = 'service_viyd67t';
 const EMAILJS_TEMPLATE_ID = 'template_7reiyko';
 const ADMIN_EMAIL         = 'admin@ckhinternationalschool.com';
 
-/** Call once after the EmailJS SDK script has loaded. */
+/** Initialise EmailJS (v4 syntax). Called on DOMContentLoaded. */
 function initEmailJS() {
     if (typeof emailjs !== 'undefined') {
-        emailjs.init(EMAILJS_PUBLIC_KEY);
+        // EmailJS v4 requires an object — NOT a bare string
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
         console.log('[EmailJS] Initialised.');
     } else {
-        console.warn('[EmailJS] SDK not loaded yet — make sure the CDN script comes before emailservice.js');
+        console.warn('[EmailJS] SDK not loaded yet.');
     }
+}
+
+// Initialise as soon as the DOM (and therefore the CDN script) is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEmailJS);
+} else {
+    initEmailJS(); // already loaded
 }
 
 /**
@@ -57,7 +65,8 @@ async function sendApplicationEmails({ toName, toEmail, refNumber, applicationTy
     };
 
     try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, applicantParams);
+        // Pass publicKey as 4th arg — works even if init() hasn't fired yet (v4)
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, applicantParams, { publicKey: EMAILJS_PUBLIC_KEY });
         console.log(`[EmailJS] Confirmation sent to applicant: ${toEmail}`);
     } catch (err) {
         console.error('[EmailJS] Failed to send applicant confirmation:', err);
@@ -75,7 +84,7 @@ async function sendApplicationEmails({ toName, toEmail, refNumber, applicationTy
     };
 
     try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, adminParams);
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, adminParams, { publicKey: EMAILJS_PUBLIC_KEY });
         console.log(`[EmailJS] Admin notification sent to: ${ADMIN_EMAIL}`);
     } catch (err) {
         console.error('[EmailJS] Failed to send admin notification:', err);
