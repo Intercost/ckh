@@ -672,14 +672,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-parent-email">Parent's email*</label>
-                    <input type="email" id="pt-parent-email" name="pt-parent-email" required>
-                    <div class="error-message">A valid email is required</div>
+                    <label for="pt-student-email">Student's email* <span style="color:var(--ink-soft);font-weight:400;">(used to sign in to the portal)</span></label>
+                    <input type="email" id="pt-student-email" name="pt-student-email" required>
+                    <div class="error-message">A valid email address is required</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-student-email">Student's own email <span style="color:var(--ink-soft);font-weight:400;">(optional — for direct confirmation)</span></label>
-                    <input type="email" id="pt-student-email" name="pt-student-email">
+                    <label for="pt-parent-email">Parent / Guardian email <span style="color:var(--ink-soft);font-weight:400;">(optional)</span></label>
+                    <input type="email" id="pt-parent-email" name="pt-parent-email">
                     <div class="error-message">Please enter a valid email address</div>
                 </div>
 
@@ -723,6 +723,24 @@
                         <option value="Other">Other</option>
                     </select>
                     <div class="error-message">This field is required</div>
+                </div>
+
+                <!-- ── Portal account ── -->
+                <div style="margin:1.5rem 0 1rem; padding-top:1.25rem; border-top:1px solid var(--line);">
+                    <h3 style="font-size:15px; font-weight:700; color:var(--ink); margin:0 0 4px;">Create your portal account</h3>
+                    <p style="font-size:13px; color:var(--ink-soft); margin:0 0 1rem;">You'll use your student email and this password to sign in and track your application.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="pt-password">Choose a password*</label>
+                    <input type="password" id="pt-password" name="pt-password" minlength="6" placeholder="At least 6 characters" required>
+                    <div class="error-message">Password must be at least 6 characters</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pt-confirm-password">Confirm password*</label>
+                    <input type="password" id="pt-confirm-password" name="pt-confirm-password" minlength="6" placeholder="Repeat your password" required>
+                    <div class="error-message">Passwords do not match</div>
                 </div>
 
                 <div class="actions" style="margin-top:2rem;">
@@ -1211,61 +1229,102 @@
             document.getElementById('pt-global-error').style.display = 'none';
 
             const ptData = {
-                name:         document.getElementById('pt-name').value.trim(),
-                parentEmail:  document.getElementById('pt-parent-email').value.trim(),
-                studentEmail: document.getElementById('pt-student-email').value.trim(),
-                phone:        document.getElementById('pt-phone').value.trim(),
-                gender:       document.getElementById('pt-gender').value,
-                grade:        document.getElementById('pt-grade').value.trim(),
-                curriculum:   document.getElementById('pt-curriculum').value,
-                learningType: 'Part-Time'
+                name:            document.getElementById('pt-name').value.trim(),
+                studentEmail:    document.getElementById('pt-student-email').value.trim(),
+                parentEmail:     document.getElementById('pt-parent-email').value.trim(),
+                phone:           document.getElementById('pt-phone').value.trim(),
+                gender:          document.getElementById('pt-gender').value,
+                grade:           document.getElementById('pt-grade').value.trim(),
+                curriculum:      document.getElementById('pt-curriculum').value,
+                password:        document.getElementById('pt-password').value,
+                confirmPassword: document.getElementById('pt-confirm-password').value,
+                learningType:    'Part-Time'
             };
 
-            // Validate optional student email format if provided
-            if (ptData.studentEmail && !ptData.studentEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                document.getElementById('pt-student-email').closest('.form-group').classList.add('has-error');
+            // Validate passwords
+            if (ptData.password.length < 6) {
+                document.getElementById('pt-password').closest('.form-group').classList.add('has-error');
                 btn.disabled = false;
                 btn.textContent = 'Submit Application';
                 return;
             }
-            document.getElementById('pt-student-email').closest('.form-group').classList.remove('has-error');
+            if (ptData.password !== ptData.confirmPassword) {
+                document.getElementById('pt-confirm-password').closest('.form-group').classList.add('has-error');
+                btn.disabled = false;
+                btn.textContent = 'Submit Application';
+                return;
+            }
+            document.getElementById('pt-password').closest('.form-group').classList.remove('has-error');
+            document.getElementById('pt-confirm-password').closest('.form-group').classList.remove('has-error');
+
+            // Validate optional parent email format if provided
+            if (ptData.parentEmail && !ptData.parentEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                document.getElementById('pt-parent-email').closest('.form-group').classList.add('has-error');
+                btn.disabled = false;
+                btn.textContent = 'Submit Application';
+                return;
+            }
+            document.getElementById('pt-parent-email').closest('.form-group').classList.remove('has-error');
 
             try {
                 const ref = 'ADM-PT-' + Math.floor(1000 + Math.random() * 9000);
 
                 if (typeof sb !== 'undefined') {
+                    // Create Supabase auth account so they can log in to the portal
+                    const { data: signUpData, error: signUpError } = await sb.auth.signUp({
+                        email:    ptData.studentEmail,
+                        password: ptData.password,
+                        options:  { data: { role: 'student', name: ptData.name, phone: ptData.phone } }
+                    });
+
+                    if (signUpError) {
+                        // If email already registered, try signing them in instead
+                        if (signUpError.message && signUpError.message.toLowerCase().includes('already registered')) {
+                            const errEl = document.getElementById('pt-global-error');
+                            errEl.textContent = 'This email already has a portal account. Please sign in instead, or use a different email.';
+                            errEl.style.display = 'block';
+                            btn.disabled = false;
+                            btn.textContent = 'Submit Application';
+                            return;
+                        }
+                        throw signUpError;
+                    }
+
+                    const studentId = signUpData.user ? signUpData.user.id : null;
+
                     await sb.from('admissions').insert({
                         id:          ref,
                         name:        ptData.name,
-                        email:       ptData.parentEmail,
+                        email:       ptData.studentEmail,
                         phone:       ptData.phone,
                         gender:      ptData.gender,
                         level:       ptData.grade,
                         curriculum:  ptData.curriculum,
-                        notes:       `Part-Time application. Learning type: Part-Time.${ptData.studentEmail ? ' Student email: ' + ptData.studentEmail : ''}`,
+                        notes:       `Part-Time application. Learning type: Part-Time.${ptData.parentEmail ? ' Parent email: ' + ptData.parentEmail : ''}`,
                         status:      'pending',
-                        programme_name: 'Part-Time'
+                        programme_name: 'Part-Time',
+                        student_id:  studentId
                     });
                 }
 
-                // 1. Send confirmation to parent
+                // 1. Send confirmation to student
                 await sendApplicationEmails({
                     toName:          ptData.name,
-                    toEmail:         ptData.parentEmail,
+                    toEmail:         ptData.studentEmail,
                     refNumber:       ref,
                     applicationType: 'Student Application (Part-Time)',
                     extraDetails:    `Grade: ${ptData.grade} | Curriculum: ${ptData.curriculum}`
-                }).catch(e => console.warn('[EmailJS] Part-time parent email error:', e));
+                }).catch(e => console.warn('[EmailJS] Part-time student email error:', e));
 
-                // 2. Send confirmation to student directly (if they provided their own email)
-                if (ptData.studentEmail) {
+                // 2. Send copy to parent if they provided their email
+                if (ptData.parentEmail) {
                     await sendApplicationEmails({
                         toName:          ptData.name,
-                        toEmail:         ptData.studentEmail,
+                        toEmail:         ptData.parentEmail,
                         refNumber:       ref,
                         applicationType: 'Student Application (Part-Time)',
                         extraDetails:    `Grade: ${ptData.grade} | Curriculum: ${ptData.curriculum}`
-                    }).catch(e => console.warn('[EmailJS] Part-time student email error:', e));
+                    }).catch(e => console.warn('[EmailJS] Part-time parent email error:', e));
                 }
 
                 // Reset button before transitioning to success screen
