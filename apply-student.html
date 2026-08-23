@@ -1268,6 +1268,10 @@
                     }).catch(e => console.warn('[EmailJS] Part-time student email error:', e));
                 }
 
+                // Reset button before transitioning to success screen
+                btn.disabled = false;
+                btn.textContent = 'Submit Application';
+
                 showSuccess(ref);
             } catch (e) {
                 const errEl = document.getElementById('pt-global-error');
@@ -1528,12 +1532,23 @@
         }
 
         function showSuccess(ref) {
+            // Hide all form containers
             document.getElementById('progress-container').style.display = 'none';
             document.getElementById('form-container').style.display = 'none';
+            const ptContainer = document.getElementById('parttime-container');
+            if (ptContainer) ptContainer.style.display = 'none';
+
+            // Show success screen
             const success = document.getElementById('success-screen');
             success.style.display = 'block';
             document.getElementById('ref-badge-text').textContent = ref;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Scroll to the top of the success screen — scrollIntoView is
+            // more reliable than window.scrollTo on mobile browsers
+            setTimeout(() => {
+                success.scrollIntoView({ top: 0, behavior: 'smooth', block: 'start' });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 50);
         }
 
         async function handleFinalSubmit() {

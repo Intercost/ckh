@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Classes - CKH Teacher Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/db.js"></script>
+  <link rel="icon" type="image/png" href="../ckh-nobg.png">
+
+  <style>
+    /* ── Schedule form modal ── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(7,27,58,0.55);
+      backdrop-filter: blur(4px);
+      z-index: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+      background: white;
+      border-radius: 18px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-box h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.4rem;
+      color: var(--navy-900, #0a274f);
+      margin: 0 0 1.25rem;
+    }
+
+    /* ── Field helpers ── */
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink, #14213d);
+      margin-bottom: 5px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line, rgba(10,39,79,0.14));
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--ink, #14213d);
+      box-sizing: border-box;
+      background: #fafbfc;
+      transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--navy-800, #0f3060);
+      background: white;
+    }
+    .field textarea { resize: vertical; min-height: 70px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── Class cards ── */
+    .class-card {
+      background: white;
+      border: 1px solid var(--line, rgba(10,39,79,0.14));
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: box-shadow 0.2s;
+    }
+    .class-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+
+    .class-date-block {
+      flex-shrink: 0;
+      width: 52px;
+      background: var(--navy-900, #0a274f);
+      border-radius: 10px;
+      text-align: center;
+      padding: 8px 4px;
+      color: white;
+    }
+    .class-date-block .cdb-day {
+      font-size: 22px;
+      font-weight: 700;
+      font-family: 'Fraunces', serif;
+      line-height: 1;
+    }
+    .class-date-block .cdb-mon {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.75;
+    }
+
+    .class-info { flex: 1; min-width: 0; }
+    .class-info .ci-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink, #14213d);
+      margin: 0 0 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .class-info .ci-meta {
+      font-size: 12.5px;
+      color: var(--ink-soft, #4a5674);
+      margin-bottom: 10px;
+    }
+
+    .class-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .btn-start {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+    .btn-start:hover { background: #15803d; }
+    .btn-start:disabled { background: #9ca3af; cursor: not-allowed; }
+
+    .btn-delete {
+      background: transparent;
+      color: #dc2626;
+      border: 1px solid #fca5a5;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .btn-delete:hover { background: #fee2e2; }
+
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #ef4444;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      background: white;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .badge-soon {
+      display: inline-block;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-ended {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #64748b;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .schedule-btn {
+      background: var(--gold-600, #a97c22);
+      color: white;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.2s;
+    }
+    .schedule-btn:hover { background: var(--gold-500, #c9a13a); }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 1.25rem;
+    }
+    .btn-cancel {
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-save {
+      background: var(--navy-900, #0a274f);
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--navy-800, #0f3060); }
+    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    #formError {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .section-header h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+      color: var(--navy-900);
+      margin: 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--ink-soft);
+      font-size: 14px;
+    }
+    .empty-state .es-icon { font-size: 2.5rem; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<!-- Mobile Header -->
+<div class="mobile-header">
+  <button class="hamburger-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <div class="mobile-brand">
+    <img src="../ckh-nobg.png" alt="CKH Crest">
+    <span class="name">CKH Teacher Portal</span>
+  </div>
+  <div style="width:40px;"></div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="dash-shell">
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="dash-brand">
+      <div class="dash-brand-mark">
+        <img src="../ckh-nobg.png" alt="CKH Crest">
+        <span class="name">CKH Teacher Portal</span>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="dash-nav-container">
+      <a href="dashboard.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="courses.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 19V5.5"/></svg>
+        My Courses
+      </a>
+      <a href="lessons.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z"/><path d="M9 8h7M9 12h7"/></svg>
+        Lesson Planning
+      </a>
+      <a href="live.html" class="dash-nav-item active">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-4v12l-6-4"/></svg>
+        Live Classes
+      </a>
+      <a href="assignments.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6l1 3h3v15H5V6h3l1-3Z"/><path d="M9 12h6M9 16h6"/></svg>
+        Assignments
+      </a>
+      <a href="assessments.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M9 9h6v6H9z"/></svg>
+        Assessments
+      </a>
+      <a href="attendance.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Attendance
+      </a>
+      <a href="gradebook.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M11 19V4M18 19v-6"/></svg>
+        Gradebook
+      </a>
+      <a href="communication.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4V5Z"/></svg>
+        Communication
+      </a>
+      <a href="reports.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V10M10 21V3M16 21v-7M22 21H2"/></svg>
+        Reports &amp; Analytics
+      </a>
+      <a href="account.html" class="dash-nav-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        My Account
+      </a>
+    </div>
+    <div class="dash-bottom-section">
+      <div class="dash-user-info">
+        <div class="dash-user-avatar" id="userAvatar">JO</div>
+        <div class="dash-user-details">
+          <p class="dash-user-name" id="userName">Teacher</p>
+          <p class="dash-user-role" id="userRole">Teacher</p>
+        </div>
+      </div>
+      <button class="dash-logout-btn" onclick="logout(event)">Sign Out</button>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <h1>Live Classes</h1>
+        <div class="who">Schedule and start your live video sessions</div>
+      </div>
+      <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
+    </div>
+
+    <!-- Section: My Scheduled Classes -->
+    <div class="section-header">
+      <h2>My Scheduled Classes</h2>
+      <button class="schedule-btn" onclick="openModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Schedule a Class
+      </button>
+    </div>
+
+    <div id="classesList">
+      <p style="color:var(--ink-soft);font-size:14px;">Loading your classes…</p>
+    </div>
+  </main>
+</div>
+
+<!-- ── Schedule Modal ── -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-box">
+    <h2>📅 Schedule a Live Class</h2>
+    <div id="formError"></div>
+
+    <div class="field">
+      <label for="fc-title">Class title *</label>
+      <input type="text" id="fc-title" placeholder="e.g. Year 8 Mathematics — Algebra">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="fc-subject">Subject</label>
+        <input type="text" id="fc-subject" placeholder="e.g. Mathematics">
+      </div>
+      <div class="field">
+        <label for="fc-grade">Grade / Year</label>
+        <input type="text" id="fc-grade" placeholder="e.g. Year 8">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="fc-date">Date *</label>
+        <input type="date" id="fc-date">
+      </div>
+      <div class="field">
+        <label for="fc-time">Start time *</label>
+        <input type="time" id="fc-time">
+      </div>
+    </div>
+    <div class="field">
+      <label for="fc-duration">Duration (minutes)</label>
+      <select id="fc-duration">
+        <option value="30">30 minutes</option>
+        <option value="45">45 minutes</option>
+        <option value="60" selected>1 hour</option>
+        <option value="90">1.5 hours</option>
+        <option value="120">2 hours</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="fc-description">Description / Notes</label>
+      <textarea id="fc-description" placeholder="Topics to cover, what students should prepare, etc."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="saveBtn" onclick="saveClass()">Schedule Class</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentUser = null;
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await sb.auth.signOut();
+    window.location.href = '../index.html';
+  }
+
+  function openModal() {
+    // Default date to today, time to next round hour
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('fc-date').value =
+      `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    now.setHours(now.getHours() + 1, 0, 0, 0);
+    document.getElementById('fc-time').value = `${pad(now.getHours())}:00`;
+    // Pre-fill subject from teacher's subjects
+    if (currentUser && currentUser.subjects && currentUser.subjects.length) {
+      document.getElementById('fc-subject').value = currentUser.subjects[0];
+    }
+    document.getElementById('fc-title').value = '';
+    document.getElementById('fc-grade').value = '';
+    document.getElementById('fc-description').value = '';
+    document.getElementById('formError').style.display = 'none';
+    document.getElementById('modalBackdrop').classList.add('open');
+    document.getElementById('fc-title').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('modalBackdrop').classList.remove('open');
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('modalBackdrop').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  function generateRoomName() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let r = '';
+    for (let i = 0; i < 8; i++) r += chars[Math.floor(Math.random() * chars.length)];
+    return r;
+  }
+
+  async function saveClass() {
+    const title = document.getElementById('fc-title').value.trim();
+    const date  = document.getElementById('fc-date').value;
+    const time  = document.getElementById('fc-time').value;
+    const errEl = document.getElementById('formError');
+    errEl.style.display = 'none';
+
+    if (!title || !date || !time) {
+      errEl.textContent = 'Please fill in the title, date, and start time.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Scheduling…';
+
+    try {
+      const scheduledAt = new Date(`${date}T${time}:00`).toISOString();
+      const roomName = generateRoomName();
+
+      const { error } = await sb.from('virtual_classes').insert({
+        teacher_id:       currentUser.id,
+        teacher_name:     currentUser.name,
+        title:            title,
+        subject:          document.getElementById('fc-subject').value.trim() || null,
+        grade:            document.getElementById('fc-grade').value.trim() || null,
+        curriculum:       currentUser.curriculum || null,
+        scheduled_at:     scheduledAt,
+        duration_minutes: parseInt(document.getElementById('fc-duration').value),
+        room_name:        roomName,
+        description:      document.getElementById('fc-description').value.trim() || null,
+        status:           'scheduled'
+      });
+
+      if (error) throw error;
+      closeModal();
+      await loadClasses();
+    } catch (e) {
+      errEl.textContent = e.message || 'Failed to schedule the class. Please try again.';
+      errEl.style.display = 'block';
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Schedule Class';
+    }
+  }
+
+  async function deleteClass(id) {
+    if (!confirm('Are you sure you want to cancel this class? Students will no longer see it.')) return;
+    const { error } = await sb.from('virtual_classes').delete().eq('id', id);
+    if (!error) await loadClasses();
+  }
+
+  function classStatus(scheduledAt, durationMins) {
+    const now = Date.now();
+    const start = new Date(scheduledAt).getTime();
+    const end   = start + durationMins * 60000;
+    const soon  = start - 10 * 60000; // 10 mins before
+    if (now >= start && now <= end) return 'live';
+    if (now >= soon && now < start)  return 'soon';
+    if (now > end)                   return 'ended';
+    return 'upcoming';
+  }
+
+  async function loadClasses() {
+    const container = document.getElementById('classesList');
+    container.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;">Loading…</p>';
+
+    const { data, error } = await sb
+      .from('virtual_classes')
+      .select('*')
+      .eq('teacher_id', currentUser.id)
+      .order('scheduled_at', { ascending: true });
+
+    if (error || !data || data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="es-icon">📹</div>
+          <p>No classes scheduled yet.<br>Click <strong>Schedule a Class</strong> to get started.</p>
+        </div>`;
+      return;
+    }
+
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    container.innerHTML = data.map(cls => {
+      const dt = new Date(cls.scheduled_at);
+      const day = dt.getDate();
+      const mon = months[dt.getMonth()];
+      const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateStr = dt.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const status  = classStatus(cls.scheduled_at, cls.duration_minutes);
+      const jitsiUrl = `https://meet.jit.si/ckh-${cls.room_name}`;
+
+      let statusBadge = '';
+      let startDisabled = '';
+      if (status === 'live') {
+        statusBadge = `<span class="badge-live"><span class="live-dot"></span> LIVE NOW</span>`;
+      } else if (status === 'soon') {
+        statusBadge = `<span class="badge-soon">⏳ Starting soon</span>`;
+      } else if (status === 'ended') {
+        statusBadge = `<span class="badge-ended">✓ Ended</span>`;
+        startDisabled = 'disabled title="This class has ended"';
+      }
+
+      return `
+        <div class="class-card">
+          <div class="class-date-block">
+            <div class="cdb-day">${day}</div>
+            <div class="cdb-mon">${mon}</div>
+          </div>
+          <div class="class-info">
+            <div class="ci-title">${cls.title}</div>
+            <div class="ci-meta">
+              ${cls.subject ? cls.subject + ' · ' : ''}
+              ${cls.grade ? cls.grade + ' · ' : ''}
+              ${timeStr} · ${cls.duration_minutes} min
+              ${statusBadge ? ' &nbsp;' + statusBadge : ''}
+            </div>
+            ${cls.description ? `<div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;">${cls.description}</div>` : ''}
+            <div class="class-actions">
+              <button class="btn-start" ${startDisabled}
+                onclick="window.open('${jitsiUrl}', '_blank')">
+                📹 Start Class
+              </button>
+              <button class="btn-delete" onclick="deleteClass('${cls.id}')">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  window.onload = async function() {
+    const user = await getCurrentUser();
+    if (!user) { window.location.href = '../index.html'; return; }
+    if (user.role !== 'teacher') {
+      window.location.href = user.role === 'student' ? '../student/dashboard.html' : '../admin/dashboard.html';
+      return;
+    }
+    currentUser = user;
+
+    const parts = user.name.split(' ');
+    const initials = parts.length >= 2
+      ? parts[0][0].toUpperCase() + parts[1][0].toUpperCase()
+      : parts[0][0].toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userRole').textContent = 'Teacher';
+
+    await loadClasses();
+
+    // Auto-refresh every 60 s so Live badge appears without page reload
+    setInterval(loadClasses, 60000);
+  };
+</script>
+
+</body>
+</html>

@@ -11,47 +11,154 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabaseClient.js"></script>
   <script src="../js/db.js"></script>
+  <link rel="icon" type="image/png" href="../ckh-nobg.png">
+
   <style>
-    .live-card {
-      background: var(--ivory-100);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 20px;
+    /* ── Class cards ── */
+    .class-card {
+      background: white;
+      border: 1px solid var(--line, rgba(10,39,79,0.14));
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: box-shadow 0.2s;
     }
-    .live-indicator {
+    .class-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .class-card.is-ended { opacity: 0.55; }
+
+    .class-date-block {
+      flex-shrink: 0;
+      width: 52px;
+      background: var(--navy-900, #0a274f);
+      border-radius: 10px;
+      text-align: center;
+      padding: 8px 4px;
+      color: white;
+    }
+    .class-card.is-live .class-date-block { background: #dc2626; }
+    .class-card.is-ended .class-date-block { background: #94a3b8; }
+
+    .cdb-day {
+      font-size: 22px;
+      font-weight: 700;
+      font-family: 'Fraunces', serif;
+      line-height: 1;
+    }
+    .cdb-mon {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.8;
+    }
+
+    .class-info { flex: 1; min-width: 0; }
+    .ci-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink, #14213d);
+      margin: 0 0 4px;
+    }
+    .ci-meta {
+      font-size: 12.5px;
+      color: var(--ink-soft, #4a5674);
+      margin-bottom: 12px;
+    }
+
+    .btn-join {
+      background: var(--navy-900, #0a274f);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-join:hover { background: #0f3060; transform: translateY(-1px); }
+    .btn-join.live-pulse {
+      background: #dc2626;
+      animation: btn-pulse 2s infinite;
+    }
+    @keyframes btn-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
+    }
+    .btn-join:disabled {
+      background: #e2e8f0;
+      color: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      animation: none;
+    }
+
+    .badge-live {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       background: #ef4444;
       color: white;
-      padding: 6px 12px;
+      padding: 3px 10px;
       border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
     }
     .live-dot {
-      width: 8px;
-      height: 8px;
-      background: white;
-      border-radius: 50%;
+      width: 7px; height: 7px;
+      background: white; border-radius: 50%;
       animation: pulse 1.5s infinite;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+      50% { opacity: 0.3; }
     }
-    .join-btn {
-      background: var(--navy-900);
-      color: var(--ivory-100);
-      border: none;
-      padding: 12px 24px;
-      border-radius: 20px;
-      font-weight: 600;
-      cursor: pointer;
+    .badge-soon {
+      display: inline-block;
+      background: #fef3c7; color: #92400e;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
     }
+    .badge-upcoming {
+      display: inline-block;
+      background: #eff6ff; color: #1d4ed8;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+    .badge-ended {
+      display: inline-block;
+      background: #f1f5f9; color: #64748b;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+
+    .day-heading {
+      font-family: 'Fraunces', serif;
+      font-size: 1.05rem;
+      color: var(--navy-900, #0a274f);
+      margin: 24px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line, rgba(10,39,79,0.12));
+    }
+    .day-heading:first-child { margin-top: 0; }
+
+    .countdown {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 4px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--ink-soft);
+      font-size: 14px;
+    }
+    .empty-state .es-icon { font-size: 2.5rem; margin-bottom: 12px; }
   </style>
-  <link rel="icon" type="image/png" href="../ckh-nobg.png">
 </head>
 <body>
 
@@ -104,11 +211,11 @@
       </a>
       <a href="assessments.html" class="dash-nav-item">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M9 9h6v6H9z"/></svg>
-        Assessments & Exams
+        Assessments &amp; Exams
       </a>
       <a href="grades.html" class="dash-nav-item">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M11 19V4M18 19v-6"/></svg>
-        Grades & Reports
+        Grades &amp; Reports
       </a>
       <a href="attendance.html" class="dash-nav-item">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
@@ -131,7 +238,7 @@
       <div class="dash-user-info">
         <div class="dash-user-avatar" id="userAvatar">AK</div>
         <div class="dash-user-details">
-          <p class="dash-user-name" id="userName">Amara Kamau</p>
+          <p class="dash-user-name" id="userName">Student</p>
           <p class="dash-user-role" id="userRole">Student</p>
         </div>
       </div>
@@ -143,13 +250,17 @@
     <div class="dash-topbar">
       <div>
         <h1>Live Classes</h1>
-        <div class="who">Join your scheduled live sessions</div>
+        <div class="who">Your upcoming and live video sessions</div>
       </div>
       <a href="#" class="exit-link" onclick="logout(event)">← Exit to school site</a>
     </div>
 
-    <div id="pendingBanner" style="display:none;background:#fff8e6;border:1px solid #f0d78c;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;color:var(--navy-900);"></div>
+    <!-- Pending admission banner -->
+    <div id="pendingBanner" style="display:none;background:#fff8e6;border:1px solid #f0d78c;
+         border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;
+         color:var(--navy-900);"></div>
 
+    <!-- Classes container -->
     <div id="liveClassesContainer">
       <p style="color:var(--ink-soft);font-size:13.5px;">Loading your schedule…</p>
     </div>
@@ -158,10 +269,8 @@
 
 <script>
   function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('open');
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
   }
 
   async function logout(e) {
@@ -170,22 +279,137 @@
     window.location.href = '../index.html';
   }
 
-  window.onload = async function() {
-    const user = await getCurrentUser();
-    if (!user) {
-      window.location.href = '../index.html';
+  function classStatus(scheduledAt, durationMins) {
+    const now   = Date.now();
+    const start = new Date(scheduledAt).getTime();
+    const end   = start + durationMins * 60000;
+    const soon  = start - 10 * 60000; // 10 min before
+    if (now >= start && now <= end) return 'live';
+    if (now >= soon && now < start)  return 'soon';
+    if (now > end)                   return 'ended';
+    return 'upcoming';
+  }
+
+  function formatCountdown(scheduledAt) {
+    const diff = new Date(scheduledAt).getTime() - Date.now();
+    if (diff <= 0) return '';
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    if (h > 24) {
+      const days = Math.floor(h / 24);
+      return `Starts in ${days} day${days > 1 ? 's' : ''}`;
+    }
+    if (h > 0) return `Starts in ${h}h ${m}m`;
+    return `Starts in ${m} min`;
+  }
+
+  async function renderClasses() {
+    const container = document.getElementById('liveClassesContainer');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+    const { data, error } = await sb
+      .from('virtual_classes')
+      .select('*')
+      .order('scheduled_at', { ascending: true });
+
+    if (error || !data || data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="es-icon">📹</div>
+          <p>No live classes scheduled yet.<br>Your teacher will post sessions here.</p>
+        </div>`;
       return;
     }
+
+    // Group by date label
+    const groups = {};
+    data.forEach(cls => {
+      const dt = new Date(cls.scheduled_at);
+      const dateKey = dt.toDateString(); // e.g. "Sat Aug 24 2026"
+      if (!groups[dateKey]) groups[dateKey] = { dt, classes: [] };
+      groups[dateKey].classes.push(cls);
+    });
+
+    let html = '';
+    Object.values(groups).forEach(({ dt, classes }) => {
+      const today    = new Date().toDateString();
+      const tomorrow = new Date(Date.now() + 86400000).toDateString();
+      let dayLabel   = days[dt.getDay()] + ', ' + dt.getDate() + ' ' + months[dt.getMonth()] + ' ' + dt.getFullYear();
+      if (dt.toDateString() === today)    dayLabel = '📅 Today — ' + dayLabel;
+      if (dt.toDateString() === tomorrow) dayLabel = '🌅 Tomorrow — ' + dayLabel;
+
+      html += `<div class="day-heading">${dayLabel}</div>`;
+
+      classes.forEach(cls => {
+        const status   = classStatus(cls.scheduled_at, cls.duration_minutes);
+        const jitsiUrl = `https://meet.jit.si/ckh-${cls.room_name}`;
+        const dtObj    = new Date(cls.scheduled_at);
+        const timeStr  = dtObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const day      = dtObj.getDate();
+        const mon      = months[dtObj.getMonth()];
+
+        let statusBadge = '';
+        let joinBtn = '';
+
+        if (status === 'live') {
+          statusBadge = `<span class="badge-live"><span class="live-dot"></span> LIVE NOW</span>`;
+          joinBtn = `<button class="btn-join live-pulse" onclick="window.open('${jitsiUrl}','_blank')">📹 Join Now</button>`;
+        } else if (status === 'soon') {
+          statusBadge = `<span class="badge-soon">⏳ Starting soon</span>`;
+          joinBtn = `<button class="btn-join" onclick="window.open('${jitsiUrl}','_blank')">📹 Join Class</button>`;
+        } else if (status === 'ended') {
+          statusBadge = `<span class="badge-ended">✓ Ended</span>`;
+          joinBtn = `<button class="btn-join" disabled>Class Ended</button>`;
+        } else {
+          const countdown = formatCountdown(cls.scheduled_at);
+          statusBadge = `<span class="badge-upcoming">🗓 Upcoming</span>`;
+          joinBtn = `<button class="btn-join" disabled title="Available 10 minutes before class starts">Join Class</button>
+                     ${countdown ? `<div class="countdown">${countdown}</div>` : ''}`;
+        }
+
+        const cardClass = status === 'live' ? 'class-card is-live' :
+                          status === 'ended' ? 'class-card is-ended' : 'class-card';
+
+        html += `
+          <div class="${cardClass}">
+            <div class="class-date-block">
+              <div class="cdb-day">${day}</div>
+              <div class="cdb-mon">${mon}</div>
+            </div>
+            <div class="class-info">
+              <div class="ci-title">${cls.title}</div>
+              <div class="ci-meta">
+                ${cls.teacher_name ? '👤 ' + cls.teacher_name + ' &nbsp;·&nbsp; ' : ''}
+                ${cls.subject ? cls.subject + ' &nbsp;·&nbsp; ' : ''}
+                ${cls.grade ? cls.grade + ' &nbsp;·&nbsp; ' : ''}
+                ⏰ ${timeStr} &nbsp;·&nbsp; ${cls.duration_minutes} min
+                &nbsp; ${statusBadge}
+              </div>
+              ${cls.description ? `<div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;line-height:1.5;">${cls.description}</div>` : ''}
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+                ${joinBtn}
+              </div>
+            </div>
+          </div>`;
+      });
+    });
+
+    container.innerHTML = html;
+  }
+
+  window.onload = async function() {
+    const user = await getCurrentUser();
+    if (!user) { window.location.href = '../index.html'; return; }
     if (user.role !== 'student') {
       window.location.href = user.role === 'teacher' ? '../teacher/dashboard.html' : '../admin/dashboard.html';
       return;
     }
 
-    // Set user info in sidebar
-    const nameParts = user.name.split(' ');
-    const initials = nameParts.length >= 2 
-      ? nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase() 
-      : nameParts[0][0].toUpperCase();
+    const parts = user.name.split(' ');
+    const initials = parts.length >= 2
+      ? parts[0][0].toUpperCase() + parts[1][0].toUpperCase()
+      : parts[0][0].toUpperCase();
     document.getElementById('userAvatar').textContent = initials;
     document.getElementById('userName').textContent = user.name;
     document.getElementById('userRole').textContent = user.role;
@@ -193,52 +417,16 @@
     // Check admission status
     const myApps = await getMyAdmissionApplications(user.email);
     const latest = myApps.sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''))[0];
-    const isApproved = !latest || latest.status === 'approved';
     const banner = document.getElementById('pendingBanner');
     if (latest && latest.status !== 'approved') {
       banner.textContent = 'Your live class schedule will appear here once your admission has been approved.';
       banner.style.display = 'block';
     }
 
-    const container = document.getElementById('liveClassesContainer');
-    const slots = await getDB('timetable') || [];
+    await renderClasses();
 
-    if (!isApproved || slots.length === 0) {
-      container.innerHTML = isApproved
-        ? '<p style="color:var(--ink-soft);font-size:13.5px;">No live sessions have been scheduled yet. Check back soon.</p>'
-        : '<p style="color:var(--ink-soft);font-size:13.5px;">Your schedule will appear here once your admission has been approved.</p>';
-      return;
-    }
-
-    const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    const sorted = slots.slice().sort((a, b) =>
-      dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day) || (a.time || '').localeCompare(b.time || '')
-    );
-
-    // Group by day
-    const byDay = {};
-    sorted.forEach(s => {
-      if (!byDay[s.day]) byDay[s.day] = [];
-      byDay[s.day].push(s);
-    });
-
-    container.innerHTML = Object.entries(byDay).map(([day, sessions]) => `
-      <div style="margin-bottom:24px;">
-        <h3 style="font-family:'Fraunces',serif;font-size:17px;color:var(--navy-900);margin:0 0 12px;">${day}</h3>
-        ${sessions.map(s => `
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
-                      background:var(--ivory);border:1px solid var(--line);border-radius:12px;
-                      padding:16px 18px;margin-bottom:10px;">
-            <div>
-              <div style="font-weight:600;font-size:15px;color:var(--ink);">${s.course}</div>
-              <div style="font-size:12.5px;color:var(--ink-soft);margin-top:3px;">⏰ ${s.time}</div>
-            </div>
-            ${s.room
-              ? `<a href="${s.room}" target="_blank" class="btn btn-gold btn-sm">Join session</a>`
-              : `<span style="font-size:12.5px;color:var(--ink-soft);">Link not set yet</span>`
-            }
-          </div>`).join('')}
-      </div>`).join('');
+    // Auto-refresh every 30 s so Live badge and join buttons update without reload
+    setInterval(renderClasses, 30000);
   };
 </script>
 
