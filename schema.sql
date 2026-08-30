@@ -31,7 +31,14 @@ create table profiles (
   curriculum  text,
   subjects    text[] not null default '{}',
   created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now()
+  updated_at  timestamptz not null default now(),
+  -- Teacher Agreement & Online Teaching Code of Conduct sign-off.
+  -- Teachers sign this on first login after a successful interview,
+  -- before they can reach any teacher portal page.
+  agreement_signed      boolean not null default false,
+  agreement_signed_at   timestamptz,
+  agreement_version     text,
+  agreement_signed_name text  -- the typed name entered as their signature
 );
 
 -- Auto-create a profile row whenever a new auth user signs up (self signup
@@ -81,6 +88,32 @@ $$ language sql stable security definer set search_path = public;
 create function public.is_staff() returns boolean as $$
   select public.current_role() in ('admin', 'teacher');
 $$ language sql stable security definer set search_path = public;
+
+-- ---------------------------------------------------------------------
+-- Security hardening: prevent privilege escalation.
+-- The "profiles_update" policy below (correctly) lets a user update
+-- their OWN row, e.g. to sign the agreement or change their phone
+-- number. Without this trigger, that same policy would also let any
+-- signed-in student or teacher run
+--   update profiles set role = 'admin' where id = auth.uid()
+-- using nothing but the public anon key, since RLS's USING/WITH CHECK
+-- clauses don't restrict individual columns. This trigger blocks role
+-- changes from anyone except an existing admin, regardless of what the
+-- row-level policy allows.
+-- ---------------------------------------------------------------------
+create function public.prevent_role_self_escalation()
+returns trigger as $$
+begin
+  if new.role is distinct from old.role and not public.is_admin() then
+    raise exception 'Only an admin can change a user''s role';
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+create trigger trg_prevent_role_self_escalation
+  before update on profiles
+  for each row execute procedure public.prevent_role_self_escalation();
 
 -- ---------------------------------------------------------------------
 -- courses (replaces ckh_courses). `teacher` stays a plain display name,
@@ -252,7 +285,16 @@ create table admissions (
   admin_note      text,
   submitted_at    timestamptz not null default now(),
   reviewed_at     timestamptz,
-  student_id      uuid references profiles (id)   -- set at signup time, see below
+  student_id      uuid references profiles (id),  -- set at signup time, see below
+  -- Online Student Terms & Conditions sign-off, captured at application
+  -- time. The check constraint below rejects any insert that doesn't
+  -- explicitly set this to true, so the application form can't be
+  -- bypassed by skipping the agreement step client-side.
+  agreement_accepted    boolean not null default false,
+  agreement_accepted_at timestamptz,
+  agreement_version     text,
+  agreement_signed_name text,  -- the typed name entered as their signature
+  constraint admissions_agreement_required check (agreement_accepted = true)
 );
 
 -- ---------------------------------------------------------------------

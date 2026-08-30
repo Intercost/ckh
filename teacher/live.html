@@ -662,6 +662,10 @@
       window.location.href = user.role === 'student' ? '../student/dashboard.html' : '../admin/dashboard.html';
       return;
     }
+    if (!user.agreementSigned) {
+      window.location.href = 'agreement.html';
+      return;
+    }
     currentUser = user;
 
     const parts = user.name.split(' ');

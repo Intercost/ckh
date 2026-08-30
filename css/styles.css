@@ -1179,3 +1179,114 @@ nav.links a:hover, nav.links a:focus-visible {
   flex: none !important;
   font-weight: 400 !important;
 }
+
+/* ── Password strength meter (used on apply-student, index register,
+   teacher/account, admin/account) — injected by js/password-strength.js ── */
+.pw-input-wrap {
+  position: relative;
+}
+
+.pw-input-wrap input[type="password"],
+.pw-input-wrap input[type="text"] {
+  padding-right: 2.75rem !important;
+}
+
+.pw-toggle-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft, #6b7280);
+  padding: 0;
+}
+
+.pw-toggle-btn:hover {
+  color: var(--navy-900, #0a274f);
+}
+
+.pw-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pw-strength-block {
+  margin-top: 0.6rem;
+}
+
+.pw-bars {
+  display: flex;
+  gap: 6px;
+}
+
+.pw-bar {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line, #e2e2e2);
+  transition: background 0.2s ease;
+}
+
+.pw-bar.pw-bar-1 { background: #e74c3c; }
+.pw-bar.pw-bar-2 { background: #e67e22; }
+.pw-bar.pw-bar-3 { background: #d4ac0d; }
+.pw-bar.pw-bar-4 { background: #a97c22; }
+.pw-bar.pw-bar-5 { background: #27ae60; }
+
+.pw-strength-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft, #6b7280);
+  margin: 6px 0 4px;
+}
+
+.pw-strength-text {
+  font-weight: 600;
+  color: var(--ink, #14213d);
+}
+
+.pw-rules {
+  list-style: none;
+  padding: 10px 12px;
+  margin: 4px 0 0;
+  background: var(--ivory, #f8f4ea);
+  border: 1px solid var(--line, rgba(10,39,79,0.14));
+  border-radius: 8px;
+  font-size: 12.5px;
+  display: grid;
+  gap: 4px;
+}
+
+.pw-rules li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #a0a0a0;
+  transition: color 0.2s ease;
+}
+
+.pw-rules li.pass {
+  color: #1e8e50;
+}
+
+.pw-rules li .pw-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pw-rules li .pw-icon svg {
+  width: 14px;
+  height: 14px;
+}

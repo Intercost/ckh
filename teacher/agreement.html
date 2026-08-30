@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Teacher Agreement - CKH Teacher Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/db.js"></script>
+  <link rel="icon" type="image/png" href="../ckh-nobg.png">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f4ea;
+      margin: 0;
+      color: #14213d;
+    }
+    h1, h2, h3 { font-family: 'Fraunces', serif; color: var(--navy-950); }
+
+    .agr-header {
+      background: var(--navy-950);
+      color: white;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .agr-header img { height: 44px; }
+    .agr-header h1 { color: white; margin: 0; font-size: 1.15rem; font-weight: 600; }
+    .agr-header p { margin: 0; color: var(--gold-300, #e3c47c); font-size: 0.8rem; }
+
+    .agr-shell { max-width: 820px; margin: 2.5rem auto; padding: 0 1rem 3rem; }
+
+    .agr-banner {
+      background: var(--gold-100, #f3e6c4);
+      border: 1px solid var(--gold-500, #c9a13a);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--navy-950);
+    }
+
+    .agr-card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .agr-scroll {
+      max-height: 55vh;
+      overflow-y: auto;
+      padding: 1.75rem 2rem;
+      border-bottom: 1px solid rgba(10,39,79,0.14);
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: #333;
+    }
+
+    .agr-scroll h2 { font-size: 1.4rem; margin: 0 0 0.25rem; }
+    .agr-scroll .agr-subtitle { color: var(--gold-600, #a97c22); font-style: italic; margin-bottom: 1.5rem; font-size: 0.85rem; }
+    .view-full-pdf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8f4ea;
+      border: 1px solid rgba(10,39,79,0.14);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--navy-900);
+      text-decoration: none;
+      margin-bottom: 1rem;
+    }
+    .view-full-pdf-btn:hover { background: var(--gold-100, #f3e6c4); border-color: var(--gold-500, #c9a13a); }
+    .view-full-pdf-btn svg { width: 13px; height: 13px; flex: none; }
+    .agr-scroll h3 { font-size: 0.95rem; margin: 1.4rem 0 0.4rem; color: var(--navy-900); }
+    .agr-scroll p { margin: 0 0 0.6rem; }
+    .agr-scroll ul { margin: 0.4rem 0 0.6rem 1.2rem; padding: 0; }
+    .agr-scroll li { margin-bottom: 0.3rem; }
+
+    .agr-signoff { padding: 1.75rem 2rem; }
+
+    .agr-field { margin-bottom: 1.1rem; }
+    .agr-field label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.4rem; color: var(--ink, #14213d); }
+    .agr-field input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid rgba(10,39,79,0.14);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    .agr-field input[type="text"]:focus { outline: none; border-color: var(--navy-800); }
+
+    .agr-consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      background: #f8f4ea;
+      border: 1px solid rgba(10,39,79,0.14);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .agr-consent input[type="checkbox"] { margin-top: 0.2rem; width: 18px; height: 18px; accent-color: var(--navy-900); cursor: pointer; flex: none; }
+    .agr-consent label { margin: 0; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
+
+    .agr-error {
+      display: none;
+      background: #ffebee;
+      color: #c62828;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .agr-btn {
+      display: inline-block;
+      background: linear-gradient(180deg, var(--gold-500, #c9a13a), var(--gold-600, #a97c22));
+      color: var(--navy-950);
+      border: none;
+      padding: 0.85rem 1.75rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+    .agr-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .agr-loading, .agr-blocked { text-align: center; padding: 4rem 1rem; color: var(--ink-soft, #4a5674); }
+  </style>
+</head>
+<body>
+
+  <div class="agr-header">
+    <img src="../ckh-nobg.png" alt="CKH Crest">
+    <div>
+      <h1>CKH International School</h1>
+      <p>Empowering Minds, Transforming Futures.</p>
+    </div>
+  </div>
+
+  <div class="agr-shell">
+
+    <div id="agr-loading" class="agr-loading">Loading your details…</div>
+
+    <div id="agr-blocked" class="agr-blocked" style="display:none;"></div>
+
+    <div id="agr-content" style="display:none;">
+      <div class="agr-banner">
+        Before you can access the Teacher Portal, please read and sign the Teacher Agreement
+        and Online Teaching Code of Conduct below. This is required once, after a successful
+        interview, before you start working with CKH students.
+      </div>
+
+      <div class="agr-card">
+        <div class="agr-scroll">
+          <a href="../assets/CKH_Teacher_Agreement.pdf" target="_blank" rel="noopener" class="view-full-pdf-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            View full document (PDF)
+          </a>
+          <h2>Teacher Agreement and Online Teaching Code of Conduct</h2>
+          <div class="agr-subtitle">"Empowering Minds, Transforming Futures."</div>
+
+          <h3>1. Purpose and Scope</h3>
+          <p>This Agreement establishes the terms and conditions governing your engagement by CKH
+          International School and sets out the professional, academic, safeguarding, confidentiality
+          and online teaching standards you agree to follow.</p>
+
+          <h3>2–4. Appointment, Responsibilities &amp; Online Delivery</h3>
+          <p>You agree to prepare and deliver high-quality online lessons, prepare resources, attend
+          lessons punctually, maintain attendance records, assess and give feedback, monitor student
+          progress, communicate professionally through authorised channels, maintain academic records,
+          attend required meetings/training, and report safeguarding, behavioural, academic or technical
+          concerns. All official lessons are conducted through the official CKH platform or another
+          platform expressly authorised by the School.</p>
+
+          <h3>5–6. Student Communication &amp; No Private Meetings</h3>
+          <p>You must not privately communicate with any CKH student outside the official CKH platform
+          or authorised School channels — this includes personal WhatsApp, Telegram, Facebook, Instagram,
+          TikTok, Snapchat, personal email, personal phone numbers, or any other private messaging app.
+          You must not arrange private one-to-one meetings with students outside the approved platform, or
+          independently offer paid private tutoring without written School approval.</p>
+
+          <h3>7–8. Safeguarding &amp; Professional Boundaries</h3>
+          <p>You will maintain professional boundaries, treat students with dignity, report safeguarding
+          concerns immediately, and never engage in inappropriate, sexual, romantic, grooming, threatening,
+          discriminatory, or secretive conduct with students. You must not develop inappropriate personal
+          relationships with students, flirt, engage in romantic or sexual communication, send inappropriate
+          content, discuss inappropriate personal matters, encourage secrecy, or give personal gifts without
+          School approval.</p>
+
+          <h3>9–10. Camera, Environment &amp; Recording</h3>
+          <p>You will maintain a professional appearance and environment, appropriate background, suitable
+          lighting/sound, and minimise distractions. Where lessons are recorded, recordings may be used for
+          legitimate educational, safeguarding, quality-assurance, training, or administrative purposes. You
+          will not independently record or distribute lessons without authorisation.</p>
+
+          <h3>11–12. Confidentiality &amp; Student Data</h3>
+          <p>You will maintain strict confidentiality of student, parent, staff, financial, academic,
+          business, technology, security, and internal School information. Student information may only be
+          collected, accessed, stored, or used for legitimate educational purposes authorised by the School.
+          Suspected data breaches must be reported immediately.</p>
+
+          <h3>13–17. Academic Standards, Attendance &amp; Assessment</h3>
+          <p>You will follow the approved curriculum, prepare lessons in advance, attend all assigned
+          lessons (notifying the School as soon as reasonably possible if unable to teach), assess fairly,
+          and never alter marks dishonestly, provide unauthorised examination answers, or manipulate
+          results. AI tools may be used only in accordance with School guidelines and must never misrepresent
+          another person's work as your own.</p>
+
+          <h3>18–21. Intellectual Property, Branding &amp; Private Business</h3>
+          <p>Teaching materials created specifically for CKH as part of your duties are subject to the
+          agreed intellectual-property arrangements. You will protect the School's reputation and not use
+          its name, logo, or branding for personal commercial purposes without authorisation, and will not
+          solicit CKH students for private tutoring, paid consultancy, or other commercial services without
+          written School approval.</p>
+
+          <h3>22–26. Communication, Technology &amp; Performance</h3>
+          <p>Parent/guardian communication is conducted through official School channels. You will maintain
+          access to suitable technology for online teaching, keep passwords confidential, report suspicious
+          activity, and participate in required staff meetings and training. The School may monitor teaching
+          quality through lesson observations, feedback, attendance records, and academic reviews.</p>
+
+          <h3>27–29. Payment, Expenses &amp; Conflicts of Interest</h3>
+          <p>Payment is made according to the agreed remuneration arrangement communicated to you separately
+          (payment structure, rate, and frequency). Expenses incurred on behalf of CKH require prior approval
+          where required. You must disclose actual or potential conflicts of interest.</p>
+
+          <h3>30–34. Conduct, Discipline &amp; Termination</h3>
+          <p>Professional conduct is required at all times. Misconduct may include harassment, bullying,
+          discrimination, fraud, theft, confidentiality breaches, unauthorised student contact, safeguarding
+          violations, or conduct that seriously damages the School's reputation. Depending on circumstances,
+          breaches may result in a warning, mandatory training, suspension, restricted platform access,
+          termination, or referral to relevant authorities. Following termination, you must not use
+          confidential School information or systems to contact students for personal, commercial, or
+          unauthorised purposes.</p>
+
+          <h3>35–38. Governing Law, Disputes &amp; Amendments</h3>
+          <p>This Agreement complies with applicable laws concerning online education, employment/services,
+          child protection, safeguarding, privacy, and data protection. The Parties will first attempt
+          good-faith discussion to resolve disputes, and any amendment must be made in writing and approved
+          by authorised representatives.</p>
+
+          <h3>39. Teacher Declaration</h3>
+          <p>By signing below, you confirm that you have read and understood this Agreement, agree to
+          follow School policies, understand safeguarding and professional-boundary requirements, agree not
+          to communicate privately with CKH students outside authorised School channels, agree not to
+          solicit students for unauthorised private services, and agree to protect student and School
+          information.</p>
+
+          <h3>Appendix B — Non-Negotiable Student Communication Rule</h3>
+          <p>All student-teacher communication must remain within the official CKH platform or an officially
+          authorised School communication channel. You are strictly prohibited from establishing private
+          communication channels with CKH students. A breach may constitute serious misconduct and may
+          result in disciplinary action, suspension, or termination, subject to applicable law.</p>
+        </div>
+
+        <div class="agr-signoff">
+          <div id="agr-error" class="agr-error"></div>
+
+          <div class="agr-field">
+            <label for="agr-full-name">Type your full legal name as your signature</label>
+            <input type="text" id="agr-full-name" placeholder="e.g. Jane Wanjiru Mwangi">
+          </div>
+
+          <div class="agr-consent">
+            <input type="checkbox" id="agr-checkbox">
+            <label for="agr-checkbox">I confirm I have read, understood, and agree to the CKH International
+              School Teacher Agreement and Online Teaching Code of Conduct above, including the safeguarding
+              and student-communication requirements.</label>
+          </div>
+
+          <button type="button" class="agr-btn" id="agr-sign-btn" onclick="signAgreement()">Sign &amp; Continue to Portal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TEACHER_AGREEMENT_VERSION = 'teacher-v1.0-2026-08-28';
+    let currentTeacher = null;
+
+    window.onload = async function () {
+      const user = await getCurrentUser();
+      const loadingEl = document.getElementById('agr-loading');
+      const blockedEl = document.getElementById('agr-blocked');
+      const contentEl = document.getElementById('agr-content');
+
+      if (!user) {
+        window.location.href = '../index.html';
+        return;
+      }
+      if (user.role !== 'teacher') {
+        window.location.href = user.role === 'student' ? '../student/dashboard.html' : '../admin/dashboard.html';
+        return;
+      }
+      if (user.agreementSigned) {
+        // Already signed - nothing to do here, send them to the portal.
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      currentTeacher = user;
+      document.getElementById('agr-full-name').placeholder = 'e.g. ' + user.name;
+      loadingEl.style.display = 'none';
+      blockedEl.style.display = 'none';
+      contentEl.style.display = 'block';
+    };
+
+    async function signAgreement() {
+      const errorEl = document.getElementById('agr-error');
+      const nameInput = document.getElementById('agr-full-name');
+      const checkbox = document.getElementById('agr-checkbox');
+      const btn = document.getElementById('agr-sign-btn');
+      errorEl.style.display = 'none';
+
+      const typedName = nameInput.value.trim();
+      if (!typedName) {
+        errorEl.textContent = 'Please type your full legal name to sign.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (!checkbox.checked) {
+        errorEl.textContent = 'Please confirm you have read and agree to the Teacher Agreement.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Signing…';
+
+      try {
+        // RLS ("profiles_update": id = auth.uid() or is_admin()) allows a
+        // teacher to update only their own row. Note: the role-escalation
+        // trigger only blocks changes to the `role` column, so this update
+        // is still allowed even though it touches other profile fields.
+        const { error } = await sb.from('profiles').update({
+          agreement_signed:      true,
+          agreement_signed_at:   new Date().toISOString(),
+          agreement_version:     TEACHER_AGREEMENT_VERSION,
+          agreement_signed_name: typedName
+        }).eq('id', currentTeacher.id);
+
+        if (error) throw error;
+
+        window.location.href = 'dashboard.html';
+      } catch (e) {
+        errorEl.textContent = e.message || 'Something went wrong while signing. Please try again.';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Sign & Continue to Portal';
+      }
+    }
+  </script>
+</body>
+</html>

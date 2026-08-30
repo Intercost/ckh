@@ -175,6 +175,10 @@
       window.location.href = user.role === 'student' ? '../student/dashboard.html' : '../admin/dashboard.html';
       return null;
     }
+    if (!user.agreementSigned) {
+      window.location.href = 'agreement.html';
+      return null;
+    }
     const nameParts = user.name.split(' ');
     const initials = nameParts.length >= 2
       ? nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase()

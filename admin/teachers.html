@@ -109,7 +109,7 @@
     <div class="card">
       <div style="overflow-x:auto;">
         <table class="data-table">
-          <thead><tr><th>Name</th><th>Email</th><th>WhatsApp</th><th>Subjects</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Name</th><th>Email</th><th>WhatsApp</th><th>Subjects</th><th>Status</th><th>Agreement</th><th>Actions</th></tr></thead>
           <tbody id="teacherRows"></tbody>
         </table>
       </div>
@@ -352,6 +352,9 @@
     empty.style.display = 'none';
     teachers.forEach(t => {
       const subjects = (t.subjects && t.subjects.length) ? t.subjects.join(', ') : '<span style="color:var(--ink-soft);">None assigned</span>';
+      const agreementCell = t.agreementSigned
+        ? `<span class="status-pill good">Signed</span><div style="font-size:11px;color:var(--ink-soft);margin-top:3px;">${new Date(t.agreementSignedAt).toLocaleDateString()}</div>`
+        : `<span class="status-pill bad">Not signed</span>`;
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td data-label="Name">${t.name}</td>
@@ -359,6 +362,7 @@
         <td data-label="WhatsApp">${t.phone || '-'}</td>
         <td data-label="Subjects">${subjects}</td>
         <td data-label="Status"><span class="status-pill good">Active</span></td>
+        <td data-label="Agreement">${agreementCell}</td>
         <td class="table-actions" data-label="Actions">
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-outline btn-sm" onclick="resendCredentials('${t.id}')">Resend credentials</button>

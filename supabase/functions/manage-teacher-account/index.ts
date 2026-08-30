@@ -23,29 +23,76 @@ const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 // ---------------------------------------------------------------------------
-// CORS headers - required for requests from browser origins (e.g. Vercel).
-// The OPTIONS preflight must be answered before the browser will send the
-// real POST, and every real response must echo these headers back too.
+// CORS - required for requests from browser origins (e.g. Vercel).
+// This function handles PRIVILEGED account operations (create/reset/delete
+// teacher accounts), so unlike a public form endpoint, it should not accept
+// requests from arbitrary origins with '*'. Set ALLOWED_ORIGINS as a
+// comma-separated list of your real production domain(s):
+//   supabase secrets set ALLOWED_ORIGINS=https://ckhschool.com,https://www.ckhschool.com
+// localhost is always allowed too, for local development.
+// If ALLOWED_ORIGINS is not set, this falls back to reflecting the request's
+// own origin (still safer than '*', but you should set the secret above
+// before going live).
 // ---------------------------------------------------------------------------
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey, x-client-info',
-};
+const CONFIGURED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
 
-function generateTempPassword(): string {
-  const num = Math.floor(1000 + Math.random() * 9000);
-  return `Ckh-${num}`;
+const DEV_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5500', 'http://127.0.0.1:5500'];
+
+function corsHeadersFor(req: Request): Record<string, string> {
+  const requestOrigin = req.headers.get('Origin') ?? '';
+  const allowList = [...CONFIGURED_ORIGINS, ...DEV_ORIGINS];
+  const allowOrigin = allowList.includes(requestOrigin) ? requestOrigin : (CONFIGURED_ORIGINS[0] ?? '');
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey, x-client-info',
+    'Vary': 'Origin',
+  };
 }
 
-function jsonResponse(body: unknown, status = 200) {
+// Cryptographically random temp password: 14 chars mixing upper/lower/
+// digits/symbols. Replaces the old `Ckh-####` pattern, which only had
+// 9,000 possible combinations and was brute-forceable in seconds.
+function generateTempPassword(): string {
+  const UPPER = 'ABCDEFGHJKLMNPQRSTUVWXYZ';       // no I/O (visual ambiguity)
+  const LOWER = 'abcdefghijkmnpqrstuvwxyz';        // no l/o
+  const DIGITS = '23456789';                       // no 0/1
+  const SYMBOLS = '!@#$%^&*-_+=';
+  const ALL = UPPER + LOWER + DIGITS + SYMBOLS;
+
+  const pick = (charset: string) => charset[crypto.getRandomValues(new Uint32Array(1))[0] % charset.length];
+
+  // Guarantee at least one of each character class, then fill the rest
+  // randomly, then shuffle so the guaranteed characters aren't always in
+  // the same positions.
+  const required = [pick(UPPER), pick(LOWER), pick(DIGITS), pick(SYMBOLS)];
+  const rest = Array.from({ length: 10 }, () => pick(ALL));
+  const chars = [...required, ...rest];
+
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = crypto.getRandomValues(new Uint32Array(1))[0] % (i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return chars.join('');
+}
+
+function jsonResponseBase(body: unknown, status = 200, corsHeaders: Record<string, string> = {}) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+    headers: { 'Content-Type': 'application/json', ...corsHeaders }
   });
 }
 
 Deno.serve(async (req) => {
+  const CORS_HEADERS = corsHeadersFor(req);
+  // Local wrapper so every response below automatically carries the right
+  // CORS headers for the calling origin, without editing every call site.
+  const jsonResponse = (body: unknown, status = 200) =>
+    jsonResponseBase(body, status, CORS_HEADERS);
+
   // Handle CORS preflight - browsers send this before every cross-origin POST.
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS_HEADERS });

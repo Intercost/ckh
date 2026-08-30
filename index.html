@@ -29,6 +29,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/db.js"></script>
+  <script src="js/password-strength.js"></script>
   <style>
     .hero {
       position: relative;
@@ -1664,11 +1665,11 @@
           </div>
           <div class="field">
             <label for="registerPassword">Choose a portal password</label>
-            <input id="registerPassword" type="password" placeholder="At least 6 characters" minlength="6" required>
+            <input id="registerPassword" type="password" placeholder="At least 8 characters" minlength="8" required>
           </div>
           <div class="field">
             <label for="registerConfirmPassword">Confirm password</label>
-            <input id="registerConfirmPassword" type="password" placeholder="••••••••" minlength="6" required>
+            <input id="registerConfirmPassword" type="password" placeholder="••••••••" minlength="8" required>
           </div>
           <div class="field">
             <label for="registerProgramme">Programme you're applying to</label>
@@ -1682,6 +1683,23 @@
             <label for="registerNotes">Anything else admissions should know?</label>
             <textarea id="registerNotes" placeholder="e.g. transferring from another school, documents you're attaching by email/WhatsApp, etc."></textarea>
           </div>
+
+          <details style="margin:4px 0 12px;font-size:12.5px;color:var(--ink-soft);">
+            <summary style="cursor:pointer;font-weight:600;color:var(--navy-900);">View the CKH Terms &amp; Conditions (5 rules)</summary>
+            <ol style="margin:8px 0 0;padding-left:18px;line-height:1.6;">
+              <li>Show up, be honest, do your own work.</li>
+              <li>Be respectful — no bullying, harassment, or discrimination.</li>
+              <li>Use school systems responsibly and protect privacy.</li>
+              <li>Communicate only through official channels.</li>
+              <li>Speak up if something's wrong, and follow the process if you don't agree.</li>
+            </ol>
+            <p style="margin:8px 0 0;">Full text: <a href="apply-student.html" target="_blank">see the complete Terms &amp; Conditions</a>.</p>
+          </details>
+          <div class="field" style="display:flex;align-items:flex-start;gap:8px;">
+            <input type="checkbox" id="registerAgreement" style="width:auto;margin-top:3px;" required>
+            <label for="registerAgreement" style="margin:0;font-weight:500;">I have read and agree to the CKH International School Terms &amp; Conditions and Code of Conduct.</label>
+          </div>
+
           <button type="submit" class="btn btn-gold full-btn">Submit application</button>
           <div id="registerErrorMessage" class="error-message"></div>
         </form>
@@ -2121,24 +2139,29 @@
     const programmeId = document.getElementById('registerProgramme').value;
     const level = document.getElementById('registerGrade').value.trim();
     const notes = document.getElementById('registerNotes').value.trim();
+    const agreementAccepted = document.getElementById('registerAgreement').checked;
 
     if (!programmeId) {
       errorElement.textContent = 'Please choose the programme you are applying to.';
       return false;
     }
-    if (password.length < 6) {
-      errorElement.textContent = 'Your password must be at least 6 characters.';
+    if (password.length < 8) {
+      errorElement.textContent = 'Your password must be at least 8 characters.';
       return false;
     }
     if (password !== confirmPassword) {
       errorElement.textContent = 'Passwords do not match.';
       return false;
     }
+    if (!agreementAccepted) {
+      errorElement.textContent = 'You must agree to the Terms & Conditions before submitting your application.';
+      return false;
+    }
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
 
-    const result = await studentSignUpAndApply({ name, email, phone, password, programmeId, level, notes });
+    const result = await studentSignUpAndApply({ name, email, phone, password, programmeId, level, notes, agreementAccepted });
 
     submitBtn.disabled = false;
 
@@ -2372,6 +2395,7 @@
   // If a Supabase session already exists (from a previous visit), skip
   // the splash and straight to the right portal.
   window.onload = async function() {
+    attachPasswordStrength('registerPassword');
     const user = await getCurrentUser();
     if (user) {
       document.getElementById('splashLoader').style.display = 'none';

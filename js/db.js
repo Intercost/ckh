@@ -181,7 +181,7 @@ async function getAllStudents() {
 // students) at the same time as submitting their admission application,
 // so they can sign back in any time to follow up on its status.
 // ---------------------------------------------------------------------
-async function studentSignUpAndApply({ name, email, phone, password, programmeId, level, notes }) {
+async function studentSignUpAndApply({ name, email, phone, password, programmeId, level, notes, agreementAccepted }) {
   const { data: signUpData, error: signUpError } = await sb.auth.signUp({
     email,
     password,
@@ -206,7 +206,14 @@ async function studentSignUpAndApply({ name, email, phone, password, programmeId
     level: level || (programme ? programme.level : ''),
     notes: notes || '',
     status: 'pending',
-    studentId: signUpData.user ? signUpData.user.id : null
+    studentId: signUpData.user ? signUpData.user.id : null,
+    // Terms & Conditions sign-off, captured at application time. The
+    // admissions_agreement_required CHECK constraint rejects the insert
+    // below if this isn't explicitly true, so this can't be skipped by
+    // calling this function directly with a missing/false value.
+    agreementAccepted: agreementAccepted === true,
+    agreementAcceptedAt: agreementAccepted === true ? new Date().toISOString() : null,
+    agreementVersion: agreementAccepted === true ? 'student-v1.0-2026-08-28' : null
   };
 
   const { data, error } = await sb.from('admissions').insert(rowToSnake(application)).select().single();

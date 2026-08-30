@@ -8,7 +8,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;500;600;700&family=Inter:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
     
     <!-- Global styles -->
     <link rel="stylesheet" href="css/styles.css">
@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
     <script src="js/db.js"></script>
+    <script src="js/password-strength.js"></script>
 
     <!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -214,18 +215,6 @@
         input[type="tel"],
         input[type="email"],
         input[type="password"],
-        /* Password strength rules list */
-        .pw-rules {
-          list-style: none;
-          padding: 10px 12px;
-          margin: 8px 0 0;
-          background: var(--ivory, #f8f4ea);
-          border: 1px solid var(--line, rgba(10,39,79,0.14));
-          border-radius: 8px;
-          font-size: 13px;
-        }
-        .pw-rules li { padding: 3px 0; color: #c0392b; transition: color 0.2s; }
-        .pw-rules li.pass { color: #27ae60; }
         select,
         textarea {
             width: 100%;
@@ -427,8 +416,8 @@
             margin-top: 0.25rem;
         }
 
-        /* ── Enrollment-type overlay ── */
-        #enrollment-overlay {
+        /* ── Terms & Conditions sign-off modal ── */
+        #agreement-modal-overlay {
             position: fixed;
             inset: 0;
             background: rgba(7, 27, 58, 0.72);
@@ -446,109 +435,197 @@
             to { opacity: 1; }
         }
 
-        #enrollment-overlay.hidden {
+        #agreement-modal-overlay.hidden {
             display: none;
         }
 
-        .enrollment-card {
+        .agreement-modal-card {
             background: white;
             border-radius: 20px;
-            padding: 3rem 2.5rem;
-            max-width: 540px;
+            max-width: 640px;
             width: 100%;
+            max-height: 88vh;
             box-shadow: 0 24px 64px rgba(0,0,0,0.25);
-            text-align: center;
             transform: translateY(20px);
             animation: cardIn 0.4s ease forwards;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         @keyframes cardIn {
             to { transform: translateY(0); }
         }
 
-        .enrollment-card .ec-icon {
-            font-size: 2.75rem;
-            margin-bottom: 1rem;
+        .agreement-modal-header {
+            padding: 1.75rem 2rem 0.5rem;
+            flex: none;
         }
 
-        .enrollment-card h2 {
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
-            color: var(--navy-950);
-        }
-
-        .enrollment-card p {
-            color: var(--ink-soft);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-        }
-
-        .enrollment-choices {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .enrollment-btn {
-            display: flex;
-            flex-direction: column;
+        .view-full-pdf-btn {
+            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 1.5rem 1rem;
-            border-radius: 14px;
-            border: 2px solid var(--line);
+            gap: 6px;
             background: var(--ivory);
-            cursor: pointer;
-            transition: all 0.2s ease;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--navy-900);
+            text-decoration: none;
+            transition: all 0.15s ease;
+            margin-bottom: 0.9rem;
+        }
+
+        .view-full-pdf-btn:hover {
+            background: var(--gold-100);
+            border-color: var(--gold-500);
+        }
+
+        .view-full-pdf-btn svg {
+            width: 13px;
+            height: 13px;
+            flex: none;
+        }
+
+        .agreement-modal-header h2 {
+            font-size: 1.4rem;
+            color: var(--navy-950);
+            margin: 0 0 0.25rem;
+        }
+
+        .agreement-modal-header p {
+            color: var(--ink-soft);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .agreement-modal-scroll {
+            overflow-y: auto;
+            padding: 1rem 2rem;
+            flex: 1 1 auto;
+        }
+
+        .agreement-modal-footer {
+            padding: 1.5rem 2rem 2rem;
+            border-top: 1px solid var(--line);
+            flex: none;
+        }
+
+        .signature-section {
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px dashed var(--line);
+        }
+
+        .signature-section h3 {
+            font-size: 0.95rem;
+            color: var(--navy-950);
+            margin: 0 0 0.4rem;
+        }
+
+        .signature-section > p {
+            font-size: 0.82rem;
+            color: var(--ink-soft);
+            margin: 0 0 0.75rem;
+        }
+
+        #signature-name-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-size: 0.95rem;
             font-family: inherit;
         }
 
-        .enrollment-btn:hover {
-            border-color: var(--gold-500);
-            background: var(--gold-100);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        .signature-preview-box {
+            margin-top: 1rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            display: none;
         }
 
-        .enrollment-btn .eb-icon {
-            font-size: 2rem;
+        .signature-preview-box.visible {
+            display: block;
         }
 
-        .enrollment-btn .eb-title {
-            font-weight: 700;
-            font-size: 1rem;
+        .signature-preview-name {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
             color: var(--navy-950);
-            font-family: 'Fraunces', serif;
+            line-height: 1.2;
+            word-break: break-word;
         }
 
-        .enrollment-btn .eb-desc {
-            font-size: 0.8rem;
+        .signature-preview-date {
+            font-size: 0.78rem;
+            color: var(--ink-soft);
+            margin-top: 0.4rem;
+            border-top: 1px solid var(--line);
+            padding-top: 0.4rem;
+        }
+
+        .signature-actions {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sign {
+            background: linear-gradient(180deg, var(--gold-500), var(--gold-600));
+            color: var(--navy-950);
+            border: none;
+            padding: 0.65rem 1.3rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .btn-sign:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-edit-signature {
+            background: none;
+            border: 1px solid var(--line);
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
             color: var(--ink-soft);
         }
 
-        /* ── Part-Time single-page form ── */
-        #parttime-container {
+        /* ── Single-page easy application form ── */
+        #easy-container {
             display: none;
             max-width: 800px;
             margin: 3rem auto;
             padding: 0 1rem;
         }
 
-        .pt-card {
+        .easy-card {
             background: white;
             border-radius: var(--radius);
             padding: 2.5rem;
             box-shadow: 0 4px 24px rgba(0,0,0,0.06);
         }
 
-        .pt-card h2 {
+        .easy-card h2 {
             font-size: 1.75rem;
             margin-bottom: 0.5rem;
             border-bottom: 1px solid var(--line);
             padding-bottom: 1rem;
         }
 
-        .pt-badge {
+        .easy-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
@@ -561,7 +638,7 @@
             margin-bottom: 1.5rem;
         }
 
-        #pt-global-error {
+        #easy-global-error {
             background: #ffebee;
             color: #c62828;
             padding: 1rem;
@@ -624,6 +701,214 @@
             display: none;
             font-weight: 500;
         }
+
+        /* ── Terms & Conditions accordion ── */
+        .agreement-block {
+            margin: 1.5rem 0 1rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .agreement-block h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+            margin: 0 0 4px;
+        }
+
+        .agreement-block > p {
+            font-size: 13px;
+            color: var(--ink-soft);
+            margin: 0 0 1rem;
+        }
+
+        .agreement-accordion {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .agreement-item + .agreement-item {
+            border-top: 1px solid var(--line);
+        }
+
+        .agreement-item-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1rem;
+            cursor: pointer;
+            background: #fafbfc;
+            user-select: none;
+        }
+
+        .agreement-item-header:hover {
+            background: var(--gold-100);
+        }
+
+        .agreement-item-num {
+            flex: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--navy-900);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .agreement-item-title {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--ink);
+        }
+
+        .agreement-item-chevron {
+            flex: none;
+            transition: transform 0.2s ease;
+            color: var(--ink-soft);
+            font-size: 0.8rem;
+        }
+
+        .agreement-item.open .agreement-item-chevron {
+            transform: rotate(180deg);
+        }
+
+        .agreement-item-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease;
+            background: white;
+        }
+
+        .agreement-item.open .agreement-item-body {
+            max-height: 600px;
+        }
+
+        .agreement-item-body-inner {
+            padding: 0 1rem 1rem 2.7rem;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: var(--ink-soft);
+        }
+
+        .agreement-item-body-inner ul {
+            margin: 0 0 0.6rem;
+            padding-left: 1.1rem;
+        }
+
+        .agreement-item-body-inner li {
+            margin-bottom: 0.5rem;
+        }
+
+        .agreement-item-body-inner li:last-child {
+            margin-bottom: 0;
+        }
+
+        .agreement-item-body-inner strong {
+            color: var(--navy-900);
+            font-weight: 700;
+        }
+
+        /* ── Expand-to-fullscreen toggle ── */
+        .agr-expand-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            background: white;
+            cursor: pointer;
+            color: var(--navy-900);
+            flex: none;
+        }
+
+        .agr-expand-btn:hover {
+            background: var(--gold-100);
+            border-color: var(--gold-500);
+        }
+
+        .agr-expand-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .agreement-modal-header-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        #agreement-modal-overlay.fullscreen {
+            padding: 0;
+        }
+
+        #agreement-modal-overlay.fullscreen .agreement-modal-card {
+            max-width: none;
+            width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            border-radius: 0;
+        }
+
+        .agreement-item-ref {
+            font-size: 0.75rem;
+            font-style: italic;
+            color: var(--gold-600);
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .agreement-consent {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+        }
+
+        .agreement-consent input[type="checkbox"] {
+            margin-top: 0.2rem;
+            width: 18px;
+            height: 18px;
+            flex: none;
+            accent-color: var(--navy-900);
+            cursor: pointer;
+        }
+
+        .agreement-consent label {
+            margin: 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+        }
+
+        .agreement-consent.has-error {
+            border-color: #d32f2f;
+            background: #fff5f5;
+        }
+
+        .agreement-consent-error {
+            color: #d32f2f;
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            display: none;
+        }
+
+        .agreement-consent.has-error + .agreement-consent-error {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -634,64 +919,44 @@
     </header>
 
     <!-- ── Enrollment-type overlay ── -->
-    <div id="enrollment-overlay">
-        <div class="enrollment-card">
-            <div class="ec-icon">🎓</div>
-            <h2>How will you be attending?</h2>
-            <p>Please select your enrolment type so we can take you to the right application.</p>
-            <div class="enrollment-choices">
-                <button class="enrollment-btn" id="choose-fulltime" onclick="selectEnrollmentType('fulltime')">
-                    <span class="eb-icon">📚</span>
-                    <span class="eb-title">Full-Time</span>
-                    <span class="eb-desc">Complete multi-step application</span>
-                </button>
-                <button class="enrollment-btn" id="choose-parttime" onclick="selectEnrollmentType('parttime')">
-                    <span class="eb-icon">⏱️</span>
-                    <span class="eb-title">Part-Time</span>
-                    <span class="eb-desc">Quick single-page application</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- ── Single-page easy application form ── -->
+    <div id="easy-container">
+        <div class="easy-card">
+            <h2 id="easy-form-title">Student Application</h2>
+            <div class="easy-badge" id="easy-form-badge">📚 Full-Time Enrolment</div>
+            <p class="step-desc">Fill in the details below to apply. Our admissions team will contact you within 3 working days.</p>
 
-    <!-- ── Part-Time single-page form ── -->
-    <div id="parttime-container">
-        <div class="pt-card">
-            <h2>Part-Time Student Application</h2>
-            <div class="pt-badge">⏱️ Part-Time Enrolment</div>
-            <p class="step-desc">Fill in the details below to apply as a part-time student. Our admissions team will contact you within 3 working days.</p>
+            <div id="easy-global-error"></div>
 
-            <div id="pt-global-error"></div>
-
-            <form id="pt-form" onsubmit="return false;">
+            <form id="easy-form" onsubmit="return false;">
 
                 <div class="form-group">
-                    <label for="pt-name">Full name*</label>
-                    <input type="text" id="pt-name" name="pt-name" required>
+                    <label for="easy-name">Full name*</label>
+                    <input type="text" id="easy-name" name="easy-name" required>
                     <div class="error-message">This field is required</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-student-email">Student's email* <span style="color:var(--ink-soft);font-weight:400;">(used to sign in to the portal)</span></label>
-                    <input type="email" id="pt-student-email" name="pt-student-email" required>
+                    <label for="easy-student-email">Student's email* <span style="color:var(--ink-soft);font-weight:400;">(used to sign in to the portal)</span></label>
+                    <input type="email" id="easy-student-email" name="easy-student-email" required>
                     <div class="error-message">A valid email address is required</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-parent-email">Parent / Guardian email <span style="color:var(--ink-soft);font-weight:400;">(optional)</span></label>
-                    <input type="email" id="pt-parent-email" name="pt-parent-email">
+                    <label for="easy-parent-email">Parent / Guardian email <span style="color:var(--ink-soft);font-weight:400;">(optional)</span></label>
+                    <input type="email" id="easy-parent-email" name="easy-parent-email">
                     <div class="error-message">Please enter a valid email address</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-phone">Phone number*</label>
-                    <input type="tel" id="pt-phone" name="pt-phone" required>
+                    <label for="easy-phone">Phone number*</label>
+                    <input type="tel" id="easy-phone" name="easy-phone" required>
                     <div class="error-message">This field is required</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-gender">Gender*</label>
-                    <select id="pt-gender" name="pt-gender" required>
+                    <label for="easy-gender">Gender*</label>
+                    <select id="easy-gender" name="easy-gender" required>
                         <option value="">Select...</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -701,20 +966,23 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-grade">Grade / Year applying for*</label>
-                    <input type="text" id="pt-grade" name="pt-grade" placeholder="e.g. Year 8" required>
+                    <label for="easy-grade">Grade / Year applying for*</label>
+                    <input type="text" id="easy-grade" name="easy-grade" placeholder="e.g. Year 8" required>
                     <div class="error-message">This field is required</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-learning-type">Type of learning</label>
-                    <input type="text" id="pt-learning-type" name="pt-learning-type" value="Part-Time" readonly
-                        style="background:#f0f4f8; color:var(--ink-soft); cursor:default;">
+                    <label for="easy-learning-type">Type of learning*</label>
+                    <select id="easy-learning-type" name="easy-learning-type" required onchange="updateLearningTypeUI()">
+                        <option value="Full-Time">Full-Time</option>
+                        <option value="Tuition">Tuition</option>
+                    </select>
+                    <div class="error-message">This field is required</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-curriculum">Curriculum*</label>
-                    <select id="pt-curriculum" name="pt-curriculum" required>
+                    <label for="easy-curriculum">Curriculum*</label>
+                    <select id="easy-curriculum" name="easy-curriculum" required>
                         <option value="">Select...</option>
                         <option value="Cambridge IGCSE">Cambridge IGCSE</option>
                         <option value="Pearson Edexcel">Pearson Edexcel</option>
@@ -732,28 +1000,182 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-password">Choose a password*</label>
-                    <input type="password" id="pt-password" name="pt-password" minlength="6" placeholder="At least 6 characters" required>
+                    <label for="easy-password">Choose a password*</label>
+                    <input type="password" id="easy-password" name="easy-password" minlength="8" placeholder="At least 8 characters" required>
                     <div class="error-message">Password must be at least 6 characters</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="pt-confirm-password">Confirm password*</label>
-                    <input type="password" id="pt-confirm-password" name="pt-confirm-password" minlength="6" placeholder="Repeat your password" required>
+                    <label for="easy-confirm-password">Confirm password*</label>
+                    <input type="password" id="easy-confirm-password" name="easy-confirm-password" minlength="8" placeholder="Repeat your password" required>
                     <div class="error-message">Passwords do not match</div>
                 </div>
 
-                <div class="actions" style="margin-top:2rem;">
-                    <button type="button" class="btn-prev" onclick="selectEnrollmentType(null)" style="border:1px solid var(--line);">
-                        ← Change type
-                    </button>
-                    <div style="flex-grow:1;"></div>
-                    <button type="button" class="btn-submit" id="pt-submit-btn" onclick="handlePartTimeSubmit()">
-                        Submit Application
+                <div class="actions" style="margin-top:2rem; justify-content:flex-end;">
+                    <button type="button" class="btn-submit" id="easy-continue-btn" onclick="openAgreementModal()">
+                        Continue
                     </button>
                 </div>
 
             </form>
+        </div>
+    </div>
+
+    <!-- ── Terms & Conditions sign-off modal (hidden until "Continue" is
+         clicked and the base form validates) ── -->
+    <div id="agreement-modal-overlay" class="hidden">
+        <div class="agreement-modal-card">
+            <div class="agreement-modal-header">
+                <div class="agreement-modal-header-row">
+                    <a href="assets/CKH_Student_Terms_and_Conditions.pdf" target="_blank" rel="noopener" class="view-full-pdf-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        View full document (PDF)
+                    </a>
+                    <button type="button" class="agr-expand-btn" id="agr-expand-btn" onclick="toggleAgreementFullscreen()" aria-label="Expand to full screen" title="Expand to full screen">
+                        <svg id="agr-expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                    </button>
+                </div>
+                <h2>CKH International School Terms &amp; Conditions</h2>
+                <p>Please review the rules below, then sign to submit your application.</p>
+            </div>
+
+            <div class="agreement-modal-scroll">
+                <div class="agreement-accordion" id="agreement-accordion">
+                    <div class="agreement-item" data-item="1">
+                        <div class="agreement-item-header" onclick="toggleAgreementItem(1)">
+                            <span class="agreement-item-num">1</span>
+                            <span class="agreement-item-title">Show up, be honest, do your own work</span>
+                            <span class="agreement-item-chevron">▾</span>
+                        </div>
+                        <div class="agreement-item-body">
+                            <div class="agreement-item-body-inner">
+                                <ul>
+                                    <li>Attend all scheduled lessons and complete required activities <strong>on time</strong>.</li>
+                                    <li>Follow teacher instructions and keep your account information accurate.</li>
+                                    <li>Submit only <strong>your own work</strong> — no cheating, plagiarism, unauthorised collusion, or impersonating another student.</li>
+                                    <li>Never share assessment answers or falsify academic records.</li>
+                                    <li><strong>AI tools</strong> may only be used when a teacher or the assessment instructions permit it, and never to pass off work as your own.</li>
+                                    <li>Follow all examination rules, including <strong>identity verification</strong>, time limits, and any online-proctoring requirements.</li>
+                                </ul>
+                                <span class="agreement-item-ref">Ref: Sections 2, 5, 6, 7 — Student Responsibilities,
+                                Attendance &amp; Punctuality, Academic Integrity, Assessments &amp; Examinations</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agreement-item" data-item="2">
+                        <div class="agreement-item-header" onclick="toggleAgreementItem(2)">
+                            <span class="agreement-item-num">2</span>
+                            <span class="agreement-item-title">Be respectful — no bullying, harassment, or discrimination</span>
+                            <span class="agreement-item-chevron">▾</span>
+                        </div>
+                        <div class="agreement-item-body">
+                            <div class="agreement-item-body-inner">
+                                <ul>
+                                    <li>Join lessons <strong>on time</strong>, dress appropriately, and use a quiet, suitable learning environment.</li>
+                                    <li>Mute your microphone when not speaking and use chat appropriately.</li>
+                                    <li><strong>Cameras may be required</strong> during selected lessons or assessments where reasonably necessary.</li>
+                                    <li>Communicate respectfully with classmates and staff at all times.</li>
+                                    <li><strong>Bullying, cyberbullying, harassment, threats, intimidation, discrimination, hate speech, sexual harassment</strong>, impersonation, and deliberately disruptive behaviour are all strictly prohibited.</li>
+                                </ul>
+                                <span class="agreement-item-ref">Ref: Sections 3, 4 — Online Classroom Etiquette,
+                                Respect, Inclusion &amp; Anti-Bullying</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agreement-item" data-item="3">
+                        <div class="agreement-item-header" onclick="toggleAgreementItem(3)">
+                            <span class="agreement-item-num">3</span>
+                            <span class="agreement-item-title">Use school systems responsibly and protect privacy</span>
+                            <span class="agreement-item-chevron">▾</span>
+                        </div>
+                        <div class="agreement-item-body">
+                            <div class="agreement-item-body-inner">
+                                <ul>
+                                    <li>School systems are for <strong>lawful educational purposes only</strong>.</li>
+                                    <li>Do not attempt unauthorised access, bypass security controls, or share your password.</li>
+                                    <li>Never install malicious software, upload harmful files, or disrupt school services.</li>
+                                    <li>Do not misuse another person's account.</li>
+                                    <li>Respect classmates' and staff's <strong>privacy</strong> — no recording, screenshotting, photographing, or distributing lessons, chats, or personal information without authorisation.</li>
+                                    <li>Use only your own assigned account, and <strong>report a suspected account compromise immediately</strong>.</li>
+                                </ul>
+                                <span class="agreement-item-ref">Ref: Sections 8, 9, 14 — Technology &amp;
+                                Acceptable Use, Privacy, Recording &amp; Digital Content, Student Accounts &amp;
+                                Security</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agreement-item" data-item="4">
+                        <div class="agreement-item-header" onclick="toggleAgreementItem(4)">
+                            <span class="agreement-item-num">4</span>
+                            <span class="agreement-item-title">Communicate only through official channels</span>
+                            <span class="agreement-item-chevron">▾</span>
+                        </div>
+                        <div class="agreement-item-body">
+                            <div class="agreement-item-body-inner">
+                                <ul>
+                                    <li>Use <strong>official school communication channels</strong> for anything related to CKH.</li>
+                                    <li>Keep messages courteous, relevant, and sent at reasonable times.</li>
+                                    <li>Do not contact teachers through personal social media or other unauthorised channels for school matters.</li>
+                                </ul>
+                                <span class="agreement-item-ref">Ref: Section 10 — Communication</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agreement-item" data-item="5">
+                        <div class="agreement-item-header" onclick="toggleAgreementItem(5)">
+                            <span class="agreement-item-num">5</span>
+                            <span class="agreement-item-title">Speak up if something's wrong, and follow the process if you don't agree</span>
+                            <span class="agreement-item-chevron">▾</span>
+                        </div>
+                        <div class="agreement-item-body">
+                            <div class="agreement-item-body-inner">
+                                <ul>
+                                    <li><strong>Report any safeguarding concern immediately</strong> — abuse, exploitation, grooming, self-harm, threats, or inappropriate adult contact — through the school's designated process.</li>
+                                    <li>Depending on seriousness, breaking the rules may lead to a reminder, warning, parent/guardian meeting, restricted platform privileges, removal from a live session, academic sanctions, <strong>suspension, or termination of enrolment</strong>.</li>
+                                    <li>You and your parent/guardian may raise concerns through the school's <strong>official complaints process</strong>.</li>
+                                    <li>Academic or disciplinary decisions may be <strong>appealed</strong> where the relevant procedure permits.</li>
+                                    <li>Retaliation against anyone who raises a genuine concern is not permitted.</li>
+                                </ul>
+                                <span class="agreement-item-ref">Ref: Sections 11, 15, 16 — Safeguarding &amp;
+                                Student Welfare, Misconduct &amp; Consequences, Complaints &amp; Appeals</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="signature-section">
+                    <h3>Sign to confirm</h3>
+                    <p>Type your full legal name below to sign this agreement. It will be recorded with today's date.</p>
+                    <input type="text" id="signature-name-input" placeholder="Type your full name here" oninput="onSignatureInputChange()">
+                    <div class="signature-actions">
+                        <button type="button" class="btn-sign" id="sign-btn" onclick="confirmSignature()" disabled>Sign</button>
+                    </div>
+
+                    <div class="signature-preview-box" id="signature-preview-box">
+                        <div class="signature-preview-name" id="signature-preview-name"></div>
+                        <div class="signature-preview-date" id="signature-preview-date"></div>
+                        <div class="signature-actions">
+                            <button type="button" class="btn-edit-signature" onclick="editSignature()">Edit signature</button>
+                        </div>
+                    </div>
+                    <div class="agreement-consent-error" id="signature-error">Please type your full name and click "Sign" before submitting.</div>
+                </div>
+            </div>
+
+            <div class="agreement-modal-footer">
+                <div class="actions" style="justify-content:space-between;">
+                    <button type="button" class="btn-prev" onclick="closeAgreementModal()" style="border:1px solid var(--line);">
+                        ← Back
+                    </button>
+                    <button type="button" class="btn-submit" id="easy-submit-btn" onclick="handleEasySubmit()">
+                        Submit Application
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -770,317 +1192,6 @@
         </p>
     </div>
 
-    <div class="progress-container" id="progress-container">
-        <div class="progress-bar">
-            <div class="step-indicator active" data-step="1">
-                <div class="step-circle">1</div>
-                <div class="step-label">Personal</div>
-            </div>
-            <div class="step-indicator" data-step="2">
-                <div class="step-circle">2</div>
-                <div class="step-label">Guardian</div>
-            </div>
-            <div class="step-indicator" data-step="3">
-                <div class="step-circle">3</div>
-                <div class="step-label">Academic</div>
-            </div>
-            <div class="step-indicator" data-step="4">
-                <div class="step-circle">4</div>
-                <div class="step-label">Programme</div>
-            </div>
-            <div class="step-indicator" data-step="5">
-                <div class="step-circle">5</div>
-                <div class="step-label">Documents</div>
-            </div>
-            <div class="step-indicator" data-step="6">
-                <div class="step-circle">6</div>
-                <div class="step-label">Account</div>
-            </div>
-            <div class="step-indicator" data-step="7">
-                <div class="step-circle">7</div>
-                <div class="step-label">Review</div>
-            </div>
-        </div>
-    </div>
-
-    <main id="form-container">
-        <div id="global-error"></div>
-        <form id="application-form" onsubmit="return false;">
-            
-            <!-- Step 1: Personal Information -->
-            <div class="step-card active" id="step-1">
-                <h2>1. Personal Information</h2>
-                <p class="step-desc">Please provide the applicant's personal details.</p>
-                
-                <div class="form-group">
-                    <label for="name">Full name*</label>
-                    <input type="text" id="name" name="name" required>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="dob">Date of birth*</label>
-                    <input type="date" id="dob" name="dob" required>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="gender">Gender*</label>
-                    <select id="gender" name="gender" required>
-                        <option value="">Select...</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Prefer not to say">Prefer not to say</option>
-                    </select>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="nationality">Nationality*</label>
-                    <input type="text" id="nationality" name="nationality" required>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="nationalId">National ID / Passport number</label>
-                    <input type="text" id="nationalId" name="nationalId">
-                </div>
-                
-                <div class="form-group">
-                    <label for="phone">Phone / WhatsApp*</label>
-                    <input type="tel" id="phone" name="phone" required>
-                    <div class="error-message">This field is required</div>
-                </div>
-            </div>
-
-            <!-- Step 2: Parent / Guardian -->
-            <div class="step-card" id="step-2">
-                <h2>2. Parent / Guardian</h2>
-                <p class="step-desc">Contact details of the primary caregiver.</p>
-                
-                <div class="form-group">
-                    <label for="guardianName">Guardian full name*</label>
-                    <input type="text" id="guardianName" name="guardianName" required>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="guardianRelationship">Relationship to learner*</label>
-                    <select id="guardianRelationship" name="guardianRelationship" required>
-                        <option value="">Select...</option>
-                        <option value="Mother">Mother</option>
-                        <option value="Father">Father</option>
-                        <option value="Legal Guardian">Legal Guardian</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="guardianPhone">Guardian phone / WhatsApp*</label>
-                    <input type="tel" id="guardianPhone" name="guardianPhone" required>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="guardianEmail">Guardian email</label>
-                    <input type="email" id="guardianEmail" name="guardianEmail">
-                </div>
-                
-                <div class="form-group">
-                    <label for="guardianOccupation">Guardian occupation</label>
-                    <input type="text" id="guardianOccupation" name="guardianOccupation">
-                </div>
-                
-                <div class="form-group">
-                    <label for="guardianId">Guardian National ID number</label>
-                    <input type="text" id="guardianId" name="guardianId">
-                </div>
-            </div>
-
-            <!-- Step 3: Academic Background -->
-            <div class="step-card" id="step-3">
-                <h2>3. Academic Background</h2>
-                <p class="step-desc">Previous education details.</p>
-                
-                <div class="form-group">
-                    <label for="previousSchool">Name of previous school*</label>
-                    <input type="text" id="previousSchool" name="previousSchool" required>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="previousCountry">Country of previous school</label>
-                    <input type="text" id="previousCountry" name="previousCountry">
-                </div>
-                
-                <div class="form-group">
-                    <label for="previousGrade">Highest grade / year completed*</label>
-                    <input type="text" id="previousGrade" name="previousGrade" placeholder="e.g. Year 10" required>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="previousCurriculum">Curriculum previously followed*</label>
-                    <select id="previousCurriculum" name="previousCurriculum" required>
-                        <option value="">Select...</option>
-                        <option value="Cambridge IGCSE">Cambridge IGCSE</option>
-                        <option value="Pearson Edexcel">Pearson Edexcel</option>
-                        <option value="IB">IB</option>
-                        <option value="CBC">CBC</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="specialRequirements">Any special learning needs or requirements?</label>
-                    <textarea id="specialRequirements" name="specialRequirements"></textarea>
-                </div>
-            </div>
-
-            <!-- Step 4: Programme & Intake -->
-            <div class="step-card" id="step-4">
-                <h2>4. Programme & Intake</h2>
-                <p class="step-desc">Select the desired programme and intake date.</p>
-                
-                <div class="form-group">
-                    <label for="programmeId">Programme applying for*</label>
-                    <select id="programmeId" name="programmeId" required>
-                        <option value="">Loading programmes...</option>
-                    </select>
-                    <div class="error-message">This field is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="gradeApplyingFor">Year / Grade applying for</label>
-                    <input type="text" id="gradeApplyingFor" name="gradeApplyingFor">
-                </div>
-                
-                <div class="form-group">
-                    <label for="preferredIntake">Preferred intake date</label>
-                    <input type="text" id="preferredIntake" name="preferredIntake" placeholder="e.g. January 2025">
-                </div>
-                
-                <div class="form-group">
-                    <label for="notes">Additional notes</label>
-                    <textarea id="notes" name="notes"></textarea>
-                </div>
-            </div>
-
-            <!-- Step 5: Supporting Documents -->
-            <div class="step-card" id="step-5">
-                <h2>5. Supporting Documents</h2>
-                <p class="step-desc">Accepted formats: PDF, JPG, PNG. Max 5MB per file.</p>
-                
-                <div class="form-group">
-                    <label>Birth certificate*</label>
-                    <div class="file-upload-wrapper" onclick="document.getElementById('birthCert').click()">
-                        <span class="upload-icon">📄</span>
-                        <span class="upload-text">Upload Birth Certificate</span>
-                        <span class="upload-btn">Browse files</span>
-                        <input type="file" id="birthCert" name="birthCert" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
-                        <span class="file-name" id="birthCert-name"></span>
-                    </div>
-                    <div class="error-message" id="birthCert-error">This file is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Latest school report / transcript*</label>
-                    <div class="file-upload-wrapper" onclick="document.getElementById('schoolReport').click()">
-                        <span class="upload-icon">📄</span>
-                        <span class="upload-text">Upload School Report</span>
-                        <span class="upload-btn">Browse files</span>
-                        <input type="file" id="schoolReport" name="schoolReport" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
-                        <span class="file-name" id="schoolReport-name"></span>
-                    </div>
-                    <div class="error-message" id="schoolReport-error">This file is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Parent / Guardian ID copy*</label>
-                    <div class="file-upload-wrapper" onclick="document.getElementById('guardianIdFile').click()">
-                        <span class="upload-icon">📄</span>
-                        <span class="upload-text">Upload Guardian ID</span>
-                        <span class="upload-btn">Browse files</span>
-                        <input type="file" id="guardianIdFile" name="guardianIdFile" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
-                        <span class="file-name" id="guardianIdFile-name"></span>
-                    </div>
-                    <div class="error-message" id="guardianIdFile-error">This file is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Passport-size photo (optional)</label>
-                    <div class="file-upload-wrapper" onclick="document.getElementById('passportPhoto').click()">
-                        <span class="upload-icon">🖼️</span>
-                        <span class="upload-text">Upload Photo</span>
-                        <span class="upload-btn">Browse files</span>
-                        <input type="file" id="passportPhoto" name="passportPhoto" accept=".jpg,.jpeg,.png" onchange="updateFileName(this)">
-                        <span class="file-name" id="passportPhoto-name"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 6: Portal Account -->
-            <div class="step-card" id="step-6">
-                <h2>6. Portal Account</h2>
-                <p class="step-desc">Create an account to track your application.</p>
-                
-                <div class="form-group">
-                    <label for="email">Email address*</label>
-                    <input type="email" id="email" name="email" required>
-                    <div class="error-message">A valid email is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Create a portal password*</label>
-                    <input type="password" id="password" name="password" required oninput="checkPasswordStrength(this.value)">
-                    <div class="error-message" id="passwordError">Password does not meet all requirements</div>
-                    <!-- Live strength checklist -->
-                    <ul class="pw-rules" id="pwRules">
-                      <li id="rule-len">❌ At least 8 characters</li>
-                      <li id="rule-upper">❌ One uppercase letter (A–Z)</li>
-                      <li id="rule-lower">❌ One lowercase letter (a–z)</li>
-                      <li id="rule-num">❌ One number (0–9)</li>
-                      <li id="rule-special">❌ One special character (!@#$%^&amp;* …)</li>
-                    </ul>
-                </div>
-
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm password*</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
-                    <div class="error-message">Passwords must match</div>
-                </div>
-            </div>
-
-            <!-- Step 7: Review & Submit -->
-            <div class="step-card" id="step-7">
-                <h2>7. Review & Submit</h2>
-                <p class="step-desc">Please review your information before submitting.</p>
-                
-                <div id="summary-content">
-                    <!-- Summary populated by JS -->
-                </div>
-                
-                <div class="declaration">
-                    <label>
-                        <input type="checkbox" id="declaration" required>
-                        <span>I declare that all information provided is true and accurate.</span>
-                    </label>
-                    <div class="error-message" id="declaration-error" style="margin-left: 2rem;">You must agree to the declaration</div>
-                </div>
-            </div>
-
-            <!-- Navigation -->
-            <div class="actions">
-                <button type="button" class="btn-prev" id="btn-prev" style="display: none;" onclick="prevStep()">Previous</button>
-                <div style="flex-grow: 1;"></div>
-                <button type="button" class="btn-next" id="btn-next" onclick="nextStep()">Next Step &rarr;</button>
-                <button type="button" class="btn-submit" id="btn-submit" style="display: none;" onclick="handleFinalSubmit()">Submit Application</button>
-            </div>
-        </form>
-    </main>
-
     <!-- Success Screen -->
     <div id="success-screen">
         <div class="success-icon">✓</div>
@@ -1093,61 +1204,26 @@
     </div>
 
     <script>
-        let currentStep = 1;
-        const totalSteps = 7;
-        const formData = {};
-
-        // Load Programmes
-        async function loadProgrammes() {
-            if (typeof sb !== 'undefined') {
-                try {
-                    const { data, error } = await sb.from('programmes').select('id,name,curriculum,level').eq('status', 'open');
-                    if (!error && data) {
-                        const select = document.getElementById('programmeId');
-                        select.innerHTML = '<option value="">Select...</option>';
-                        data.forEach(p => {
-                            select.innerHTML += `<option value="${p.id}">${p.name} (${p.curriculum})</option>`;
-                        });
-                    }
-                } catch(e) {
-                    console.error("Error loading programmes", e);
-                    document.getElementById('programmeId').innerHTML = '<option value="">Error loading</option>';
-                }
-            }
-        }
-
-        // Read optional query params so a link from the marketing site
-        // (curriculum cards, "Apply for this programme" button) can
-        // preselect a programme or prefill the curriculum/level being applied for.
         const urlParams = new URLSearchParams(window.location.search);
-        const prefillProgrammeId = urlParams.get('programmeId');
         const prefillCurriculum = urlParams.get('curriculum');
         const prefillLevel = urlParams.get('level');
 
-        function applyPrefill() {
-            if (prefillProgrammeId) {
-                const select = document.getElementById('programmeId');
-                if (select) select.value = prefillProgrammeId;
-            }
+        function applyEasyPrefill() {
             if (prefillLevel) {
-                const gradeField = document.getElementById('gradeApplyingFor');
+                const gradeField = document.getElementById('easy-grade');
                 if (gradeField && !gradeField.value) gradeField.value = prefillLevel;
             }
-            if (prefillCurriculum || prefillLevel) {
-                const notesField = document.getElementById('notes');
-                if (notesField && !notesField.value) {
-                    notesField.value = `Interested in: ${[prefillCurriculum, prefillLevel].filter(Boolean).join(' - ')}`;
+            if (prefillCurriculum) {
+                const curriculumField = document.getElementById('easy-curriculum');
+                if (curriculumField && !curriculumField.value) {
+                    const options = Array.from(curriculumField.options).map(o => o.value);
+                    if (options.includes(prefillCurriculum)) {
+                        curriculumField.value = prefillCurriculum;
+                    }
                 }
             }
         }
 
-        // If someone is already signed in to a CKH portal account (an
-        // enrolled student, a teacher, or an admin browsing the site),
-        // don't drop them straight into a fresh application/signup - that
-        // would either error out on the duplicate email or, worse, quietly
-        // leave them confused about which account they're using. Offer to
-        // send them to their existing portal instead, with an easy way to
-        // continue anyway (e.g. a parent applying for a sibling).
         async function checkExistingSession() {
             if (typeof getCurrentUser !== 'function') return;
             try {
@@ -1162,8 +1238,7 @@
                     else window.location.href = 'student/dashboard.html';
                 };
                 document.getElementById('already-enrolled-screen').style.display = 'block';
-                document.getElementById('progress-container').style.display = 'none';
-                document.getElementById('form-container').style.display = 'none';
+                document.getElementById('easy-container').style.display = 'none';
             } catch (e) {
                 console.error('Error checking existing session', e);
             }
@@ -1172,40 +1247,88 @@
         function dismissAlreadyEnrolled(e) {
             if (e) e.preventDefault();
             document.getElementById('already-enrolled-screen').style.display = 'none';
-            document.getElementById('progress-container').style.display = '';
-            document.getElementById('form-container').style.display = '';
+            document.getElementById('easy-container').style.display = 'block';
         }
 
-        /* ── Enrollment-type selection ── */
-        function selectEnrollmentType(type) {
-            const overlay = document.getElementById('enrollment-overlay');
-            const progressContainer = document.getElementById('progress-container');
-            const formContainer = document.getElementById('form-container');
-            const parttimeContainer = document.getElementById('parttime-container');
-
-            if (type === 'fulltime') {
-                overlay.classList.add('hidden');
-                progressContainer.style.display = '';
-                formContainer.style.display = '';
-                parttimeContainer.style.display = 'none';
-            } else if (type === 'parttime') {
-                overlay.classList.add('hidden');
-                progressContainer.style.display = 'none';
-                formContainer.style.display = 'none';
-                parttimeContainer.style.display = 'block';
+        /* ── Type-of-learning dropdown: just swaps the title/badge text ── */
+        function updateLearningTypeUI() {
+            const type = document.getElementById('easy-learning-type').value;
+            if (type === 'Tuition') {
+                document.getElementById('easy-form-title').textContent = 'Tuition Student Application';
+                document.getElementById('easy-form-badge').innerHTML = '✏️ Tuition Enrolment';
             } else {
-                // Re-open overlay ("Change type" button)
-                overlay.classList.remove('hidden');
-                progressContainer.style.display = 'none';
-                formContainer.style.display = 'none';
-                parttimeContainer.style.display = 'none';
+                document.getElementById('easy-form-title').textContent = 'Full-Time Student Application';
+                document.getElementById('easy-form-badge').innerHTML = '📚 Full-Time Enrolment';
             }
         }
 
-        /* ── Part-Time form submit ── */
-        function validatePartTimeForm() {
+        /* ── Terms & Conditions accordion + signature ── */
+        const STUDENT_AGREEMENT_VERSION = 'student-v1.0-2026-08-28';
+        let signatureConfirmed = false;
+        let confirmedSignatureName = '';
+
+        function toggleAgreementItem(n) {
+            const item = document.querySelector('.agreement-item[data-item="' + n + '"]');
+            if (item) item.classList.toggle('open');
+        }
+
+        function openAgreementModal() {
+            if (!validateEasyForm()) return;
+            document.getElementById('agreement-modal-overlay').classList.remove('hidden');
+        }
+
+        function closeAgreementModal() {
+            document.getElementById('agreement-modal-overlay').classList.add('hidden');
+        }
+
+        const AGR_EXPAND_ICON = '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>';
+        const AGR_COLLAPSE_ICON = '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>';
+
+        function toggleAgreementFullscreen() {
+            const overlay = document.getElementById('agreement-modal-overlay');
+            const btn = document.getElementById('agr-expand-btn');
+            const icon = document.getElementById('agr-expand-icon');
+            const isFullscreen = overlay.classList.toggle('fullscreen');
+            icon.innerHTML = isFullscreen ? AGR_COLLAPSE_ICON : AGR_EXPAND_ICON;
+            btn.title = isFullscreen ? 'Exit full screen' : 'Expand to full screen';
+            btn.setAttribute('aria-label', btn.title);
+        }
+
+        function onSignatureInputChange() {
+            const name = document.getElementById('signature-name-input').value.trim();
+            document.getElementById('sign-btn').disabled = name.length < 2;
+        }
+
+        function confirmSignature() {
+            const name = document.getElementById('signature-name-input').value.trim();
+            if (name.length < 2) return;
+
+            signatureConfirmed = true;
+            confirmedSignatureName = name;
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById('signature-preview-name').textContent = name;
+            document.getElementById('signature-preview-date').textContent = 'Signed on ' + dateStr;
+            document.getElementById('signature-preview-box').classList.add('visible');
+            document.getElementById('signature-name-input').style.display = 'none';
+            document.getElementById('sign-btn').style.display = 'none';
+            document.getElementById('signature-error').style.display = 'none';
+        }
+
+        function editSignature() {
+            signatureConfirmed = false;
+            document.getElementById('signature-preview-box').classList.remove('visible');
+            document.getElementById('signature-name-input').style.display = 'block';
+            document.getElementById('sign-btn').style.display = 'inline-block';
+            document.getElementById('signature-name-input').focus();
+        }
+
+        /* ── Easy form submit (both Tuition and Full-Time) ── */
+        function validateEasyForm() {
             let valid = true;
-            const form = document.getElementById('pt-form');
+            const form = document.getElementById('easy-form');
             form.querySelectorAll('input[required], select[required]').forEach(el => {
                 const group = el.closest('.form-group');
                 const isEmpty = !el.value.trim();
@@ -1217,70 +1340,81 @@
                     group.classList.remove('has-error');
                 }
             });
+
+            const password = document.getElementById('easy-password').value;
+            const confirmPassword = document.getElementById('easy-confirm-password').value;
+            if (password.length < 8) {
+                document.getElementById('easy-password').closest('.form-group').classList.add('has-error');
+                valid = false;
+            } else {
+                document.getElementById('easy-password').closest('.form-group').classList.remove('has-error');
+            }
+            if (password !== confirmPassword) {
+                document.getElementById('easy-confirm-password').closest('.form-group').classList.add('has-error');
+                valid = false;
+            } else {
+                document.getElementById('easy-confirm-password').closest('.form-group').classList.remove('has-error');
+            }
+
+            const parentEmail = document.getElementById('easy-parent-email').value.trim();
+            if (parentEmail && !parentEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                document.getElementById('easy-parent-email').closest('.form-group').classList.add('has-error');
+                valid = false;
+            } else {
+                document.getElementById('easy-parent-email').closest('.form-group').classList.remove('has-error');
+            }
+
             return valid;
         }
 
-        async function handlePartTimeSubmit() {
-            if (!validatePartTimeForm()) return;
+        async function handleEasySubmit() {
+            if (!validateEasyForm()) {
+                closeAgreementModal();
+                return;
+            }
 
-            const btn = document.getElementById('pt-submit-btn');
+            const signatureErrorEl = document.getElementById('signature-error');
+            if (!signatureConfirmed) {
+                signatureErrorEl.style.display = 'block';
+                return;
+            }
+            signatureErrorEl.style.display = 'none';
+
+            const btn = document.getElementById('easy-submit-btn');
             btn.disabled = true;
             btn.textContent = 'Submitting...';
-            document.getElementById('pt-global-error').style.display = 'none';
+            document.getElementById('easy-global-error').style.display = 'none';
 
-            const ptData = {
-                name:            document.getElementById('pt-name').value.trim(),
-                studentEmail:    document.getElementById('pt-student-email').value.trim(),
-                parentEmail:     document.getElementById('pt-parent-email').value.trim(),
-                phone:           document.getElementById('pt-phone').value.trim(),
-                gender:          document.getElementById('pt-gender').value,
-                grade:           document.getElementById('pt-grade').value.trim(),
-                curriculum:      document.getElementById('pt-curriculum').value,
-                password:        document.getElementById('pt-password').value,
-                confirmPassword: document.getElementById('pt-confirm-password').value,
-                learningType:    'Part-Time'
+            const learningType = document.getElementById('easy-learning-type').value === 'Tuition' ? 'Tuition' : 'Full-Time';
+            const typeLabel = learningType;
+            const refPrefix = learningType === 'Tuition' ? 'ADM-TU-' : 'ADM-FT-';
+
+            const easyData = {
+                name:            document.getElementById('easy-name').value.trim(),
+                studentEmail:    document.getElementById('easy-student-email').value.trim(),
+                parentEmail:     document.getElementById('easy-parent-email').value.trim(),
+                phone:           document.getElementById('easy-phone').value.trim(),
+                gender:          document.getElementById('easy-gender').value,
+                grade:           document.getElementById('easy-grade').value.trim(),
+                curriculum:      document.getElementById('easy-curriculum').value,
+                password:        document.getElementById('easy-password').value,
+                confirmPassword: document.getElementById('easy-confirm-password').value,
+                learningType:    learningType
             };
 
-            // Validate passwords
-            if (ptData.password.length < 6) {
-                document.getElementById('pt-password').closest('.form-group').classList.add('has-error');
-                btn.disabled = false;
-                btn.textContent = 'Submit Application';
-                return;
-            }
-            if (ptData.password !== ptData.confirmPassword) {
-                document.getElementById('pt-confirm-password').closest('.form-group').classList.add('has-error');
-                btn.disabled = false;
-                btn.textContent = 'Submit Application';
-                return;
-            }
-            document.getElementById('pt-password').closest('.form-group').classList.remove('has-error');
-            document.getElementById('pt-confirm-password').closest('.form-group').classList.remove('has-error');
-
-            // Validate optional parent email format if provided
-            if (ptData.parentEmail && !ptData.parentEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                document.getElementById('pt-parent-email').closest('.form-group').classList.add('has-error');
-                btn.disabled = false;
-                btn.textContent = 'Submit Application';
-                return;
-            }
-            document.getElementById('pt-parent-email').closest('.form-group').classList.remove('has-error');
-
             try {
-                const ref = 'ADM-PT-' + Math.floor(1000 + Math.random() * 9000);
+                const ref = refPrefix + Math.floor(1000 + Math.random() * 9000);
 
                 if (typeof sb !== 'undefined') {
-                    // Create Supabase auth account so they can log in to the portal
                     const { data: signUpData, error: signUpError } = await sb.auth.signUp({
-                        email:    ptData.studentEmail,
-                        password: ptData.password,
-                        options:  { data: { role: 'student', name: ptData.name, phone: ptData.phone } }
+                        email:    easyData.studentEmail,
+                        password: easyData.password,
+                        options:  { data: { role: 'student', name: easyData.name, phone: easyData.phone } }
                     });
 
                     if (signUpError) {
-                        // If email already registered, try signing them in instead
                         if (signUpError.message && signUpError.message.toLowerCase().includes('already registered')) {
-                            const errEl = document.getElementById('pt-global-error');
+                            const errEl = document.getElementById('easy-global-error');
                             errEl.textContent = 'This email already has a portal account. Please sign in instead, or use a different email.';
                             errEl.style.display = 'block';
                             btn.disabled = false;
@@ -1293,47 +1427,48 @@
                     const studentId = signUpData.user ? signUpData.user.id : null;
 
                     await sb.from('admissions').insert({
-                        id:          ref,
-                        name:        ptData.name,
-                        email:       ptData.studentEmail,
-                        phone:       ptData.phone,
-                        gender:      ptData.gender,
-                        level:       ptData.grade,
-                        curriculum:  ptData.curriculum,
-                        notes:       `Part-Time application. Learning type: Part-Time.${ptData.parentEmail ? ' Parent email: ' + ptData.parentEmail : ''}`,
-                        status:      'pending',
-                        programme_name: 'Part-Time',
-                        student_id:  studentId
+                        id:              ref,
+                        name:            easyData.name,
+                        email:           easyData.studentEmail,
+                        phone:           easyData.phone,
+                        gender:          easyData.gender,
+                        level:           easyData.grade,
+                        curriculum:      easyData.curriculum,
+                        notes:           `${typeLabel} application. Learning type: ${typeLabel}.${easyData.parentEmail ? ' Parent email: ' + easyData.parentEmail : ''}`,
+                        status:          'pending',
+                        programme_name:  typeLabel,
+                        student_id:      studentId,
+                        agreement_accepted:      true,
+                        agreement_accepted_at:   new Date().toISOString(),
+                        agreement_version:       STUDENT_AGREEMENT_VERSION,
+                        agreement_signed_name:   confirmedSignatureName
                     });
                 }
 
-                // 1. Send confirmation to student
                 await sendApplicationEmails({
-                    toName:          ptData.name,
-                    toEmail:         ptData.studentEmail,
+                    toName:          easyData.name,
+                    toEmail:         easyData.studentEmail,
                     refNumber:       ref,
-                    applicationType: 'Student Application (Part-Time)',
-                    extraDetails:    `Grade: ${ptData.grade} | Curriculum: ${ptData.curriculum}`
-                }).catch(e => console.warn('[EmailJS] Part-time student email error:', e));
+                    applicationType: `Student Application (${typeLabel})`,
+                    extraDetails:    `Grade: ${easyData.grade} | Curriculum: ${easyData.curriculum}`
+                }).catch(e => console.warn(`[EmailJS] ${typeLabel} student email error:`, e));
 
-                // 2. Send copy to parent if they provided their email
-                if (ptData.parentEmail) {
+                if (easyData.parentEmail) {
                     await sendApplicationEmails({
-                        toName:          ptData.name,
-                        toEmail:         ptData.parentEmail,
+                        toName:          easyData.name,
+                        toEmail:         easyData.parentEmail,
                         refNumber:       ref,
-                        applicationType: 'Student Application (Part-Time)',
-                        extraDetails:    `Grade: ${ptData.grade} | Curriculum: ${ptData.curriculum}`
-                    }).catch(e => console.warn('[EmailJS] Part-time parent email error:', e));
+                        applicationType: `Student Application (${typeLabel})`,
+                        extraDetails:    `Grade: ${easyData.grade} | Curriculum: ${easyData.curriculum}`
+                    }).catch(e => console.warn(`[EmailJS] ${typeLabel} parent email error:`, e));
                 }
 
-                // Reset button before transitioning to success screen
                 btn.disabled = false;
                 btn.textContent = 'Submit Application';
 
                 showSuccess(ref);
             } catch (e) {
-                const errEl = document.getElementById('pt-global-error');
+                const errEl = document.getElementById('easy-global-error');
                 errEl.textContent = e.message || 'An unexpected error occurred.';
                 errEl.style.display = 'block';
                 btn.disabled = false;
@@ -1342,379 +1477,24 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Hide the main multi-step UI initially; the overlay will direct the user
-            document.getElementById('progress-container').style.display = 'none';
-            document.getElementById('form-container').style.display = 'none';
-            loadProgrammes().then(applyPrefill);
+            document.getElementById('easy-container').style.display = 'block';
+            applyEasyPrefill();
             checkExistingSession();
+            attachPasswordStrength('easy-password');
         });
 
-        function updateFileName(input) {
-            const nameSpan = document.getElementById(`${input.id}-name`);
-            if (input.files && input.files.length > 0) {
-                nameSpan.textContent = input.files[0].name;
-            } else {
-                nameSpan.textContent = '';
-            }
-        }
-
-        function validateStep(step) {
-            let isValid = true;
-            const currentCard = document.getElementById(`step-${step}`);
-            
-            // Standard inputs
-            const inputs = currentCard.querySelectorAll('input[required], select[required]');
-            inputs.forEach(input => {
-                const group = input.closest('.form-group') || input.parentElement;
-                if (!input.value.trim() && input.type !== 'checkbox' && input.type !== 'file') {
-                    group.classList.add('has-error');
-                    isValid = false;
-                } else if (input.type === 'email' && !input.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                    group.classList.add('has-error');
-                    isValid = false;
-                } else {
-                    group.classList.remove('has-error');
-                }
-            });
-
-            // Passwords in step 6
-            if (step === 6) {
-                const pass = document.getElementById('password');
-                const conf = document.getElementById('confirmPassword');
-                const val = pass.value;
-                const strong = /[A-Z]/.test(val) && /[a-z]/.test(val) && /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val) && val.length >= 8;
-                if (!strong) {
-                    pass.closest('.form-group').classList.add('has-error');
-                    document.getElementById('passwordError').style.display = 'block';
-                    isValid = false;
-                } else {
-                    document.getElementById('passwordError').style.display = 'none';
-                }
-                if (val !== conf.value) {
-                    conf.closest('.form-group').classList.add('has-error');
-                    isValid = false;
-                }
-            }
-
-            // Files in step 5
-            if (step === 5) {
-                ['birthCert', 'schoolReport', 'guardianIdFile'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (!el.files || el.files.length === 0) {
-                        document.getElementById(`${id}-error`).style.display = 'block';
-                        isValid = false;
-                    } else {
-                        document.getElementById(`${id}-error`).style.display = 'none';
-                    }
-                });
-            }
-
-            // Declaration in step 7
-            if (step === 7) {
-                const decl = document.getElementById('declaration');
-                if (!decl.checked) {
-                    document.getElementById('declaration-error').style.display = 'block';
-                    isValid = false;
-                } else {
-                    document.getElementById('declaration-error').style.display = 'none';
-                }
-            }
-
-            return isValid;
-        }
-
-        function collectFormData() {
-            const inputs = document.querySelectorAll('input:not([type="file"]), select, textarea');
-            inputs.forEach(i => {
-                if (i.name) formData[i.name] = i.value;
-            });
-
-            // Collect files
-            formData.docs = {};
-            const files = ['birthCert', 'schoolReport', 'guardianIdFile', 'passportPhoto'];
-            files.forEach(f => {
-                const el = document.getElementById(f === 'guardianIdFile' ? 'guardianIdFile' : f);
-                if (el && el.files && el.files.length > 0) {
-                    // Map HTML ids to expected submit logic keys
-                    let key = f;
-                    if (f === 'guardianIdFile') key = 'guardianId';
-                    formData.docs[key] = el.files[0];
-                }
-            });
-        }
-
-        function generateSummary() {
-            collectFormData();
-            const summary = document.getElementById('summary-content');
-            
-            const sections = [
-                {
-                    title: "Personal Information",
-                    data: [
-                        { label: "Name", val: formData.name },
-                        { label: "DOB", val: formData.dob },
-                        { label: "Gender", val: formData.gender },
-                        { label: "Nationality", val: formData.nationality },
-                        { label: "Phone", val: formData.phone }
-                    ]
-                },
-                {
-                    title: "Guardian Information",
-                    data: [
-                        { label: "Guardian Name", val: formData.guardianName },
-                        { label: "Relationship", val: formData.guardianRelationship },
-                        { label: "Phone", val: formData.guardianPhone },
-                        { label: "Email", val: formData.guardianEmail || "N/A" }
-                    ]
-                },
-                {
-                    title: "Academic Background",
-                    data: [
-                        { label: "Previous School", val: formData.previousSchool },
-                        { label: "Grade", val: formData.previousGrade },
-                        { label: "Curriculum", val: formData.previousCurriculum }
-                    ]
-                },
-                {
-                    title: "Programme & Account",
-                    data: [
-                        { label: "Programme ID", val: formData.programmeId },
-                        { label: "Account Email", val: formData.email }
-                    ]
-                }
-            ];
-
-            let html = "";
-            sections.forEach(sec => {
-                html += `<div class="summary-section">
-                    <h3>${sec.title}</h3>`;
-                sec.data.forEach(row => {
-                    html += `<div class="summary-row">
-                        <div class="summary-label">${row.label}</div>
-                        <div class="summary-value">${row.val}</div>
-                    </div>`;
-                });
-                html += `</div>`;
-            });
-
-            summary.innerHTML = html;
-        }
-
-        function updateUI() {
-            // Cards
-            document.querySelectorAll('.step-card').forEach((card, idx) => {
-                if (idx + 1 === currentStep) {
-                    card.classList.add('active');
-                } else {
-                    card.classList.remove('active');
-                }
-            });
-
-            // Progress bar
-            document.querySelectorAll('.step-indicator').forEach((ind, idx) => {
-                const step = idx + 1;
-                ind.classList.remove('active', 'completed');
-                if (step === currentStep) {
-                    ind.classList.add('active');
-                } else if (step < currentStep) {
-                    ind.classList.add('completed');
-                    ind.querySelector('.step-circle').innerHTML = '✓';
-                } else {
-                    ind.querySelector('.step-circle').innerHTML = step;
-                }
-            });
-
-            // Buttons
-            document.getElementById('btn-prev').style.display = currentStep > 1 ? 'block' : 'none';
-            if (currentStep === totalSteps) {
-                document.getElementById('btn-next').style.display = 'none';
-                document.getElementById('btn-submit').style.display = 'block';
-                generateSummary();
-            } else {
-                document.getElementById('btn-next').style.display = 'block';
-                document.getElementById('btn-submit').style.display = 'none';
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function checkPasswordStrength(val) {
-          const rules = [
-            { id: 'rule-len',     test: v => v.length >= 8 },
-            { id: 'rule-upper',   test: v => /[A-Z]/.test(v) },
-            { id: 'rule-lower',   test: v => /[a-z]/.test(v) },
-            { id: 'rule-num',     test: v => /[0-9]/.test(v) },
-            { id: 'rule-special', test: v => /[^A-Za-z0-9]/.test(v) }
-          ];
-          const labels = {
-            'rule-len':     ['\u274c At least 8 characters',               '\u2705 At least 8 characters'],
-            'rule-upper':   ['\u274c One uppercase letter (A\u2013Z)',       '\u2705 One uppercase letter (A\u2013Z)'],
-            'rule-lower':   ['\u274c One lowercase letter (a\u2013z)',       '\u2705 One lowercase letter (a\u2013z)'],
-            'rule-num':     ['\u274c One number (0\u20139)',                 '\u2705 One number (0\u20139)'],
-            'rule-special': ['\u274c One special character (!@#$%^&* \u2026)', '\u2705 One special character (!@#$%^&* \u2026)']
-          };
-          rules.forEach(r => {
-            const li = document.getElementById(r.id);
-            if (!li) return;
-            const ok = r.test(val);
-            li.textContent = labels[r.id][ok ? 1 : 0];
-            li.classList.toggle('pass', ok);
-          });
-        }
-
-        function nextStep() {
-            if (validateStep(currentStep)) {
-                if (currentStep < totalSteps) {
-                    currentStep++;
-                    updateUI();
-                }
-            }
-        }
-
-        function prevStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                updateUI();
-            }
-        }
-
-        function showError(msg) {
-            const err = document.getElementById('global-error');
-            err.textContent = msg;
-            err.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // Re-enable submit button
-            const subBtn = document.getElementById('btn-submit');
-            subBtn.disabled = false;
-            subBtn.textContent = 'Submit Application';
-        }
-
         function showSuccess(ref) {
-            // Hide all form containers
-            document.getElementById('progress-container').style.display = 'none';
-            document.getElementById('form-container').style.display = 'none';
-            const ptContainer = document.getElementById('parttime-container');
-            if (ptContainer) ptContainer.style.display = 'none';
+            const easyContainer = document.getElementById('easy-container');
+            if (easyContainer) easyContainer.style.display = 'none';
 
-            // Show success screen
             const success = document.getElementById('success-screen');
             success.style.display = 'block';
             document.getElementById('ref-badge-text').textContent = ref;
 
-            // Scroll to the top of the success screen — scrollIntoView is
-            // more reliable than window.scrollTo on mobile browsers
             setTimeout(() => {
                 success.scrollIntoView({ top: 0, behavior: 'smooth', block: 'start' });
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 50);
-        }
-
-        async function handleFinalSubmit() {
-            if (!validateStep(currentStep)) return;
-            collectFormData();
-
-            const subBtn = document.getElementById('btn-submit');
-            subBtn.disabled = true;
-            subBtn.textContent = 'Submitting...';
-            document.getElementById('global-error').style.display = 'none';
-
-            try {
-                await submitApplication();
-            } catch (e) {
-                showError(e.message || "An unexpected error occurred.");
-            }
-        }
-
-        async function submitApplication() {
-            // 1. Sign up
-            const { data: signUpData, error: signUpError } = await sb.auth.signUp({
-                email: formData.email,
-                password: formData.password,
-                options: { data: { role: 'student', name: formData.name, phone: formData.phone } }
-            });
-            if (signUpError) {
-                if (/already registered|already exists/i.test(signUpError.message || '')) {
-                    showError('An account with this email already exists. If you\'ve already applied or are an enrolled student, please sign in to your portal from the school website instead of applying again. If you believe this is a mistake, contact admissions.');
-                } else {
-                    showError(signUpError.message);
-                }
-                return;
-            }
-
-            // Try to sign in immediately if no session yet
-            if (!signUpData.session) {
-                await sb.auth.signInWithPassword({ email: formData.email, password: formData.password }).catch(()=>{});
-            }
-
-            // 2. Generate application reference
-            const ref = 'ADM-' + Math.floor(1000 + Math.random() * 9000);
-
-            // 3. Upload documents
-            const uploadedDocs = [];
-            const docFields = [
-                { key: 'birthCert', label: 'Birth Certificate' },
-                { key: 'schoolReport', label: 'School Report' },
-                { key: 'guardianId', label: 'Guardian ID' },
-                { key: 'passportPhoto', label: 'Passport Photo' }
-            ];
-            for (const df of docFields) {
-                const file = formData.docs[df.key];
-                if (!file) continue;
-                const path = `students/${ref}/${df.key}/${file.name}`;
-                const { error } = await sb.storage.from('applications').upload(path, file, { upsert: true });
-                if (!error) uploadedDocs.push({ name: df.label, path, type: file.type });
-            }
-
-            // 4. Insert admission record
-            let programme = null;
-            if (formData.programmeId) {
-                const { data } = await sb.from('programmes').select('name,curriculum,level').eq('id', formData.programmeId).single();
-                if (data) programme = data;
-            }
-            
-            const { data: admissionData, error: admissionError } = await sb.from('admissions').insert({
-                id: ref,
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone,
-                programme_id: formData.programmeId || null,
-                programme_name: programme ? programme.name : 'Not specified',
-                curriculum: programme ? programme.curriculum : '',
-                level: formData.gradeApplyingFor || (programme ? programme.level : ''),
-                notes: formData.notes || '',
-                status: 'pending',
-                student_id: signUpData.user ? signUpData.user.id : null,
-                dob: formData.dob || null,
-                gender: formData.gender || null,
-                nationality: formData.nationality || null,
-                national_id: formData.nationalId || null,
-                guardian_name: formData.guardianName || null,
-                guardian_relationship: formData.guardianRelationship || null,
-                guardian_phone: formData.guardianPhone || null,
-                guardian_email: formData.guardianEmail || null,
-                guardian_occupation: formData.guardianOccupation || null,
-                guardian_id: formData.guardianId || null,
-                previous_school: formData.previousSchool || null,
-                previous_grade: formData.previousGrade || null,
-                special_requirements: formData.specialRequirements || null,
-                preferred_intake: formData.preferredIntake || null,
-                documents: uploadedDocs
-            }).select().single();
-
-            if (admissionError) { showError(admissionError.message); return; }
-
-            // Send confirmation email to applicant + admin notification
-            const programmeName = programme ? programme.name : 'Not specified';
-            await sendApplicationEmails({
-                toName:          formData.name,
-                toEmail:         formData.email,
-                refNumber:       ref,
-                applicationType: 'Student Application (Full-Time)',
-                extraDetails:    `Programme: ${programmeName} | Grade: ${formData.gradeApplyingFor || 'N/A'}`
-            }).catch(e => console.warn('[EmailJS] Full-time email error:', e));
-            
-            showSuccess(ref);
         }
     </script>
 </body>

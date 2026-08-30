@@ -11,6 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabaseClient.js"></script>
   <script src="../js/db.js"></script>
+  <script src="../js/password-strength.js"></script>
   <link rel="icon" type="image/png" href="../ckh-nobg.png">
 </head>
 <body>
@@ -185,6 +186,10 @@
       window.location.href = user.role === 'student' ? '../student/dashboard.html' : '../admin/dashboard.html';
       return null;
     }
+    if (!user.agreementSigned) {
+      window.location.href = 'agreement.html';
+      return null;
+    }
     const nameParts = user.name.split(' ');
     const initials = nameParts.length >= 2
       ? nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase()
@@ -212,6 +217,10 @@
       errEl.textContent = 'New passwords do not match.';
       return false;
     }
+    if (next.length < 8) {
+      errEl.textContent = 'New password must be at least 8 characters.';
+      return false;
+    }
 
     // Re-authenticate with the current password to confirm it's correct
     // before changing it (Supabase Auth never stores/returns it in plain text).
@@ -232,6 +241,7 @@
   }
 
   window.onload = async function() {
+    attachPasswordStrength('newPass');
     currentUser = await requireTeacher();
     if (!currentUser) return;
     document.getElementById('profName').textContent = currentUser.name;
